@@ -1,0 +1,24 @@
+[Unit]
+Description=Educoder homework reminders
+After=network-online.target
+Wants=network-online.target
+StartLimitIntervalSec=0
+
+[Service]
+Type=simple
+# Replace these paths and the user with the actual Debian deployment values.
+User=educoder
+WorkingDirectory=/opt/educoder-reminder
+ExecStart=/opt/educoder-reminder/.venv/bin/python -u -m educoder_reminder.remind run
+Restart=on-failure
+RestartSec=60
+KillSignal=SIGINT
+TimeoutStopSec=30
+UMask=0077
+NoNewPrivileges=true
+Environment=PYTHONUNBUFFERED=1
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target
