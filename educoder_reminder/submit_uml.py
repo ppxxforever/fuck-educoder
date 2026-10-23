@@ -368,7 +368,8 @@ async def _trigger_eval(client, detail, hw_id, gid):
         })
 
 
-GRADER_CACHE = ROOT / 'data' / 'graders'
+# 评测脚本缓存随仓库管理（放 data/ 会被 .gitignore 忽略，换机器就丢）
+GRADER_CACHE = ROOT / 'graders'
 
 
 def _cache_keys(gid, subject=None, step=None):

@@ -131,8 +131,8 @@ SSH 登录 VNC 虚拟机 → 写入工作区 → `git commit` → 触发评测�
 
 答案来源优先级：
 1. 本地题库 `answer/<实验名>/`（`.mdj` 或 `stepN/res.txt`）；
-2. 缓存/抓取的评测脚本逆向构造（`data/graders/`，按 gid 与「关卡标题+step」双键缓存，
-   换账号也能命中）；
+2. 缓存/抓取的评测脚本逆向构造（`graders/`，按 gid 与「关卡标题+step」双键缓存，
+   换账号或换机器都能命中；该目录随仓库提交）；
 3. AI 生成（需配置 `AI_API_KEY`）。
 
 ```bash
@@ -188,7 +188,7 @@ uv run python -m educoder_reminder.courses                   # 验证身份
 |------|------|------|
 | `answers.json` | ✅ | 按实验名/关卡标题匹配，与账号无关 |
 | `answer/` 下的 `.mdj` / `res.txt` | ✅ | 按实验名和 step 匹配 |
-| `data/graders/` 评测脚本缓存 | ✅ | 双键缓存，换账号按关卡标题也能命中 |
+| `graders/` 评测脚本缓存 | ✅ | 双键缓存（`gid_xxx.py` + `关卡标题_stepN.py`），换账号/换机器都能命中，随仓库提交 |
 | 关卡通过状态 | ✅ | 每次从平台实时读取，自动跳过已通过 |
 | 换到另一个班（课堂 code 不同） | ✅ | code 匹配不到时改按**课堂名**匹配 |
 | `data/reminder.sqlite3` | ✅ | 按账号隔离 |
