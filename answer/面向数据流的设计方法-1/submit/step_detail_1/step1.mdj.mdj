@@ -1,0 +1,1127 @@
+{
+	"_type": "Project",
+	"_id": "AAAAAAFF+h6SjaM2Hec=",
+	"name": "Untitled",
+	"ownedElements": [
+		{
+			"_type": "UMLModel",
+			"_id": "AAAAAAFF+qBWK6M3Z8Y=",
+			"_parent": {
+				"$ref": "AAAAAAFF+h6SjaM2Hec="
+			},
+			"name": "Model",
+			"ownedElements": [
+				{
+					"_type": "UMLClassDiagram",
+					"_id": "AAAAAAFF+qBtyKM79qY=",
+					"_parent": {
+						"$ref": "AAAAAAFF+qBWK6M3Z8Y="
+					},
+					"name": "Main",
+					"defaultDiagram": true
+				}
+			]
+		},
+		{
+			"_type": "DFDDataFlowModel",
+			"_id": "AAAAAAGhYzfxN8TjaHU=",
+			"_parent": {
+				"$ref": "AAAAAAFF+h6SjaM2Hec="
+			},
+			"name": "DataFlowModel1",
+			"ownedElements": [
+				{
+					"_type": "DFDDiagram",
+					"_id": "AAAAAAGhYzfxN8TkeZo=",
+					"_parent": {
+						"$ref": "AAAAAAGhYzfxN8TjaHU="
+					},
+					"name": "DFDDiagram1",
+					"ownedViews": [
+						{
+							"_type": "DFDProcessView",
+							"_id": "AAAAAAGhYziCYcTqn7g=",
+							"_parent": {
+								"$ref": "AAAAAAGhYzfxN8TkeZo="
+							},
+							"model": {
+								"$ref": "AAAAAAGhYziCYMTobLs="
+							},
+							"subViews": [
+								{
+									"_type": "LabelView",
+									"_id": "AAAAAAGhYziCYcTrd8k=",
+									"_parent": {
+										"$ref": "AAAAAAGhYziCYcTqn7g="
+									},
+									"font": "Arial;13;0",
+									"left": 178,
+									"top": 216,
+									"width": 124,
+									"height": 13,
+									"text": "管理员信息管理系统",
+									"wordWrap": true
+								},
+								{
+									"_type": "LabelView",
+									"_id": "AAAAAAGhYziCYcTsJFU=",
+									"_parent": {
+										"$ref": "AAAAAAGhYziCYcTqn7g="
+									},
+									"font": "Arial;13;0",
+									"left": 178,
+									"top": 189,
+									"width": 124,
+									"height": 13
+								}
+							],
+							"font": "Arial;13;0",
+							"left": 168,
+							"top": 184,
+							"width": 144,
+							"height": 56,
+							"nameLabel": {
+								"$ref": "AAAAAAGhYziCYcTrd8k="
+							},
+							"idLabel": {
+								"$ref": "AAAAAAGhYziCYcTsJFU="
+							}
+						},
+						{
+							"_type": "DFDProcessView",
+							"_id": "AAAAAAGhYziUM8T1tPw=",
+							"_parent": {
+								"$ref": "AAAAAAGhYzfxN8TkeZo="
+							},
+							"model": {
+								"$ref": "AAAAAAGhYziUMsTzUdk="
+							},
+							"subViews": [
+								{
+									"_type": "LabelView",
+									"_id": "AAAAAAGhYziUM8T2cW8=",
+									"_parent": {
+										"$ref": "AAAAAAGhYziUM8T1tPw="
+									},
+									"font": "Arial;13;0",
+									"left": 26,
+									"top": 472,
+									"width": 78,
+									"height": 13,
+									"text": "界面管理系统",
+									"wordWrap": true
+								},
+								{
+									"_type": "LabelView",
+									"_id": "AAAAAAGhYziUM8T3rDM=",
+									"_parent": {
+										"$ref": "AAAAAAGhYziUM8T1tPw="
+									},
+									"font": "Arial;13;0",
+									"left": 26,
+									"top": 445,
+									"width": 78,
+									"height": 13
+								}
+							],
+							"font": "Arial;13;0",
+							"left": 16,
+							"top": 440,
+							"width": 98,
+							"height": 56,
+							"nameLabel": {
+								"$ref": "AAAAAAGhYziUM8T2cW8="
+							},
+							"idLabel": {
+								"$ref": "AAAAAAGhYziUM8T3rDM="
+							}
+						},
+						{
+							"_type": "DFDProcessView",
+							"_id": "AAAAAAGhYzimacUA+Zo=",
+							"_parent": {
+								"$ref": "AAAAAAGhYzfxN8TkeZo="
+							},
+							"model": {
+								"$ref": "AAAAAAGhYzimacT+1l4="
+							},
+							"subViews": [
+								{
+									"_type": "LabelView",
+									"_id": "AAAAAAGhYzimacUBkAQ=",
+									"_parent": {
+										"$ref": "AAAAAAGhYzimacUA+Zo="
+									},
+									"font": "Arial;13;0",
+									"left": 202,
+									"top": 480,
+									"width": 78,
+									"height": 13,
+									"text": "订单管理系统",
+									"wordWrap": true
+								},
+								{
+									"_type": "LabelView",
+									"_id": "AAAAAAGhYzimacUCXGU=",
+									"_parent": {
+										"$ref": "AAAAAAGhYzimacUA+Zo="
+									},
+									"font": "Arial;13;0",
+									"left": 202,
+									"top": 453,
+									"width": 78,
+									"height": 13
+								}
+							],
+							"font": "Arial;13;0",
+							"left": 192,
+							"top": 448,
+							"width": 98,
+							"height": 56,
+							"nameLabel": {
+								"$ref": "AAAAAAGhYzimacUBkAQ="
+							},
+							"idLabel": {
+								"$ref": "AAAAAAGhYzimacUCXGU="
+							}
+						},
+						{
+							"_type": "DFDProcessView",
+							"_id": "AAAAAAGhYzi1DsULBXI=",
+							"_parent": {
+								"$ref": "AAAAAAGhYzfxN8TkeZo="
+							},
+							"model": {
+								"$ref": "AAAAAAGhYzi1DsUJlwE="
+							},
+							"subViews": [
+								{
+									"_type": "LabelView",
+									"_id": "AAAAAAGhYzi1DsUMOB8=",
+									"_parent": {
+										"$ref": "AAAAAAGhYzi1DsULBXI="
+									},
+									"font": "Arial;13;0",
+									"left": 362,
+									"top": 480,
+									"width": 78,
+									"height": 13,
+									"text": "用户管理系统",
+									"wordWrap": true
+								},
+								{
+									"_type": "LabelView",
+									"_id": "AAAAAAGhYzi1DsUNktY=",
+									"_parent": {
+										"$ref": "AAAAAAGhYzi1DsULBXI="
+									},
+									"font": "Arial;13;0",
+									"left": 362,
+									"top": 453,
+									"width": 78,
+									"height": 13
+								}
+							],
+							"font": "Arial;13;0",
+							"left": 352,
+							"top": 448,
+							"width": 98,
+							"height": 56,
+							"nameLabel": {
+								"$ref": "AAAAAAGhYzi1DsUMOB8="
+							},
+							"idLabel": {
+								"$ref": "AAAAAAGhYzi1DsUNktY="
+							}
+						},
+						{
+							"_type": "DFDExternalEntityView",
+							"_id": "AAAAAAGhYzjCZcUWNaE=",
+							"_parent": {
+								"$ref": "AAAAAAGhYzfxN8TkeZo="
+							},
+							"model": {
+								"$ref": "AAAAAAGhYzjCZcUUoHo="
+							},
+							"subViews": [
+								{
+									"_type": "LabelView",
+									"_id": "AAAAAAGhYzjCZsUcdgk=",
+									"_parent": {
+										"$ref": "AAAAAAGhYzjCZcUWNaE="
+									},
+									"font": "Arial;13;0",
+									"left": 34,
+									"top": 301,
+									"width": 87.4326171875,
+									"height": 13
+								},
+								{
+									"_type": "LabelView",
+									"_id": "AAAAAAGhYzjCZcUXwdM=",
+									"_parent": {
+										"$ref": "AAAAAAGhYzjCZcUWNaE="
+									},
+									"font": "Arial;13;0",
+									"left": 34,
+									"top": 306,
+									"width": 87.4326171875,
+									"height": 13,
+									"text": "界面管理员",
+									"wordWrap": true
+								},
+								{
+									"_type": "LabelView",
+									"_id": "AAAAAAGhYzjCZcUYrYA=",
+									"_parent": {
+										"$ref": "AAAAAAGhYzjCZcUWNaE="
+									},
+									"font": "Arial;13;0",
+									"height": 13
+								}
+							],
+							"font": "Arial;13;0",
+							"left": 24,
+							"top": 296,
+							"width": 107.4326171875,
+							"height": 40,
+							"nameLabel": {
+								"$ref": "AAAAAAGhYzjCZcUXwdM="
+							}
+						},
+						{
+							"_type": "DFDExternalEntityView",
+							"_id": "AAAAAAGhYzjKDsUh048=",
+							"_parent": {
+								"$ref": "AAAAAAGhYzfxN8TkeZo="
+							},
+							"model": {
+								"$ref": "AAAAAAGhYzjKDcUfAeY="
+							},
+							"subViews": [
+								{
+									"_type": "LabelView",
+									"_id": "AAAAAAGhYzjKDsUn+Hc=",
+									"_parent": {
+										"$ref": "AAAAAAGhYzjKDsUh048="
+									},
+									"font": "Arial;13;0",
+									"left": 194,
+									"top": 309,
+									"width": 87.4326171875,
+									"height": 13
+								},
+								{
+									"_type": "LabelView",
+									"_id": "AAAAAAGhYzjKDsUirt0=",
+									"_parent": {
+										"$ref": "AAAAAAGhYzjKDsUh048="
+									},
+									"font": "Arial;13;0",
+									"left": 194,
+									"top": 314,
+									"width": 87.4326171875,
+									"height": 13,
+									"text": "订单管理员",
+									"wordWrap": true
+								},
+								{
+									"_type": "LabelView",
+									"_id": "AAAAAAGhYzjKDsUj46U=",
+									"_parent": {
+										"$ref": "AAAAAAGhYzjKDsUh048="
+									},
+									"font": "Arial;13;0",
+									"height": 13
+								}
+							],
+							"font": "Arial;13;0",
+							"left": 184,
+							"top": 304,
+							"width": 107.4326171875,
+							"height": 33,
+							"nameLabel": {
+								"$ref": "AAAAAAGhYzjKDsUirt0="
+							}
+						},
+						{
+							"_type": "DFDExternalEntityView",
+							"_id": "AAAAAAGhYzjcS8UsD9o=",
+							"_parent": {
+								"$ref": "AAAAAAGhYzfxN8TkeZo="
+							},
+							"model": {
+								"$ref": "AAAAAAGhYzjcS8UqMfE="
+							},
+							"subViews": [
+								{
+									"_type": "LabelView",
+									"_id": "AAAAAAGhYzjcTMUy1wg=",
+									"_parent": {
+										"$ref": "AAAAAAGhYzjcS8UsD9o="
+									},
+									"font": "Arial;13;0",
+									"left": 386,
+									"top": 317,
+									"width": 87.4326171875,
+									"height": 13
+								},
+								{
+									"_type": "LabelView",
+									"_id": "AAAAAAGhYzjcS8UtWZo=",
+									"_parent": {
+										"$ref": "AAAAAAGhYzjcS8UsD9o="
+									},
+									"font": "Arial;13;0",
+									"left": 386,
+									"top": 322,
+									"width": 87.4326171875,
+									"height": 13,
+									"text": "超级管理员",
+									"wordWrap": true
+								},
+								{
+									"_type": "LabelView",
+									"_id": "AAAAAAGhYzjcS8UumP8=",
+									"_parent": {
+										"$ref": "AAAAAAGhYzjcS8UsD9o="
+									},
+									"font": "Arial;13;0",
+									"left": -8,
+									"top": -32,
+									"height": 13
+								}
+							],
+							"font": "Arial;13;0",
+							"left": 376,
+							"top": 312,
+							"width": 107.4326171875,
+							"height": 33,
+							"nameLabel": {
+								"$ref": "AAAAAAGhYzjcS8UtWZo="
+							}
+						},
+						{
+							"_type": "DFDDataStoreView",
+							"_id": "AAAAAAGhYzj3/MU4cuA=",
+							"_parent": {
+								"$ref": "AAAAAAGhYzfxN8TkeZo="
+							},
+							"model": {
+								"$ref": "AAAAAAGhYzj3/MU25/8="
+							},
+							"subViews": [
+								{
+									"_type": "LabelView",
+									"_id": "AAAAAAGhYzj3/MU5UgU=",
+									"_parent": {
+										"$ref": "AAAAAAGhYzj3/MU4cuA="
+									},
+									"font": "Arial;13;0",
+									"left": 220,
+									"top": 578,
+									"width": 65.76171875,
+									"height": 13,
+									"text": "订单文件",
+									"wordWrap": true
+								},
+								{
+									"_type": "LabelView",
+									"_id": "AAAAAAGhYzj3/MU6YPg=",
+									"_parent": {
+										"$ref": "AAAAAAGhYzj3/MU4cuA="
+									},
+									"font": "Arial;13;0",
+									"left": 205,
+									"top": 578,
+									"height": 13
+								}
+							],
+							"font": "Arial;13;0",
+							"left": 200,
+							"top": 568,
+							"width": 95.76171875,
+							"height": 40,
+							"nameLabel": {
+								"$ref": "AAAAAAGhYzj3/MU5UgU="
+							},
+							"idLabel": {
+								"$ref": "AAAAAAGhYzj3/MU6YPg="
+							}
+						},
+						{
+							"_type": "DFDDataStoreView",
+							"_id": "AAAAAAGhYzkFzcVDdKk=",
+							"_parent": {
+								"$ref": "AAAAAAGhYzfxN8TkeZo="
+							},
+							"model": {
+								"$ref": "AAAAAAGhYzkFzMVB2N8="
+							},
+							"subViews": [
+								{
+									"_type": "LabelView",
+									"_id": "AAAAAAGhYzkFzcVEzp0=",
+									"_parent": {
+										"$ref": "AAAAAAGhYzkFzcVDdKk="
+									},
+									"font": "Arial;13;0",
+									"left": 364,
+									"top": 578,
+									"width": 78,
+									"height": 13,
+									"text": "用户信息文件",
+									"wordWrap": true
+								},
+								{
+									"_type": "LabelView",
+									"_id": "AAAAAAGhYzkFzcVFLaQ=",
+									"_parent": {
+										"$ref": "AAAAAAGhYzkFzcVDdKk="
+									},
+									"font": "Arial;13;0",
+									"left": 349,
+									"top": 578,
+									"height": 13
+								}
+							],
+							"font": "Arial;13;0",
+							"left": 344,
+							"top": 568,
+							"width": 108,
+							"height": 33,
+							"nameLabel": {
+								"$ref": "AAAAAAGhYzkFzcVEzp0="
+							},
+							"idLabel": {
+								"$ref": "AAAAAAGhYzkFzcVFLaQ="
+							}
+						},
+						{
+							"_type": "DFDDataFlowView",
+							"_id": "AAAAAAGhYzq69cVXSqI=",
+							"_parent": {
+								"$ref": "AAAAAAGhYzfxN8TkeZo="
+							},
+							"model": {
+								"$ref": "AAAAAAGhYzq69MVVnTw="
+							},
+							"subViews": [
+								{
+									"_type": "EdgeLabelView",
+									"_id": "AAAAAAGhYzq69cVYnWA=",
+									"_parent": {
+										"$ref": "AAAAAAGhYzq69cVXSqI="
+									},
+									"model": {
+										"$ref": "AAAAAAGhYzq69MVVnTw="
+									},
+									"font": "Arial;13;0",
+									"left": 154,
+									"top": 289,
+									"width": 52,
+									"height": 13,
+									"alpha": 1.5707963267948966,
+									"distance": 15,
+									"hostEdge": {
+										"$ref": "AAAAAAGhYzq69cVXSqI="
+									},
+									"edgePosition": 1,
+									"text": "个人信息"
+								}
+							],
+							"font": "Arial;13;0",
+							"head": {
+								"$ref": "AAAAAAGhYziCYcTqn7g="
+							},
+							"tail": {
+								"$ref": "AAAAAAGhYzjCZcUWNaE="
+							},
+							"lineStyle": 2,
+							"points": "130:296;195:296;195:239",
+							"nameLabel": {
+								"$ref": "AAAAAAGhYzq69cVYnWA="
+							}
+						},
+						{
+							"_type": "DFDDataFlowView",
+							"_id": "AAAAAAGhYz0vt8Vh1z0=",
+							"_parent": {
+								"$ref": "AAAAAAGhYzfxN8TkeZo="
+							},
+							"model": {
+								"$ref": "AAAAAAGhYz0vt8Vf4oY="
+							},
+							"subViews": [
+								{
+									"_type": "EdgeLabelView",
+									"_id": "AAAAAAGhYz0vt8VijtQ=",
+									"_parent": {
+										"$ref": "AAAAAAGhYz0vt8Vh1z0="
+									},
+									"model": {
+										"$ref": "AAAAAAGhYz0vt8Vf4oY="
+									},
+									"font": "Arial;13;0",
+									"left": 197,
+									"top": 264,
+									"width": 52,
+									"height": 13,
+									"alpha": 1.5707963267948966,
+									"distance": 15,
+									"hostEdge": {
+										"$ref": "AAAAAAGhYz0vt8Vh1z0="
+									},
+									"edgePosition": 1,
+									"text": "个人信息"
+								}
+							],
+							"font": "Arial;13;0",
+							"head": {
+								"$ref": "AAAAAAGhYziCYcTqn7g="
+							},
+							"tail": {
+								"$ref": "AAAAAAGhYzjKDsUh048="
+							},
+							"lineStyle": 2,
+							"points": "238:304;238:239",
+							"nameLabel": {
+								"$ref": "AAAAAAGhYz0vt8VijtQ="
+							}
+						},
+						{
+							"_type": "DFDDataFlowView",
+							"_id": "AAAAAAGhYz1MvMVrfIg=",
+							"_parent": {
+								"$ref": "AAAAAAGhYzfxN8TkeZo="
+							},
+							"model": {
+								"$ref": "AAAAAAGhYz1MvMVp+b8="
+							},
+							"subViews": [
+								{
+									"_type": "EdgeLabelView",
+									"_id": "AAAAAAGhYz1MvMVs3hE=",
+									"_parent": {
+										"$ref": "AAAAAAGhYz1MvMVrfIg="
+									},
+									"model": {
+										"$ref": "AAAAAAGhYz1MvMVp+b8="
+									},
+									"font": "Arial;13;0",
+									"left": 243,
+									"top": 305,
+									"width": 52,
+									"height": 13,
+									"alpha": 1.5707963267948966,
+									"distance": 15,
+									"hostEdge": {
+										"$ref": "AAAAAAGhYz1MvMVrfIg="
+									},
+									"edgePosition": 1,
+									"text": "个人信息"
+								}
+							],
+							"font": "Arial;13;0",
+							"head": {
+								"$ref": "AAAAAAGhYziCYcTqn7g="
+							},
+							"tail": {
+								"$ref": "AAAAAAGhYzjcS8UsD9o="
+							},
+							"lineStyle": 2,
+							"points": "376:312;284:312;284:239",
+							"nameLabel": {
+								"$ref": "AAAAAAGhYz1MvMVs3hE="
+							}
+						},
+						{
+							"_type": "DFDDataFlowView",
+							"_id": "AAAAAAGhYz1qU8V1OZA=",
+							"_parent": {
+								"$ref": "AAAAAAGhYzfxN8TkeZo="
+							},
+							"model": {
+								"$ref": "AAAAAAGhYz1qU8VzLiI="
+							},
+							"subViews": [
+								{
+									"_type": "EdgeLabelView",
+									"_id": "AAAAAAGhYz1qU8V2HJE=",
+									"_parent": {
+										"$ref": "AAAAAAGhYz1qU8V1OZA="
+									},
+									"model": {
+										"$ref": "AAAAAAGhYz1qU8VzLiI="
+									},
+									"font": "Arial;13;0",
+									"left": 24,
+									"top": 380,
+									"width": 130,
+									"height": 13,
+									"alpha": 1.5707963267948966,
+									"distance": 15,
+									"hostEdge": {
+										"$ref": "AAAAAAGhYz1qU8V1OZA="
+									},
+									"edgePosition": 1,
+									"text": "新增的商品和广告信息"
+								}
+							],
+							"font": "Arial;13;0",
+							"head": {
+								"$ref": "AAAAAAGhYziUM8T1tPw="
+							},
+							"tail": {
+								"$ref": "AAAAAAGhYzjCZcUWNaE="
+							},
+							"lineStyle": 2,
+							"points": "75:335;75:440",
+							"nameLabel": {
+								"$ref": "AAAAAAGhYz1qU8V2HJE="
+							}
+						},
+						{
+							"_type": "DFDDataFlowView",
+							"_id": "AAAAAAGhYz2xmcV/F7Q=",
+							"_parent": {
+								"$ref": "AAAAAAGhYzfxN8TkeZo="
+							},
+							"model": {
+								"$ref": "AAAAAAGhYz2xmcV9yp0="
+							},
+							"subViews": [
+								{
+									"_type": "EdgeLabelView",
+									"_id": "AAAAAAGhYz2xmcWAYis=",
+									"_parent": {
+										"$ref": "AAAAAAGhYz2xmcV/F7Q="
+									},
+									"model": {
+										"$ref": "AAAAAAGhYz2xmcV9yp0="
+									},
+									"font": "Arial;13;0",
+									"left": 196,
+									"top": 385,
+									"width": 52,
+									"height": 13,
+									"alpha": 1.5707963267948966,
+									"distance": 15,
+									"hostEdge": {
+										"$ref": "AAAAAAGhYz2xmcV/F7Q="
+									},
+									"edgePosition": 1,
+									"text": "订单信息"
+								}
+							],
+							"font": "Arial;13;0",
+							"head": {
+								"$ref": "AAAAAAGhYzjKDsUh048="
+							},
+							"tail": {
+								"$ref": "AAAAAAGhYzimacUA+Zo="
+							},
+							"lineStyle": 2,
+							"points": "237:448;237:336",
+							"nameLabel": {
+								"$ref": "AAAAAAGhYz2xmcWAYis="
+							}
+						},
+						{
+							"_type": "DFDDataFlowView",
+							"_id": "AAAAAAGhYz3d9sWJDac=",
+							"_parent": {
+								"$ref": "AAAAAAGhYzfxN8TkeZo="
+							},
+							"model": {
+								"$ref": "AAAAAAGhYz3d9sWHdXU="
+							},
+							"subViews": [
+								{
+									"_type": "EdgeLabelView",
+									"_id": "AAAAAAGhYz3d98WKvc4=",
+									"_parent": {
+										"$ref": "AAAAAAGhYz3d9sWJDac="
+									},
+									"model": {
+										"$ref": "AAAAAAGhYz3d9sWHdXU="
+									},
+									"font": "Arial;13;0",
+									"left": 354,
+									"top": 441,
+									"width": 78,
+									"height": 13,
+									"alpha": 1.5707963267948966,
+									"distance": 15,
+									"hostEdge": {
+										"$ref": "AAAAAAGhYz3d9sWJDac="
+									},
+									"edgePosition": 1,
+									"text": "历史订单记录"
+								}
+							],
+							"font": "Arial;13;0",
+							"head": {
+								"$ref": "AAAAAAGhYzjcS8UsD9o="
+							},
+							"tail": {
+								"$ref": "AAAAAAGhYzimacUA+Zo="
+							},
+							"lineStyle": 2,
+							"points": "289:448;408:448;408:344",
+							"nameLabel": {
+								"$ref": "AAAAAAGhYz3d98WKvc4="
+							}
+						},
+						{
+							"_type": "DFDDataFlowView",
+							"_id": "AAAAAAGhYz4BLcWTQLY=",
+							"_parent": {
+								"$ref": "AAAAAAGhYzfxN8TkeZo="
+							},
+							"model": {
+								"$ref": "AAAAAAGhYz4BLcWRVEI="
+							},
+							"subViews": [
+								{
+									"_type": "EdgeLabelView",
+									"_id": "AAAAAAGhYz4BLsWUoDo=",
+									"_parent": {
+										"$ref": "AAAAAAGhYz4BLcWTQLY="
+									},
+									"model": {
+										"$ref": "AAAAAAGhYz4BLcWRVEI="
+									},
+									"visible": false,
+									"font": "Arial;13;0",
+									"left": 227,
+									"top": 528,
+									"height": 13,
+									"alpha": 1.5707963267948966,
+									"distance": 15,
+									"hostEdge": {
+										"$ref": "AAAAAAGhYz4BLcWTQLY="
+									},
+									"edgePosition": 1
+								}
+							],
+							"font": "Arial;13;0",
+							"head": {
+								"$ref": "AAAAAAGhYzimacUA+Zo="
+							},
+							"tail": {
+								"$ref": "AAAAAAGhYzj3/MU4cuA="
+							},
+							"lineStyle": 2,
+							"points": "242:568;242:503",
+							"nameLabel": {
+								"$ref": "AAAAAAGhYz4BLsWUoDo="
+							}
+						},
+						{
+							"_type": "DFDDataFlowView",
+							"_id": "AAAAAAGhYz4LosWcMSk=",
+							"_parent": {
+								"$ref": "AAAAAAGhYzfxN8TkeZo="
+							},
+							"model": {
+								"$ref": "AAAAAAGhYz4LosWaWls="
+							},
+							"subViews": [
+								{
+									"_type": "EdgeLabelView",
+									"_id": "AAAAAAGhYz4LosWdWmE=",
+									"_parent": {
+										"$ref": "AAAAAAGhYz4LosWcMSk="
+									},
+									"model": {
+										"$ref": "AAAAAAGhYz4LosWaWls="
+									},
+									"visible": false,
+									"font": "Arial;13;0",
+									"left": 384,
+									"top": 528,
+									"height": 13,
+									"alpha": 1.5707963267948966,
+									"distance": 15,
+									"hostEdge": {
+										"$ref": "AAAAAAGhYz4LosWcMSk="
+									},
+									"edgePosition": 1
+								}
+							],
+							"font": "Arial;13;0",
+							"head": {
+								"$ref": "AAAAAAGhYzi1DsULBXI="
+							},
+							"tail": {
+								"$ref": "AAAAAAGhYzkFzcVDdKk="
+							},
+							"lineStyle": 2,
+							"points": "399:568;399:503",
+							"nameLabel": {
+								"$ref": "AAAAAAGhYz4LosWdWmE="
+							}
+						},
+						{
+							"_type": "DFDDataFlowView",
+							"_id": "AAAAAAGhYz4ZQ8Wl/MA=",
+							"_parent": {
+								"$ref": "AAAAAAGhYzfxN8TkeZo="
+							},
+							"model": {
+								"$ref": "AAAAAAGhYz4ZQ8Wji88="
+							},
+							"subViews": [
+								{
+									"_type": "EdgeLabelView",
+									"_id": "AAAAAAGhYz4ZQ8Wm+RI=",
+									"_parent": {
+										"$ref": "AAAAAAGhYz4ZQ8Wl/MA="
+									},
+									"model": {
+										"$ref": "AAAAAAGhYz4ZQ8Wji88="
+									},
+									"font": "Arial;13;0",
+									"left": 385,
+									"top": 389,
+									"width": 52,
+									"height": 13,
+									"alpha": 1.5707963267948966,
+									"distance": 15,
+									"hostEdge": {
+										"$ref": "AAAAAAGhYz4ZQ8Wl/MA="
+									},
+									"edgePosition": 1,
+									"text": "用户信息"
+								}
+							],
+							"font": "Arial;13;0",
+							"head": {
+								"$ref": "AAAAAAGhYzjcS8UsD9o="
+							},
+							"tail": {
+								"$ref": "AAAAAAGhYzi1DsULBXI="
+							},
+							"lineStyle": 2,
+							"points": "426:448;426:344",
+							"nameLabel": {
+								"$ref": "AAAAAAGhYz4ZQ8Wm+RI="
+							}
+						}
+					]
+				},
+				{
+					"_type": "DFDProcess",
+					"_id": "AAAAAAGhYziCYMTobLs=",
+					"_parent": {
+						"$ref": "AAAAAAGhYzfxN8TjaHU="
+					},
+					"name": "管理员信息管理系统"
+				},
+				{
+					"_type": "DFDProcess",
+					"_id": "AAAAAAGhYziUMsTzUdk=",
+					"_parent": {
+						"$ref": "AAAAAAGhYzfxN8TjaHU="
+					},
+					"name": "界面管理系统"
+				},
+				{
+					"_type": "DFDProcess",
+					"_id": "AAAAAAGhYzimacT+1l4=",
+					"_parent": {
+						"$ref": "AAAAAAGhYzfxN8TjaHU="
+					},
+					"name": "订单管理系统",
+					"ownedElements": [
+						{
+							"_type": "DFDDataFlow",
+							"_id": "AAAAAAGhYz2xmcV9yp0=",
+							"_parent": {
+								"$ref": "AAAAAAGhYzimacT+1l4="
+							},
+							"name": "订单信息",
+							"source": {
+								"$ref": "AAAAAAGhYzimacT+1l4="
+							},
+							"target": {
+								"$ref": "AAAAAAGhYzjKDcUfAeY="
+							}
+						},
+						{
+							"_type": "DFDDataFlow",
+							"_id": "AAAAAAGhYz3d9sWHdXU=",
+							"_parent": {
+								"$ref": "AAAAAAGhYzimacT+1l4="
+							},
+							"name": "历史订单记录",
+							"source": {
+								"$ref": "AAAAAAGhYzimacT+1l4="
+							},
+							"target": {
+								"$ref": "AAAAAAGhYzjcS8UqMfE="
+							}
+						}
+					]
+				},
+				{
+					"_type": "DFDProcess",
+					"_id": "AAAAAAGhYzi1DsUJlwE=",
+					"_parent": {
+						"$ref": "AAAAAAGhYzfxN8TjaHU="
+					},
+					"name": "用户管理系统",
+					"ownedElements": [
+						{
+							"_type": "DFDDataFlow",
+							"_id": "AAAAAAGhYz4ZQ8Wji88=",
+							"_parent": {
+								"$ref": "AAAAAAGhYzi1DsUJlwE="
+							},
+							"name": "用户信息",
+							"source": {
+								"$ref": "AAAAAAGhYzi1DsUJlwE="
+							},
+							"target": {
+								"$ref": "AAAAAAGhYzjcS8UqMfE="
+							}
+						}
+					]
+				},
+				{
+					"_type": "DFDExternalEntity",
+					"_id": "AAAAAAGhYzjCZcUUoHo=",
+					"_parent": {
+						"$ref": "AAAAAAGhYzfxN8TjaHU="
+					},
+					"name": "界面管理员",
+					"ownedElements": [
+						{
+							"_type": "DFDDataFlow",
+							"_id": "AAAAAAGhYzq69MVVnTw=",
+							"_parent": {
+								"$ref": "AAAAAAGhYzjCZcUUoHo="
+							},
+							"name": "个人信息",
+							"source": {
+								"$ref": "AAAAAAGhYzjCZcUUoHo="
+							},
+							"target": {
+								"$ref": "AAAAAAGhYziCYMTobLs="
+							}
+						},
+						{
+							"_type": "DFDDataFlow",
+							"_id": "AAAAAAGhYz1qU8VzLiI=",
+							"_parent": {
+								"$ref": "AAAAAAGhYzjCZcUUoHo="
+							},
+							"name": "新增的商品和广告信息",
+							"source": {
+								"$ref": "AAAAAAGhYzjCZcUUoHo="
+							},
+							"target": {
+								"$ref": "AAAAAAGhYziUMsTzUdk="
+							}
+						}
+					]
+				},
+				{
+					"_type": "DFDExternalEntity",
+					"_id": "AAAAAAGhYzjKDcUfAeY=",
+					"_parent": {
+						"$ref": "AAAAAAGhYzfxN8TjaHU="
+					},
+					"name": "订单管理员",
+					"ownedElements": [
+						{
+							"_type": "DFDDataFlow",
+							"_id": "AAAAAAGhYz0vt8Vf4oY=",
+							"_parent": {
+								"$ref": "AAAAAAGhYzjKDcUfAeY="
+							},
+							"name": "个人信息",
+							"source": {
+								"$ref": "AAAAAAGhYzjKDcUfAeY="
+							},
+							"target": {
+								"$ref": "AAAAAAGhYziCYMTobLs="
+							}
+						}
+					]
+				},
+				{
+					"_type": "DFDExternalEntity",
+					"_id": "AAAAAAGhYzjcS8UqMfE=",
+					"_parent": {
+						"$ref": "AAAAAAGhYzfxN8TjaHU="
+					},
+					"name": "超级管理员",
+					"ownedElements": [
+						{
+							"_type": "DFDDataFlow",
+							"_id": "AAAAAAGhYz1MvMVp+b8=",
+							"_parent": {
+								"$ref": "AAAAAAGhYzjcS8UqMfE="
+							},
+							"name": "个人信息",
+							"source": {
+								"$ref": "AAAAAAGhYzjcS8UqMfE="
+							},
+							"target": {
+								"$ref": "AAAAAAGhYziCYMTobLs="
+							}
+						}
+					]
+				},
+				{
+					"_type": "DFDDataStore",
+					"_id": "AAAAAAGhYzj3/MU25/8=",
+					"_parent": {
+						"$ref": "AAAAAAGhYzfxN8TjaHU="
+					},
+					"name": "订单文件",
+					"ownedElements": [
+						{
+							"_type": "DFDDataFlow",
+							"_id": "AAAAAAGhYz4BLcWRVEI=",
+							"_parent": {
+								"$ref": "AAAAAAGhYzj3/MU25/8="
+							},
+							"source": {
+								"$ref": "AAAAAAGhYzj3/MU25/8="
+							},
+							"target": {
+								"$ref": "AAAAAAGhYzimacT+1l4="
+							}
+						}
+					]
+				},
+				{
+					"_type": "DFDDataStore",
+					"_id": "AAAAAAGhYzkFzMVB2N8=",
+					"_parent": {
+						"$ref": "AAAAAAGhYzfxN8TjaHU="
+					},
+					"name": "用户信息文件",
+					"ownedElements": [
+						{
+							"_type": "DFDDataFlow",
+							"_id": "AAAAAAGhYz4LosWaWls=",
+							"_parent": {
+								"$ref": "AAAAAAGhYzkFzMVB2N8="
+							},
+							"source": {
+								"$ref": "AAAAAAGhYzkFzMVB2N8="
+							},
+							"target": {
+								"$ref": "AAAAAAGhYzi1DsUJlwE="
+							}
+						}
+					]
+				}
+			]
+		}
+	]
+}

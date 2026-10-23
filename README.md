@@ -123,6 +123,80 @@ uv run python -m educoder_reminder.submit --apply --poll-timeout 120
 选择题先按 answers.json 直接提交，若格式导致未全对，会用平台在提交响应里回吐的标准答案键兜底重交一次；
 代码题评测默认等待 90 秒，超时或未通过请在平台确认。
 
+
+### UML/图形化绘图题自动提交
+
+`educoder_reminder.submit_uml` 处理画 UML 图（StarUML `.mdj`）的图形化实验：
+SSH 登录 VNC 虚拟机 → 写入工作区 → `git commit` → 触发评测。
+
+答案来源优先级：
+1. 本地题库 `answer/<实验名>/`（`.mdj` 或 `stepN/res.txt`）；
+2. 缓存/抓取的评测脚本逆向构造（`data/graders/`，按 gid 与「关卡标题+step」双键缓存，
+   换账号也能命中）；
+3. AI 生成（需配置 `AI_API_KEY`）。
+
+```bash
+uv run python -m educoder_reminder.submit_uml            # 预览
+uv run python -m educoder_reminder.submit_uml --apply    # 真实提交
+uv run python -m educoder_reminder.submit_uml --apply --experiment "面向对象分析之用例图"
+uv run python -m educoder_reminder.submit_uml --apply --release-envs   # 清理环境 pod
+```
+
+注意：每个图形化实验占用一个 VNC 环境，平台对并发数有上限（实测约 5 个）。
+报「用户创建实验环境数已达上限」时用 `--release-envs` 先释放，或分批跑。
+
+### 一键提交
+
+```bash
+uv run python -m educoder_reminder.submit_all            # 预览
+uv run python -m educoder_reminder.submit_all --apply    # 真实提交
+```
+
+平台驱动：检测本人进行中的课堂（`created_at` 早于 `COURSE_CUTOFF` 的旧学期课堂会跳过）
+→ 拉实验列表 → 与平台实时核对已通过状态 → 对未通过关卡分派到选择/代码题与 UML 题流程。
+
+### AI 自动做题（题库缺答案时）
+
+在 `.env` 配置（OpenAI 兼容接口，DeepSeek/OpenAI/Kimi/Qwen 等均可）：
+
+```dotenv
+AI_API_KEY='你的 key'
+AI_BASE_URL='https://api.deepseek.com'
+AI_MODEL='deepseek-chat'
+```
+
+不填 `AI_API_KEY` 则自动禁用；运行时可用 `--no-ai` 临时关闭。
+AI 生成代码时会同时参考：题目要求、当前文件模板、评测脚本（`main.py`/`test.py`/`evaluate.py`）、
+平台预期输出、以及失败后的实际报错。评测通过后答案写回 `answers.json` 或 `answer/`。
+
+## 切换账号
+
+```bash
+uv run python scripts/switch_account.py                      # 交互输入
+uv run python scripts/switch_account.py --account 138xxxx --password 'xxx'
+uv run python scripts/switch_account.py --clear-limit        # 顺带清除登录冷却记录
+uv run python -m educoder_reminder.courses                   # 验证身份
+```
+
+脚本会写入 `EDUCODER_LOGIN_ACCOUNT` / `EDUCODER_LOGIN_PASSWORD`，并清空
+`EDUCODER_TOKEN` / `EDUCODER_COOKIE` / `EDUCODER_CLASSROOMS_URL`（旧账号会话）。
+手工改 `.env` 时也要把这几个键置空。
+
+切换账号后可复用的内容：
+
+| 内容 | 复用 | 说明 |
+|------|------|------|
+| `answers.json` | ✅ | 按实验名/关卡标题匹配，与账号无关 |
+| `answer/` 下的 `.mdj` / `res.txt` | ✅ | 按实验名和 step 匹配 |
+| `data/graders/` 评测脚本缓存 | ✅ | 双键缓存，换账号按关卡标题也能命中 |
+| 关卡通过状态 | ✅ | 每次从平台实时读取，自动跳过已通过 |
+| 换到另一个班（课堂 code 不同） | ✅ | code 匹配不到时改按**课堂名**匹配 |
+| `data/reminder.sqlite3` | ✅ | 按账号隔离 |
+| 旧 Token/Cookie | ❌ | 必须清空，否则先用旧会话请求，触发身份校验失败 |
+
+自动登录限制（同账号 30 分钟一次、24 小时最多 3 次）按账号分别记录，换账号不受影响；
+同账号反复失败可用 `--clear-limit` 清冷却记录。
+
 ## 推送与定时运行
 
 `.env` 除认证信息外需配置：

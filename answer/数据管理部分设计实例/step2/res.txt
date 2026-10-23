@@ -1,0 +1,14 @@
++--------------+--------------+------+-----+---------+-------+
+| Field        | Type         | Null | Key | Default | Extra |
++--------------+--------------+------+-----+---------+-------+
+| hotelID      | bigint(20)   | NO   | PRI | NULL    |       |
+| hotelName    | varchar(255) | YES  |     |         |       |
+| city         | varchar(255) | YES  |     |         |       |
+| circle       | varchar(255) | YES  |     |         |       |
+| address      | text         | YES  |     | NULL    |       |
+| level        | varchar(255) | YES  |     |         |       |
+| score        | double       | YES  |     | 0       |       |
+| introduction | text         | YES  |     | NULL    |       |
+| equipment    | text         | YES  |     | NULL    |       |
+| commentsNum  | int(11)      | YES  |     | 0       |       |
++--------------+--------------+------+-----+---------+-------+

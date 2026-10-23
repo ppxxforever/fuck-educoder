@@ -1,0 +1,610 @@
+{
+	"_type": "Project",
+	"_id": "AAAAAAFF+h6SjaM2Hec=",
+	"name": "Untitled",
+	"ownedElements": [
+		{
+			"_type": "UMLModel",
+			"_id": "AAAAAAFF+qBWK6M3Z8Y=",
+			"_parent": {
+				"$ref": "AAAAAAFF+h6SjaM2Hec="
+			},
+			"name": "Model",
+			"ownedElements": [
+				{
+					"_type": "UMLClassDiagram",
+					"_id": "AAAAAAFF+qBtyKM79qY=",
+					"_parent": {
+						"$ref": "AAAAAAFF+qBWK6M3Z8Y="
+					},
+					"name": "Main",
+					"defaultDiagram": true
+				},
+				{
+					"_type": "DFDDataFlowModel",
+					"_id": "AAAAAAGhY6abfOHBZdk=",
+					"_parent": {
+						"$ref": "AAAAAAFF+qBWK6M3Z8Y="
+					},
+					"name": "DataFlowModel1",
+					"ownedElements": [
+						{
+							"_type": "DFDDiagram",
+							"_id": "AAAAAAGhY6abfOHCbAc=",
+							"_parent": {
+								"$ref": "AAAAAAGhY6abfOHBZdk="
+							},
+							"name": "DFDDiagram1",
+							"ownedViews": [
+								{
+									"_type": "DFDExternalEntityView",
+									"_id": "AAAAAAGhY6gxiuHIADg=",
+									"_parent": {
+										"$ref": "AAAAAAGhY6abfOHCbAc="
+									},
+									"model": {
+										"$ref": "AAAAAAGhY6gxieHGEew="
+									},
+									"subViews": [
+										{
+											"_type": "LabelView",
+											"_id": "AAAAAAGhY6gxi+HOEkw=",
+											"_parent": {
+												"$ref": "AAAAAAGhY6gxiuHIADg="
+											},
+											"font": "Arial;13;0",
+											"left": 210,
+											"top": 141,
+											"width": 87.4326171875,
+											"height": 13
+										},
+										{
+											"_type": "LabelView",
+											"_id": "AAAAAAGhY6gxiuHJzwE=",
+											"_parent": {
+												"$ref": "AAAAAAGhY6gxiuHIADg="
+											},
+											"font": "Arial;13;0",
+											"left": 210,
+											"top": 146,
+											"width": 87.4326171875,
+											"height": 13,
+											"text": "计算工资",
+											"wordWrap": true
+										},
+										{
+											"_type": "LabelView",
+											"_id": "AAAAAAGhY6gxiuHKksU=",
+											"_parent": {
+												"$ref": "AAAAAAGhY6gxiuHIADg="
+											},
+											"font": "Arial;13;0",
+											"height": 13
+										}
+									],
+									"font": "Arial;13;0",
+									"left": 200,
+									"top": 136,
+									"width": 107.4326171875,
+									"height": 33,
+									"nameLabel": {
+										"$ref": "AAAAAAGhY6gxiuHJzwE="
+									}
+								},
+								{
+									"_type": "DFDExternalEntityView",
+									"_id": "AAAAAAGhY6hXheHUNSc=",
+									"_parent": {
+										"$ref": "AAAAAAGhY6abfOHCbAc="
+									},
+									"model": {
+										"$ref": "AAAAAAGhY6hXhOHSq68="
+									},
+									"subViews": [
+										{
+											"_type": "LabelView",
+											"_id": "AAAAAAGhY6hXheHaeiE=",
+											"_parent": {
+												"$ref": "AAAAAAGhY6hXheHUNSc="
+											},
+											"font": "Arial;13;0",
+											"left": 218,
+											"top": 341,
+											"width": 87.4326171875,
+											"height": 13
+										},
+										{
+											"_type": "LabelView",
+											"_id": "AAAAAAGhY6hXheHV2jo=",
+											"_parent": {
+												"$ref": "AAAAAAGhY6hXheHUNSc="
+											},
+											"font": "Arial;13;0",
+											"left": 218,
+											"top": 346,
+											"width": 87.4326171875,
+											"height": 13,
+											"text": "计算实发工资",
+											"wordWrap": true
+										},
+										{
+											"_type": "LabelView",
+											"_id": "AAAAAAGhY6hXheHW1nA=",
+											"_parent": {
+												"$ref": "AAAAAAGhY6hXheHUNSc="
+											},
+											"font": "Arial;13;0",
+											"left": -24,
+											"top": -24,
+											"height": 13
+										}
+									],
+									"font": "Arial;13;0",
+									"left": 208,
+									"top": 336,
+									"width": 107.4326171875,
+									"height": 33,
+									"nameLabel": {
+										"$ref": "AAAAAAGhY6hXheHV2jo="
+									}
+								},
+								{
+									"_type": "DFDExternalEntityView",
+									"_id": "AAAAAAGhY6hwveHg5QE=",
+									"_parent": {
+										"$ref": "AAAAAAGhY6abfOHCbAc="
+									},
+									"model": {
+										"$ref": "AAAAAAGhY6hwveHeqXU="
+									},
+									"subViews": [
+										{
+											"_type": "LabelView",
+											"_id": "AAAAAAGhY6hwveHmSfw=",
+											"_parent": {
+												"$ref": "AAAAAAGhY6hwveHg5QE="
+											},
+											"font": "Arial;13;0",
+											"left": 50,
+											"top": 341,
+											"width": 87.4326171875,
+											"height": 13
+										},
+										{
+											"_type": "LabelView",
+											"_id": "AAAAAAGhY6hwveHhYI0=",
+											"_parent": {
+												"$ref": "AAAAAAGhY6hwveHg5QE="
+											},
+											"font": "Arial;13;0",
+											"left": 50,
+											"top": 346,
+											"width": 87.4326171875,
+											"height": 13,
+											"text": "计算工资总额",
+											"wordWrap": true
+										},
+										{
+											"_type": "LabelView",
+											"_id": "AAAAAAGhY6hwveHi4YY=",
+											"_parent": {
+												"$ref": "AAAAAAGhY6hwveHg5QE="
+											},
+											"font": "Arial;13;0",
+											"left": 8,
+											"top": -24,
+											"height": 13
+										}
+									],
+									"font": "Arial;13;0",
+									"left": 40,
+									"top": 336,
+									"width": 107.4326171875,
+									"height": 33,
+									"nameLabel": {
+										"$ref": "AAAAAAGhY6hwveHhYI0="
+									}
+								},
+								{
+									"_type": "DFDExternalEntityView",
+									"_id": "AAAAAAGhY6iLJuHstQA=",
+									"_parent": {
+										"$ref": "AAAAAAGhY6abfOHCbAc="
+									},
+									"model": {
+										"$ref": "AAAAAAGhY6iLJuHqI70="
+									},
+									"subViews": [
+										{
+											"_type": "LabelView",
+											"_id": "AAAAAAGhY6iLJ+HyQZo=",
+											"_parent": {
+												"$ref": "AAAAAAGhY6iLJuHstQA="
+											},
+											"font": "Arial;13;0",
+											"left": 394,
+											"top": 341,
+											"width": 87.4326171875,
+											"height": 13
+										},
+										{
+											"_type": "LabelView",
+											"_id": "AAAAAAGhY6iLJuHtsiY=",
+											"_parent": {
+												"$ref": "AAAAAAGhY6iLJuHstQA="
+											},
+											"font": "Arial;13;0",
+											"left": 394,
+											"top": 346,
+											"width": 87.4326171875,
+											"height": 13,
+											"text": "打印工资清单",
+											"wordWrap": true
+										},
+										{
+											"_type": "LabelView",
+											"_id": "AAAAAAGhY6iLJuHuf18=",
+											"_parent": {
+												"$ref": "AAAAAAGhY6iLJuHstQA="
+											},
+											"font": "Arial;13;0",
+											"left": -32,
+											"top": -32,
+											"height": 13
+										}
+									],
+									"font": "Arial;13;0",
+									"left": 384,
+									"top": 336,
+									"width": 107.4326171875,
+									"height": 33,
+									"nameLabel": {
+										"$ref": "AAAAAAGhY6iLJuHtsiY="
+									}
+								},
+								{
+									"_type": "DFDDataFlowView",
+									"_id": "AAAAAAGhY6jaj+H9MGo=",
+									"_parent": {
+										"$ref": "AAAAAAGhY6abfOHCbAc="
+									},
+									"model": {
+										"$ref": "AAAAAAGhY6jajuH7rdQ="
+									},
+									"subViews": [
+										{
+											"_type": "EdgeLabelView",
+											"_id": "AAAAAAGhY6jaj+H+djA=",
+											"_parent": {
+												"$ref": "AAAAAAGhY6jaj+H9MGo="
+											},
+											"model": {
+												"$ref": "AAAAAAGhY6jajuH7rdQ="
+											},
+											"font": "Arial;13;0",
+											"left": 81,
+											"top": 261,
+											"width": 91,
+											"height": 13,
+											"alpha": 1.5707963267948966,
+											"distance": 15,
+											"hostEdge": {
+												"$ref": "AAAAAAGhY6jaj+H9MGo="
+											},
+											"edgePosition": 1,
+											"text": "基本工资及奖金"
+										}
+									],
+									"font": "Arial;13;0",
+									"head": {
+										"$ref": "AAAAAAGhY6hwveHg5QE="
+									},
+									"tail": {
+										"$ref": "AAAAAAGhY6gxiuHIADg="
+									},
+									"lineStyle": 1,
+									"points": "232:169;112:264;97:335",
+									"nameLabel": {
+										"$ref": "AAAAAAGhY6jaj+H+djA="
+									}
+								},
+								{
+									"_type": "DFDDataFlowView",
+									"_id": "AAAAAAGhY6kyZuIK86I=",
+									"_parent": {
+										"$ref": "AAAAAAGhY6abfOHCbAc="
+									},
+									"model": {
+										"$ref": "AAAAAAGhY6kyZuII+Gk="
+									},
+									"subViews": [
+										{
+											"_type": "EdgeLabelView",
+											"_id": "AAAAAAGhY6kyZuILCDI=",
+											"_parent": {
+												"$ref": "AAAAAAGhY6kyZuIK86I="
+											},
+											"model": {
+												"$ref": "AAAAAAGhY6kyZuII+Gk="
+											},
+											"font": "Arial;13;0",
+											"left": 149,
+											"top": 235,
+											"width": 26,
+											"height": 13,
+											"alpha": -4.82244756151931,
+											"distance": 15,
+											"hostEdge": {
+												"$ref": "AAAAAAGhY6kyZuIK86I="
+											},
+											"edgePosition": 1,
+											"text": "总额"
+										}
+									],
+									"font": "Arial;13;0",
+									"head": {
+										"$ref": "AAAAAAGhY6gxiuHIADg="
+									},
+									"tail": {
+										"$ref": "AAAAAAGhY6hwveHg5QE="
+									},
+									"lineStyle": 1,
+									"points": "107:335;239:169",
+									"nameLabel": {
+										"$ref": "AAAAAAGhY6kyZuILCDI="
+									}
+								},
+								{
+									"_type": "DFDDataFlowView",
+									"_id": "AAAAAAGhY6mmtOIamFk=",
+									"_parent": {
+										"$ref": "AAAAAAGhY6abfOHCbAc="
+									},
+									"model": {
+										"$ref": "AAAAAAGhY6mmtOIYD50="
+									},
+									"subViews": [
+										{
+											"_type": "EdgeLabelView",
+											"_id": "AAAAAAGhY6mmtOIbhW0=",
+											"_parent": {
+												"$ref": "AAAAAAGhY6mmtOIamFk="
+											},
+											"model": {
+												"$ref": "AAAAAAGhY6mmtOIYD50="
+											},
+											"font": "Arial;13;0",
+											"left": 203,
+											"top": 245,
+											"width": 39,
+											"height": 13,
+											"alpha": 1.5707963267948966,
+											"distance": 15,
+											"hostEdge": {
+												"$ref": "AAAAAAGhY6mmtOIamFk="
+											},
+											"edgePosition": 1,
+											"text": "扣款数"
+										}
+									],
+									"font": "Arial;13;0",
+									"head": {
+										"$ref": "AAAAAAGhY6hXheHUNSc="
+									},
+									"tail": {
+										"$ref": "AAAAAAGhY6gxiuHIADg="
+									},
+									"lineStyle": 2,
+									"points": "208:168;208:336",
+									"nameLabel": {
+										"$ref": "AAAAAAGhY6mmtOIbhW0="
+									}
+								},
+								{
+									"_type": "DFDDataFlowView",
+									"_id": "AAAAAAGhY6ngoOIlMzQ=",
+									"_parent": {
+										"$ref": "AAAAAAGhY6abfOHCbAc="
+									},
+									"model": {
+										"$ref": "AAAAAAGhY6ngoOIjBLw="
+									},
+									"subViews": [
+										{
+											"_type": "EdgeLabelView",
+											"_id": "AAAAAAGhY6ngoOIm48g=",
+											"_parent": {
+												"$ref": "AAAAAAGhY6ngoOIlMzQ="
+											},
+											"model": {
+												"$ref": "AAAAAAGhY6ngoOIjBLw="
+											},
+											"font": "Arial;13;0",
+											"left": 247,
+											"top": 245,
+											"width": 52,
+											"height": 13,
+											"alpha": 1.5707963267948966,
+											"distance": 15,
+											"hostEdge": {
+												"$ref": "AAAAAAGhY6ngoOIlMzQ="
+											},
+											"edgePosition": 1,
+											"text": "实发工资"
+										}
+									],
+									"font": "Arial;13;0",
+									"head": {
+										"$ref": "AAAAAAGhY6gxiuHIADg="
+									},
+									"tail": {
+										"$ref": "AAAAAAGhY6hXheHUNSc="
+									},
+									"lineStyle": 2,
+									"points": "288:336;288:168",
+									"nameLabel": {
+										"$ref": "AAAAAAGhY6ngoOIm48g="
+									}
+								},
+								{
+									"_type": "DFDDataFlowView",
+									"_id": "AAAAAAGhY6olD+IxjPI=",
+									"_parent": {
+										"$ref": "AAAAAAGhY6abfOHCbAc="
+									},
+									"model": {
+										"$ref": "AAAAAAGhY6olD+Iv4lQ="
+									},
+									"subViews": [
+										{
+											"_type": "EdgeLabelView",
+											"_id": "AAAAAAGhY6olD+Iy7w0=",
+											"_parent": {
+												"$ref": "AAAAAAGhY6olD+IxjPI="
+											},
+											"model": {
+												"$ref": "AAAAAAGhY6olD+Iv4lQ="
+											},
+											"font": "Arial;13;0",
+											"left": 298,
+											"top": 235,
+											"width": 117,
+											"height": 13,
+											"alpha": 1.5707963267948966,
+											"distance": 15,
+											"hostEdge": {
+												"$ref": "AAAAAAGhY6olD+IxjPI="
+											},
+											"edgePosition": 1,
+											"text": "实发工资及员工姓名"
+										}
+									],
+									"font": "Arial;13;0",
+									"head": {
+										"$ref": "AAAAAAGhY6iLJuHstQA="
+									},
+									"tail": {
+										"$ref": "AAAAAAGhY6gxiuHIADg="
+									},
+									"lineStyle": 1,
+									"points": "269:169;421:335",
+									"nameLabel": {
+										"$ref": "AAAAAAGhY6olD+Iy7w0="
+									}
+								}
+							]
+						},
+						{
+							"_type": "DFDExternalEntity",
+							"_id": "AAAAAAGhY6gxieHGEew=",
+							"_parent": {
+								"$ref": "AAAAAAGhY6abfOHBZdk="
+							},
+							"name": "计算工资",
+							"ownedElements": [
+								{
+									"_type": "DFDDataFlow",
+									"_id": "AAAAAAGhY6jajuH7rdQ=",
+									"_parent": {
+										"$ref": "AAAAAAGhY6gxieHGEew="
+									},
+									"name": "基本工资及奖金",
+									"source": {
+										"$ref": "AAAAAAGhY6gxieHGEew="
+									},
+									"target": {
+										"$ref": "AAAAAAGhY6hwveHeqXU="
+									}
+								},
+								{
+									"_type": "DFDDataFlow",
+									"_id": "AAAAAAGhY6mmtOIYD50=",
+									"_parent": {
+										"$ref": "AAAAAAGhY6gxieHGEew="
+									},
+									"name": "扣款数",
+									"source": {
+										"$ref": "AAAAAAGhY6gxieHGEew="
+									},
+									"target": {
+										"$ref": "AAAAAAGhY6hXhOHSq68="
+									}
+								},
+								{
+									"_type": "DFDDataFlow",
+									"_id": "AAAAAAGhY6olD+Iv4lQ=",
+									"_parent": {
+										"$ref": "AAAAAAGhY6gxieHGEew="
+									},
+									"name": "实发工资及员工姓名",
+									"source": {
+										"$ref": "AAAAAAGhY6gxieHGEew="
+									},
+									"target": {
+										"$ref": "AAAAAAGhY6iLJuHqI70="
+									}
+								}
+							]
+						},
+						{
+							"_type": "DFDExternalEntity",
+							"_id": "AAAAAAGhY6hXhOHSq68=",
+							"_parent": {
+								"$ref": "AAAAAAGhY6abfOHBZdk="
+							},
+							"name": "计算实发工资",
+							"ownedElements": [
+								{
+									"_type": "DFDDataFlow",
+									"_id": "AAAAAAGhY6ngoOIjBLw=",
+									"_parent": {
+										"$ref": "AAAAAAGhY6hXhOHSq68="
+									},
+									"name": "实发工资",
+									"source": {
+										"$ref": "AAAAAAGhY6hXhOHSq68="
+									},
+									"target": {
+										"$ref": "AAAAAAGhY6gxieHGEew="
+									}
+								}
+							]
+						},
+						{
+							"_type": "DFDExternalEntity",
+							"_id": "AAAAAAGhY6hwveHeqXU=",
+							"_parent": {
+								"$ref": "AAAAAAGhY6abfOHBZdk="
+							},
+							"name": "计算工资总额",
+							"ownedElements": [
+								{
+									"_type": "DFDDataFlow",
+									"_id": "AAAAAAGhY6kyZuII+Gk=",
+									"_parent": {
+										"$ref": "AAAAAAGhY6hwveHeqXU="
+									},
+									"name": "总额",
+									"source": {
+										"$ref": "AAAAAAGhY6hwveHeqXU="
+									},
+									"target": {
+										"$ref": "AAAAAAGhY6gxieHGEew="
+									}
+								}
+							]
+						},
+						{
+							"_type": "DFDExternalEntity",
+							"_id": "AAAAAAGhY6iLJuHqI70=",
+							"_parent": {
+								"$ref": "AAAAAAGhY6abfOHBZdk="
+							},
+							"name": "打印工资清单"
+						}
+					]
+				}
+			]
+		}
+	]
+}

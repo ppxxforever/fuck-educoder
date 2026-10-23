@@ -16,6 +16,7 @@ class Course:
     identifier: str
     url: str
     can_visit: bool
+    created_at: str = ''
 
 
 def parse_page(data):
@@ -42,7 +43,8 @@ def parse_page(data):
             raise CollectionError('课堂名称或链接格式异常。')
         parsed.append(Course(row['id'], row['name'], match[1],
                              'https://www.educoder.net' + path,
-                             row.get('can_visited') is True))
+                             row.get('can_visited') is True,
+                             row.get('created_at') or ''))
     return count, ids, parsed
 
 
