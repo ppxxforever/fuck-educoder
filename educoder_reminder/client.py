@@ -1,4 +1,5 @@
-"""Authenticated read-only API transport."""
+"""Authenticated API transport (read and write)."""
+import json
 import os
 import re
 from contextlib import asynccontextmanager
@@ -45,12 +46,20 @@ class Client:
                     persist_credentials(self.headers.get('Pc-Authorization', ''), self.headers.get('Cookie', ''), actual)
                     self.username = actual
 
-    async def get(self, path, params):
+    async def get(self, path, params, *, strict_status=True):
+        return await self.request('GET', path, params, strict_status=strict_status)
+
+    async def post(self, path, params, data):
+        # 提交类接口的 status 语义与只读接口不同，只拦截 401/-102，
+        # 其余状态交给调用方自行解释（参考官网公开客户端的行为）。
+        return await self.request('POST', path, params, data, strict_status=False)
+
+    async def request(self, method, path, params, data=None, *, strict_status=True):
         if not path.startswith('/api/') or '?' in path or '..' in path:
             raise CollectionError('无效的 API 路径。')
         original_username = self.username
         try:
-            return await self._get(path, params)
+            return await self._request(method, path, params, data, strict_status=strict_status)
         except (AuthenticationExpired, IdentityMismatch) as exc:
             await self.recover(force_login=isinstance(exc, IdentityMismatch))
         except CollectionError:
@@ -63,30 +72,41 @@ class Client:
                 raise
         if self.username != original_username:
             raise CollectionError('登录身份已更新，请重新采集新账号课堂；未重试旧账号请求。')
-        return await self._get(path, params)
+        return await self._request(method, path, params, data, strict_status=strict_status)
 
-    async def _get(self, path, params):
-        response = await self.context.get(
-            'https://data.educoder.net' + path,
-            params={**params, 'zzud': self.username},
-            headers={**signing_headers(), 'Referer': f'https://www.educoder.net/users/{self.username}/classrooms'}, max_redirects=0,
-        )
+    async def _request(self, method, path, params, data=None, *, strict_status=True):
+        headers = {**signing_headers(method),
+                   'Referer': f'https://www.educoder.net/users/{self.username}/classrooms'}
+        url = 'https://data.educoder.net' + path
+        query = {**params, 'zzud': self.username}
+        if method == 'GET':
+            response = await self.context.get(url, params=query, headers=headers, max_redirects=0)
+        else:
+            headers['Content-Type'] = 'application/json; charset=utf-8'
+            response = await self.context.post(url, params=query,
+                                               data=json.dumps(data, ensure_ascii=False),
+                                               headers=headers, max_redirects=0)
         try:
             if response.status == 401:
                 raise AuthenticationExpired('Educoder 登录已失效。')
             if response.status != 200:
                 raise CollectionError(f'接口 HTTP {response.status}，未保存本次结果。')
             try:
-                data = await response.json()
+                payload = await response.json()
             except (ValueError, UnicodeError):
                 raise CollectionError('接口未返回有效 JSON。') from None
-            if not isinstance(data, dict):
+            if not isinstance(payload, dict):
                 raise CollectionError('接口返回结构异常。')
-            if data.get('status') == 401:
+            if payload.get('status') == 401:
                 raise AuthenticationExpired('Educoder 登录已失效。')
-            if data.get('status') not in (None, 0, 200):
-                raise CollectionError('接口拒绝请求，请检查登录凭据、系统时间及签名。')
-            return data
+            if payload.get('status') == -102:
+                raise CollectionError('接口签名被拒绝，请检查系统时间与签名。')
+            if strict_status and payload.get('status') not in (None, 0, 200):
+                detail = payload.get('message') or payload.get('msg') or ''
+                raise CollectionError(
+                    f"接口拒绝请求（status={payload.get('status')}）：{detail}"
+                    '，请检查登录凭据、系统时间及签名。')
+            return payload
         finally:
             await response.dispose()
 

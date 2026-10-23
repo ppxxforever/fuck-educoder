@@ -99,6 +99,30 @@ sudo .venv/bin/python -m playwright install-deps chromium
 登录失败或保存失败不会覆盖原有凭据；重新登录成功则以身份接口结果更新缓存。
 目前认证异常记录在服务日志中，尚未增加专门的 App 登录失效告警。
 
+## 根据 answers.json 自动提交作业
+
+`educoder_reminder.submit` 读取项目根目录的 `answers.json`（class-answers 格式），
+按课堂/实验/关卡逐个把答案提交到头歌：选择题回填并提交，代码题写入远程工作区并触发评测。
+复用上面的 `.env` 认证（账号密码或 Cookie/Token 均可，失效时自动恢复）。
+
+```bash
+# 预览：只读平台当前状态，打印每个关卡会提交什么、跳过哪些，不真正提交
+uv run python -m educoder_reminder.submit
+
+# 确认无误后真实提交
+uv run python -m educoder_reminder.submit --apply
+
+# 只处理某个课堂 / 只跑前 N 个关卡（测试用）/ 调评测等待秒数
+uv run python -m educoder_reminder.submit --classroom 2i6ng7vp
+uv run python -m educoder_reminder.submit --limit 3 --apply
+uv run python -m educoder_reminder.submit --apply --poll-timeout 120
+```
+
+安全策略：跳过 `answered=false` 或无答案的关卡、平台已通过（`game.status==2`）的关卡、
+已标记完成（`shixun_finished_status==1`）的实验；代码题只处理单文件关卡，多文件关卡跳过以免半提交。
+选择题先按 answers.json 直接提交，若格式导致未全对，会用平台在提交响应里回吐的标准答案键兜底重交一次；
+代码题评测默认等待 90 秒，超时或未通过请在平台确认。
+
 ## 推送与定时运行
 
 `.env` 除认证信息外需配置：
