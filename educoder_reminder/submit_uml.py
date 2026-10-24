@@ -95,7 +95,9 @@ def extract_target(challenge_path, task_pass):
     m_dir = re.search(r'保存在[^，。；]*?(workspace/myshixun/[^\s，。；]+)[，。；]', text)
     m_name = re.search(r'文件名改为\s*([A-Za-z0-9_]+)', text)
     if m_dir and m_name:
-        rel_dir = strip_prefix(m_dir.group(1).strip().rstrip('，。；/')).strip('/')
+        rel_dir = strip_prefix(m_dir.group(1).strip()).strip('/')
+        # 去掉中文描述里的「/下」「/文件夹下」等后缀
+        rel_dir = re.sub(r'[/／]?(?:文件夹)?下$', '', rel_dir).rstrip('/')
         fname = m_name.group(1)
         file_name = fname if fname.endswith('.mdj') else f'{fname}.mdj'
         step_m = re.search(r'step_?(\d+)', fname)
@@ -116,7 +118,7 @@ def extract_target(challenge_path, task_pass):
     else:
         m = re.search(r'保存(?:到|至|于)?\s*["“]?([^"“”，。；;\s]+/下)', text)
         if m:
-            dir_raw = m.group(1).rstrip('/下')
+            dir_raw = re.sub(r'[/／]?(?:文件夹)?下$', '', m.group(1)).rstrip('/')
     filename = None
     nm = re.search(r'命名为\s*([A-Za-z0-9_]+)', text)
     fm = re.search(r'格式为\s*([A-Za-z0-9_]+)', text)
@@ -577,6 +579,10 @@ async def _capture_grader_script(ssh, step, expect_target=None):
                     got = _script_target_dir(body)
                     if got and got.rstrip('/') == want_dir:
                         return body
+                # 指定了目标却都不匹配：可能本关脚本还没挂载，继续轮询
+                # （不要兜底返回别的关卡脚本，否则会写到错误路径）
+                await asyncio.sleep(1)
+                continue
             # 1) 文件名精确匹配 demo{step}.py / code{step}.py / analyse_step{step}.py
             want = {f'demo{step}.py', f'code{step}.py',
                     f'analyse_step{step}.py', f'step{step}.py'}
