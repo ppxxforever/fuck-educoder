@@ -181,13 +181,16 @@ def clear_login_limit(account=None):
 
 
 def cmd_add(args):
+    account = (args.add or '').strip()
+    if not account:
+        raise SystemExit('请用 --add <账号> 指定要添加的账号。')
     accounts = load_json(ACCOUNTS, [])
-    if any(a.get('account') == args.account for a in accounts):
-        raise SystemExit(f'账号 {args.account} 已在队列中。')
-    accounts.append({'account': args.account, 'password': args.password,
+    if any(a.get('account') == account for a in accounts):
+        raise SystemExit(f'账号 {account} 已在队列中（如需改密码请用 --import-env 或直接编辑文件）。')
+    accounts.append({'account': account, 'password': args.password or '',
                      'note': args.note or ''})
     save_accounts(accounts, args.encrypt)
-    print(f'已添加账号 {args.account}（共 {len(accounts)} 个）')
+    print(f'已添加账号 {account}  密码：{args.password}  （共 {len(accounts)} 个）')
 
 
 def cmd_import_env(args):
@@ -331,8 +334,7 @@ def main():
 
     if args.add:
         if not args.password:
-            import getpass
-            args.password = getpass.getpass('密码（不回显）: ')
+            args.password = input('密码（会回显，方便核对）: ').strip()
         cmd_add(args)
         return
     if args.import_env:
