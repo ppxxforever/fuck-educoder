@@ -258,13 +258,44 @@ def solve_by_owned_path(script):
     path = path_p
     if path_m and len(path_m) > len(path_p):
         path = path_m
+    participants = []
+    pid_of_name = {}
+    for n in part_names:
+        pid = _gid()
+        pid_of_name[n] = pid
+        participants.append({'_type': 'UMLLifeline', '_id': pid, 'name': n})
+
+    # 消息的源/目标：脚本里通过 xxx_id = get_id(...) + analyze_line1(...) 指定
+    var_participant = {}
+    for m in re.finditer(
+            r"(\w+)\s*=\s*get_id\(\s*\w+\s*,\s*['\"]([^'\"]+)['\"]\s*,"
+            r"\s*['\"]([^'\"]+)['\"]\s*\)", script):
+        var_participant[m.group(1)] = m.group(2)
+    line_specs = []
+    for m in re.finditer(
+            r"analyze_line1\(\s*\w+\s*,\s*['\"]([^'\"]+)['\"]\s*,"
+            r"\s*['\"]([^'\"]+)['\"]\s*,\s*(\w+)\s*,\s*(\w+)\s*\)", script):
+        name, typ, sv, tv = m.groups()
+        line_specs.append((name, typ, var_participant.get(sv), var_participant.get(tv)))
+
+    messages = []
+    for name, typ, src, tgt in line_specs:
+        if src in pid_of_name and tgt in pid_of_name:
+            messages.append({'_type': typ, '_id': _gid(), 'name': name,
+                             'source': {'$ref': pid_of_name[src]},
+                             'target': {'$ref': pid_of_name[tgt]}})
+    if not messages and msg_names:
+        # 没有 analyze_line1 时，按顺序把消息接到前两个生命线上
+        a = participants[0]['_id'] if participants else _gid()
+        b = participants[1]['_id'] if len(participants) > 1 else a
+        for n in msg_names:
+            messages.append({'_type': 'UMLMessage', '_id': _gid(), 'name': n,
+                             'source': {'$ref': a}, 'target': {'$ref': b}})
+
     leaf = {
         '_type': 'UMLInteraction', '_id': _gid(), 'name': 'Interaction1',
-        'participants': [{'_type': 'UMLLifeline', '_id': _gid(), 'name': n}
-                         for n in part_names],
-        'messages': [{'_type': 'UMLMessage', '_id': _gid(), 'name': n,
-                      'source': {'$ref': _gid()}, 'target': {'$ref': _gid()}}
-                     for n in msg_names],
+        'participants': participants,
+        'messages': messages,
         'ownedElements': [{'_type': 'UMLSequenceDiagram', '_id': _gid(),
                            'name': 'SequenceDiagram1', 'defaultDiagram': True}],
     }

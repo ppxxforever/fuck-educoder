@@ -798,13 +798,28 @@ async def process_experiment(client, hw, apply, stats, poll_timeout, limit=None,
         print(f'  ▸ {subject}')
         print(f'      目标 {target}  <-  {mdj[step]}')
         stats['processed'] += 1
+        passed = False
         try:
-            await submit_graphic_game(client, hw_id, gid, detail, content, target,
-                                      step, apply, stats, poll_timeout,
-                                      classroom=classroom)
+            passed = await submit_graphic_game(client, hw_id, gid, detail, content, target,
+                                               step, apply, stats, poll_timeout,
+                                               classroom=classroom)
         except CollectionError as exc:
             stats['failed'] += 1
             print(f'      ✗ {subject}：{exc}')
+
+        # 本地答案没通过：改用评测脚本逆向构造（不消耗 AI），成功后覆盖本地答案
+        if apply and not passed:
+            print(f'      · 本地答案未通过，改用评测脚本逆向构造')
+            try:
+                ref = await solve_level_from_grader(client, hw_id, gid, detail, target,
+                                                    step, apply, stats, poll_timeout,
+                                                    classroom=classroom)
+            except CollectionError as exc:
+                print(f'      ✗ {subject}：{exc}')
+                ref = None
+            if ref:
+                saved = save_mdj_answer(name, step, ref)
+                print(f'      ↳ 已用逆向构造结果覆盖本地答案：{saved}')
 
     # 处理完一个实验后释放其环境 pod，避免并发环境数触发上限
     if release_pods and apply:
