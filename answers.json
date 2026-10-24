@@ -3852,7 +3852,7 @@
               "answered": true,
               "answer": {
                 "language": "",
-                "code": "import torch\n\n\n\ndef rnn(input,state,params):\n    \"\"\"\n    循环神经网络的前向传播\n    :param input: 输入，形状为 [ batch_size,num_inputs ]\n    :param state: 上一时刻循环神经网络的状态，形状为 [ batch_size,num_hiddens ]\n    :param params: 循环神经网络的所使用的权重以及偏置\n    :return: 输出结果和此时刻网络的状态\n    \"\"\"\n    W_xh,W_hh,b_h,W_hq,b_q = params\n    \"\"\"\n    W_xh : 输入层到隐藏层的权重\n    W_hh : 上一时刻状态隐藏层到当前时刻的权重\n    b_h : 隐藏层偏置\n    W_hq : 隐藏层到输出层的权重\n    b_q : 输出层偏置\n    \"\"\"\n    H = state\n    ########## Begin ##########\n    # 输入层到隐藏层（同时用到上一时刻的状态），再过 tanh 激活\n    H = torch.tanh(torch.matmul(input, W_xh) + torch.matmul(H, W_hh) + b_h)\n\n    # 隐藏层到输出层\n    Y = torch.matmul(H, W_hq) + b_q\n    ########## End ##########\n    return Y,H\n\ndef init_rnn_state(num_inputs,num_hiddens):\n    \"\"\"\n    循环神经网络的初始状态的初始化\n    :param num_inputs: 输入层中神经元的个数\n    :param num_hiddens: 隐藏层中神经元的个数\n    :return: 循环神经网络初始状态\n    \"\"\"\n    ########## Begin ##########\n    # 初始状态全为零，形状为 [batch_size, num_hiddens]\n    init_state = torch.zeros((1, num_hiddens))\n    ########## End ##########\n    return init_state"
+                "code": "import torch\n\n\ndef rnn(input, state, params):\n    \"\"\"\n    循环神经网络的前向传播\n    :param input: 输入，形状为 [ batch_size,num_inputs ]\n    :param state: 上一时刻循环神经网络的状态，形状为 [ batch_size,num_hiddens ]\n    :param params: 循环神经网络的所使用的权重以及偏置\n    :return: 输出结果和此时刻网络的状态\n    \"\"\"\n    W_xh, W_hh, b_h, W_hq, b_q = params\n    H = state\n    ########## Begin ##########\n    # 输入层到隐藏层（同时用到上一时刻的状态），再过 tanh 激活\n    H = torch.tanh(torch.matmul(input, W_xh) + torch.matmul(H, W_hh) + b_h)\n    # 隐藏层到输出层\n    Y = torch.matmul(H, W_hq) + b_q\n    ########## End ##########\n    return Y, H\n\n\ndef init_rnn_state(num_inputs, num_hiddens):\n    \"\"\"\n    循环神经网络的初始状态的初始化\n    :param num_inputs: 输入层中神经元的个数\n    :param num_hiddens: 隐藏层中神经元的个数\n    :return: 循环神经网络初始状态\n    \"\"\"\n    ########## Begin ##########\n    init_state = torch.zeros((num_inputs, num_hiddens))\n    ########## End ##########\n    return init_state\n"
               },
               "source": "ai"
             },
@@ -4931,7 +4931,7 @@
               "answered": true,
               "answer": {
                 "language": "",
-                "code": "# -*- coding: utf-8 -*-\n\nimport numpy as np\nfrom sklearn.neighbors import KNeighborsRegressor\n\ndef getRegressor(X, y):\n    # 请在此添加代码 完成本关任务\n    #\n    # ********** Begin *********#\n\n    # ********** End **********#"
+                "code": "# -*- coding: utf-8 -*-\n\nimport numpy as np\nfrom sklearn.neighbors import KNeighborsRegressor\n\n\ndef getRegressor(X, y):\n    # 请在此添加代码 完成本关任务\n    #\n    # ********** Begin *********#\n    regressor = KNeighborsRegressor(n_neighbors=2, weights=\"distance\", p=1)\n    regressor.fit(X, y)\n    return regressor\n    # ********** End **********#\n"
               }
             }
           ]
@@ -5654,7 +5654,7 @@
               "answered": true,
               "answer": {
                 "language": "",
-                "code": "CREATE OR REPLACE VIEW v_insurance_detail AS\nSELECT c.c_name, c.c_id_card, i.i_name, i.i_project, p.pro_status, p.pro_quantity, i.i_amount, i.i_year, p.pro_income, p.pro_purchase_time\nFROM property p\nJOIN client c ON p.pro_c_id = c.c_id\nJOIN insurance i ON p.pro_pif_id = i.i_id\nWHERE p.pro_type = 2;"
+                "code": "use finance1;\nCREATE OR REPLACE VIEW v_insurance_detail AS\nSELECT c.c_name, c.c_id_card, i.i_name, i.i_project, p.pro_status, p.pro_quantity, i.i_amount, i.i_year, p.pro_income, p.pro_purchase_time\nFROM property p\nJOIN client c ON p.pro_c_id = c.c_id\nJOIN insurance i ON p.pro_pif_id = i.i_id\nWHERE p.pro_type = 2;"
               }
             },
             {
@@ -5695,7 +5695,34 @@
               "answered": true,
               "answer": {
                 "language": "",
-                "code": "use finance1;\n-- 请用一条SQL语句删除client表中没有银行卡的客户信息：\nDELETE FROM client WHERE c_id NOT IN (SELECT b_c_id FROM bank_card);\n\n\n\n/* the end of your code */"
+                "code": "use finance1;\nDELETE FROM client WHERE c_id NOT IN (SELECT b_c_id FROM bank_card WHERE b_c_id IS NOT NULL);\n\n/* the end of your code */"
+              }
+            },
+            {
+              "title": "批量插入数据",
+              "kind": "code",
+              "answered": true,
+              "answer": {
+                "language": "",
+                "code": "use finance1;\n-- 已知表new_client保存了一批新客户信息，该表与client表结构完全相同。请用一条SQL语句将new_client表的全部客户信息插入到客户表(client):\n\nINSERT INTO client SELECT * FROM new_client;\n\n/* the end of your code */"
+              }
+            },
+            {
+              "title": "冻结客户资产",
+              "kind": "code",
+              "answered": true,
+              "answer": {
+                "language": "",
+                "code": "use finance1;\n-- 请用一条update语句将手机号码为“13686431238”的这位客户的投资资产(理财、保险与基金)的状态置为“冻结”。：\n\nupdate property\nset pro_status = '冻结'\nwhere pro_c_id = (select c_id from client where c_phone = '13686431238')\n  and pro_type in (1, 2, 3);\n\n/* the end of your code */"
+              }
+            },
+            {
+              "title": "连接更新",
+              "kind": "code",
+              "answered": true,
+              "answer": {
+                "language": "",
+                "code": "use finance1;\n-- 在金融应用场景数据库中，已在表property(资产表)中添加了客户身份证列，列名为pro_id_card，类型为char(18)，该列目前全部留空(null)。\n\n-- 请用一条update语句，根据client表中提供的身份证号(c_id_card)，填写property表中对应的身份证号信息(pro_id_card)。\n\nupdate property p\njoin client c on p.pro_c_id = c.c_id\nset p.pro_id_card = c.c_id_card;\n\n/* the end of your code */"
               }
             }
           ]
@@ -5720,6 +5747,24 @@
                 "language": "",
                 "code": "-- 实现以下查询的SQL语句：\n-- 查询“美的”、“格力”或 “志高”价格在3000(含)以下，功率为3500W的空调信息，列出厂家，型号，价格。查询结果依价格从低到高排序。\n-- 请在此处添加实现代码\nSELECT manufacturer, model, price\nFROM products\nWHERE manufacturer IN ('美的', '格力', '志高')\n  AND price <= 3000\n  AND model LIKE '%35%'\nORDER BY price;\n\n\n\n\n-- EOF"
               }
+            },
+            {
+              "title": "带 LIKE 的字符匹配查询",
+              "kind": "code",
+              "answered": true,
+              "answer": {
+                "language": "",
+                "code": "CREATE DATABASE IF NOT EXISTS `aircon`;\nuse aircon;\n-- 实现以下查询的SQL语句：\n-- 查询1.5匹，即功率3500W的冷暖空调，列出型号，生产厂家和价格，依价格从低到高排序。\n-- 请在此处添加实现代码\nSELECT model, manufacturer, price\nFROM products\nWHERE model LIKE 'KFR%-35%'\nORDER BY price ASC;\n\n\n\n\n-- EOF"
+              }
+            },
+            {
+              "title": "查询空值与去除重复结果",
+              "kind": "code",
+              "answered": true,
+              "answer": {
+                "language": "",
+                "code": "CREATE DATABASE IF NOT EXISTS `aircon`;\nuse aircon;\n-- 实现以下查询的SQL语句：\n-- 任务1：查查询产品表(products)表中，有多少厂家(manufacturer)的产品，一个厂家只列一次，即便该厂家有多个型号的产品。查询结果依厂家名称排序输出。\n-- 请在此处添加实现代码\nSELECT DISTINCT manufacturer FROM products ORDER BY manufacturer;\n\n-- 任务2：查询出生日期(出生日期)未填写(值为NULL)的员工编号，姓名。查询结果依姓名排序输出。\n-- 请在此处添加实现代码\nSELECT sid, sname FROM staff WHERE dob IS NULL ORDER BY sname;\n\n-- EOF"
+              }
             }
           ]
         },
@@ -5743,6 +5788,33 @@
                 "language": "",
                 "code": "-- 任务1: 写出可以完成以下查询任务的sql语句：\n-- 查询价格在2000到3000之间的所有空调的型号，生产厂家和价格。依价格从低到高排序。\n-- 请在此处添加实现代码\nSELECT model, manufacturer, price\nFROM products\nWHERE price BETWEEN 2000 AND 3000\nORDER BY price ASC;\n\n-- EOF"
               }
+            },
+            {
+              "title": "基本查询语句",
+              "kind": "code",
+              "answered": true,
+              "answer": {
+                "language": "",
+                "code": "-- 任务1: 查询雇员(staff)的全部信息\n-- 请在此处添加实现代码\nselect * from staff;\n\n-- 任务2: 查询全部雇员(staff)的姓名(sname)、出生日期(dob)和手机号码(mobile)\n-- 请在此处添加实现代码\nselect sname, dob, mobile from staff;\n\n-- EOF"
+              }
+            },
+            {
+              "title": "对查询的结果排序",
+              "kind": "code",
+              "answered": true,
+              "answer": {
+                "language": "",
+                "code": "CREATE DATABASE IF NOT EXISTS `aircon`;\nuse aircon;\n-- 任务1: 写出能完成以下任务的语句：\n-- 查询所有雇员的姓名,性别，手机号。按年龄降序排列，即年龄越大的越靠前。\n-- 请在此处添加实现代码\nselect sname, gender, mobile from staff order by dob asc;\n\n\n-- EOF"
+              }
+            },
+            {
+              "title": "带 IN 关键字的查询",
+              "kind": "code",
+              "answered": true,
+              "answer": {
+                "language": "",
+                "code": "CREATE DATABASE IF NOT EXISTS `aircon`;\nuse aircon;\n-- 任务1: 写出能完成以下查询任务的SQL语句:\n-- 查询10，40，70号产品(空调)的型号、生产厂家和价格，依价格从低到高排序。\n-- 请在此处添加实现代码\nSELECT model, manufacturer, price\nFROM products\nWHERE pid IN (10, 40, 70)\nORDER BY price ASC;\n\n\n\n\n-- EOF"
+              }
             }
           ]
         },
@@ -5764,7 +5836,7 @@
               "answered": true,
               "answer": {
                 "language": "",
-                "code": "# 请在以下空白处填写完成任务的语句，空白行可通过回车换行添加。\n# 你也可以在命令行窗口完成任务，不过，在命令行键入的语句不会被保存。\n\nCREATE DATABASE IF NOT EXISTS MyDb;\nUSE MyDb;\n\nCREATE TABLE products(\n    pid char(10) PRIMARY KEY,\n    name varchar(32),\n    brand char(10),\n    price int,\n    CONSTRAINT CK_products_brand CHECK(brand in ('A','B')),\n    CONSTRAINT CK_products_price CHECK(price > 0)\n);\n\n# 结束"
+                "code": "CREATE DATABASE IF NOT EXISTS MyDb;\nUSE MyDb;\n\nDROP TABLE IF EXISTS products;\n\nCREATE TABLE products(\n    pid char(10) PRIMARY KEY,\n    name varchar(32),\n    brand char(10),\n    price int,\n    CONSTRAINT CK_products_brand CHECK(brand in ('A','B')),\n    CONSTRAINT CK_products_price CHECK(price > 0)\n);"
               }
             },
             {
@@ -5773,7 +5845,75 @@
               "answered": true,
               "answer": {
                 "language": "",
-                "code": "CREATE DATABASE IF NOT EXISTS MyDb;\nUSE MyDb;\n\nDROP TABLE IF EXISTS s;\n\nCREATE TABLE s(\n    sno char(10) PRIMARY KEY,\n    name varchar(32) NOT NULL,\n    ID char(18) UNIQUE\n);"
+                "code": "CREATE DATABASE IF NOT EXISTS MyDb;\nUSE MyDb;\n\nDROP TABLE IF EXISTS s;\n\nCREATE TABLE s(\n    sno char(10) PRIMARY KEY,\n    name varchar(32) NOT NULL,\n    ID char(18),\n    CONSTRAINT uni_ID UNIQUE(ID)\n);"
+              }
+            },
+            {
+              "title": "创建数据库",
+              "kind": "code",
+              "answered": true,
+              "answer": {
+                "language": "",
+                "code": "-- 本关我们强烈建议你点击本编辑窗口上方的“命令行”菜单打开Linux的命令行，\n-- 并通过mysql命令行工具连接并登录到服务器，\n-- 然后在mysql的命令行工具里通过恰当的语句完成任务。\n-- 在以后的关卡中你可以通过命令行调试或测试语句，再将正确的语句粘贴到文件编辑窗口。\n\n-- 你也可以选择在以下空白行填写完成目标任务的SQL语句：\n-- 创建2022年北京冬奥会信息系统数据库\n\nCREATE DATABASE beijing2022;\n\n-- end"
+              }
+            },
+            {
+              "title": "创建表及表的主码约束",
+              "kind": "code",
+              "answered": true,
+              "answer": {
+                "language": "",
+                "code": "# 请在以下适当的空白处填写SQL语句，完成任务书的要求。空白行可通过回车换行添加。 \n\nCREATE DATABASE IF NOT EXISTS TestDb;\nUSE TestDb;\n\nDROP TABLE IF EXISTS `t_emp`;\nCREATE TABLE IF NOT EXISTS t_emp (\n    id INT PRIMARY KEY,\n    name VARCHAR(32),\n    deptId INT,\n    salary FLOAT\n);\n\n/* *********** 结束 ************* */"
+              }
+            },
+            {
+              "title": "DEFAULT约束",
+              "kind": "code",
+              "answered": true,
+              "answer": {
+                "language": "",
+                "code": "# 请在以下空白处填写完成任务的语句，空白行可通过回车换行添加。\n# 你也可以在命令行窗口完成任务，不过，在命令行键入的语句不会被保存。\nCREATE DATABASE IF NOT EXISTS `MyDb`;\n\nUSE MyDb;\n\nDROP TABLE IF EXISTS `hr`;\nCREATE TABLE hr(\n    id char(10) PRIMARY KEY,\n    name varchar(32) NOT NULL,\n    mz char(16) DEFAULT '汉族'\n);\n\n# 结束"
+              }
+            }
+          ]
+        },
+        {
+          "name": "MySQL-表结构与完整性约束的修改(ALTER)",
+          "levels": [
+            {
+              "title": "修改表名",
+              "kind": "code",
+              "answered": true,
+              "answer": {
+                "language": "",
+                "code": "USE TestDb1;\n\n#请在以下空白处添加恰当的语句，将表名your_table更改为my_table:\n\nALTER TABLE your_table RENAME TO my_table;"
+              }
+            },
+            {
+              "title": "添加与删除字段",
+              "kind": "code",
+              "answered": true,
+              "answer": {
+                "language": "",
+                "code": "use MyDb;\n\n#请在以下空白处添加适当的SQL代码，实现编程要求\n#语句1：删除表orderDetail中的列orderDate\nALTER TABLE orderDetail DROP COLUMN orderDate;\n\n#语句2：添加列unitPrice\nALTER TABLE orderDetail ADD COLUMN unitPrice numeric(10,2);"
+              }
+            },
+            {
+              "title": "修改字段",
+              "kind": "code",
+              "answered": true,
+              "answer": {
+                "language": "",
+                "code": "use MyDb;\n\nalter table addressBook modify QQ char(12);\n\nalter table addressBook rename column weixin to wechat;"
+              }
+            },
+            {
+              "title": "添加、删除与修改约束",
+              "kind": "code",
+              "answered": true,
+              "answer": {
+                "language": "",
+                "code": "use MyDb;\n#请在以下空白处填写适当的诘句，实现编程要求。\n#(1) 为表Staff添加主码\nalter table Staff add primary key(staffNo);\n\n#(2) Dept.mgrStaffNo是外码，对应的主码是Staff.staffNo,请添加这个外码，名字为FK_Dept_mgrStaffNo:\nalter table Dept add constraint FK_Dept_mgrStaffNo foreign key(mgrStaffNo) references Staff(staffNo);\n\n#(3) Staff.dept是外码，对应的主码是Dept.deptNo. 请添加这个外码，名字为FK_Staff_dept:\nalter table Staff add constraint FK_Staff_dept foreign key(dept) references Dept(deptNo);\n\n#(4) 为表Staff添加check约束，规则为：gender的值只能为F或M；约束名为CK_Staff_gender:\nalter table Staff add constraint CK_Staff_gender check(gender in ('F','M'));\n\n#(5) 为表Dept添加unique约束：deptName不允许重复。约束名为UN_Dept_deptName：\nalter table Dept add constraint UN_Dept_deptName unique(deptName);"
               }
             }
           ]

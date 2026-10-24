@@ -322,6 +322,9 @@ async def submit_code_game(client, hw_id, gid, code, detail, apply, stats, poll_
         print(f'      [跳过] 代码题 {gid}：缺少 {"、".join(missing)}。')
         return False
     path = paths[0]
+    if path.endswith('.sql') and code:
+        # 统一后处理：补数据库、补 DROP（本地答案也要走这一步）
+        code = postprocess_sql(code, None, challenge.get('task_pass'))
     if not apply:
         stats['would_submit'] += 1
         print(f'      [dry-run] 代码题 {gid}：写入 {path}（{len(code)} 字符）并触发评测。')
@@ -443,6 +446,9 @@ async def ai_solve_code(task_pass, path, grader_hint=None, expected_output=None,
                    f'要求：保留模板里所有已有的结构（import、use 语句、函数定义与签名、'
                    f'注释框架、Begin/End 标记、文件路径常量等）；只填充题目要求的部分；'
                    f'输出修改后的完整文件内容。\n')
+        if path.endswith('.sql'):
+            prompt += ('SQL 特别注意：模板里的 use 语句必须原样保留，数据库名不要改动、'
+                       '不要臆造新的库名；不要删除模板中的注释和结尾标记。\n')
     else:
         prompt += '请生成该文件的完整代码。\n'
     if grader_hint:
@@ -608,18 +614,33 @@ _USE_RE = re.compile(r'^\s*use\s+\w+\s*;', re.M | re.I)
 
 
 def ensure_sql_use(sql, template, db_name):
-    """确保 SQL 有 use 语句（模板未提供且 AI 未写时自动补上）。
+    """确保 SQL 里的数据库存在。
 
-    同时保证数据库存在（很多关卡会报 No database selected / Unknown database）。
+    - 没有 use 语句：按 db_name 补 CREATE DATABASE + use
+    - 已有 use X：在它前面补 CREATE DATABASE IF NOT EXISTS X
+      （pod 重建后数据库会丢，评测会报 Unknown database）
     """
     if not sql:
         return sql
-    has_use = bool(_USE_RE.search(sql or '') or _USE_RE.search(template or ''))
-    if not db_name:
+    m = re.search(r'^\s*use\s+`?(\w+)`?\s*;', sql, re.M | re.I)
+    if not m:
+        # 没有 use 语句时：
+        # - 只建表（CREATE TABLE）才补库名，否则会得到空库反而报 Table doesn't exist
+        # - 纯查询/建视图不动，库由平台预置
+        if not db_name or not re.search(r'\bcreate\s+table\b', sql, re.I):
+            return sql
+        db = db_name
+    else:
+        db = m.group(1)
+    already = re.search(
+        r'create\s+database\s+(?:if\s+not\s+exists\s+)?`?' + re.escape(db) + r'`?',
+        sql, re.I)
+    if already:
         return sql
-    if has_use:
-        return sql
-    return f'CREATE DATABASE IF NOT EXISTS `{db_name}`;\nuse {db_name};\n' + sql
+    create = 'CREATE DATABASE IF NOT EXISTS `' + db + '`;\n'
+    if m:
+        return sql[:m.start()] + create + sql[m.start():]
+    return create + 'use ' + db + ';\n' + sql
 
 
 def ensure_sql_drop_before_create(sql):
