@@ -280,6 +280,45 @@ uv run python scripts/run_queue.py --apply --classroom D9Z6O8GR
 账号之间默认等待 30 分钟（`--gap 1800`）再加 0~25% 随机抖动，用于降低风险。
 风控提示见下节。
 
+### 查看队列运行状态
+
+```bash
+# 汇总：每个账号的状态/密码/上次运行，当前登录态，日志尾部
+uv run python scripts/queue_status.py
+
+# 联网检查某账号的课堂进度（较慢，会用自己的凭据登录一次）
+uv run python scripts/queue_status.py --detail
+uv run python scripts/queue_status.py --detail --only 138xxxxxxxx
+
+# 配合后台运行看日志
+uv run python scripts/queue_status.py --log-lines 50
+```
+
+输出示例：
+
+```
+账号            备注        状态       密码                    最后运行
+18568361536             done      disbbti***            5 分钟前
+        └ 提交 12 / 失败 0 / 跳过已通过 68
+18336282507   zzy       failed    Zzy2920***            2 分钟前
+        └ 错误：用户名或密码错误
+------------------------------------------------------------------------
+总计 3 个：完成 1，失败 1，待处理 1
+
+当前登录态（.env）
+配置账号：18568361536
+Token：有   Cookie：有   （会话可用，无需密码登录）
+登录冷却：无
+```
+
+`--detail` 会显示各课堂的「实验完成数」，例如：
+
+```
+  机器学习_2026年下半年：实验 30/30 已完成
+  软件工程导论2026年下半年：实验 48/51 已完成
+  合计：实验 85/88 已完成
+```
+
 ### 部署到小规格服务器（实测阿里云 2C4G 1M）
 
 可以胜任，但要**串行**跑：
