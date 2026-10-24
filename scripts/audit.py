@@ -48,7 +48,9 @@ async def audit_classroom(client, course):
                                                    {}, strict_status=False)
             ch = d.get('challenge') or {}
             g = d.get('game') or {}
-            levels.append((ch.get('subject') or '', g.get('status')))
+            # 通过判定：status==2，或已拿到分数（平台偶尔不同步 status 字段）
+            passed = g.get('status') == 2 or (g.get('final_score') or 0) > 0
+            levels.append((ch.get('subject') or '', 2 if passed else g.get('status')))
             nxt = d.get('next_game')
             if nxt and str(nxt) not in seen:
                 queue.append(str(nxt))
