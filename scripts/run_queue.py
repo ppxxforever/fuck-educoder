@@ -32,6 +32,7 @@ import argparse
 import asyncio
 import json
 import os
+import random
 import sqlite3
 import sys
 import time
@@ -199,13 +200,18 @@ async def cmd_run(args):
 
     for a in accounts:
         _NOTES[a.get('account', '')] = a.get('note') or ''
-    print(f'共 {len(accounts)} 个账号待处理（串行执行）')
+    print(f'共 {len(accounts)} 个账号待处理（串行执行，账号间隔 {args.gap}s）')
     ok = 0
-    for a in accounts:
+    for idx, a in enumerate(accounts):
         acc, pwd = a.get('account'), a.get('password')
         if not acc or not pwd:
             print(f'跳过无效账号记录：{a}')
             continue
+        if idx > 0 and args.gap > 0:
+            wait = args.gap + random.randint(0, max(1, args.gap // 4))
+            print(f'\n等待 {wait // 60} 分 {wait % 60} 秒再处理下一个账号'
+                  f'（降低同 IP 连续登录的风控风险）…')
+            await asyncio.sleep(wait)
         if await run_one(acc, pwd, args, state):
             ok += 1
         save_json(STATE, state)                   # 每个账号后立即落盘，支持断点续跑
@@ -227,6 +233,8 @@ def main():
     parser.add_argument('--experiment', default=None, help='只处理名称包含该字符串的实验')
     parser.add_argument('--no-ai', action='store_true', help='禁用 AI 自动做题')
     parser.add_argument('--delay', type=float, default=5.0, help='实验之间等待秒数')
+    parser.add_argument('--gap', type=int, default=1800,
+                        help='账号之间的间隔秒数（默认 1800=30 分钟，降低风控风险；0 表示不等待）')
     args = parser.parse_args()
 
     if args.add:
