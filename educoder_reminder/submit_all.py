@@ -97,7 +97,7 @@ async def run_all(apply, classroom_filter, limit, poll_timeout, experiment_filte
                     await process_uml(
                         client, hw, apply, stats, poll_timeout, limit=limit,
                         experiment_filter=experiment_filter, use_ai=use_ai,
-                        release_pods=release_pods, delay=delay)
+                        release_pods=release_pods, delay=delay, classroom=code)
                 except CollectionError as exc:
                     stats['skipped_error'] += 1
                     print(f'  ✗ 图形题处理失败：{exc}')

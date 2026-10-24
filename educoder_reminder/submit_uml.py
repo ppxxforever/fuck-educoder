@@ -164,8 +164,11 @@ def is_graphic(detail) -> bool:
     return bool(envs) and bool(envs[0].get('vnc_url'))
 
 
-async def get_ssh_connection(client, detail):
-    """调用 start.json 取得 VNC 机 SSH 连接信息。"""
+async def get_ssh_connection(client, detail, classroom=None, auto_release=True):
+    """调用 start.json 取得 VNC 机 SSH 连接信息。
+
+    碰到「用户创建实验环境数已达上限」时，自动释放本课堂已打开的环境 pod 后重试一次。
+    """
     myshixun = detail.get('myshixun') or {}
     game = detail.get('game') or {}
     env = (detail.get('shixun_environments') or [{}])[0]
@@ -179,11 +182,28 @@ async def get_ssh_connection(client, detail):
     }
     if detail.get('homework_common_id'):
         params['homework_common_id'] = detail.get('homework_common_id')
-    resp = await client.get(f'/api/myshixuns/{ident}/start.json', params)
-    data = resp.get('data') or {}
+
+    async def _start():
+        resp = await client.get(f'/api/myshixuns/{ident}/start.json', params)
+        return resp.get('data') or {}
+
+    data = await _start()
     if data.get('code') not in (None, 0):
         msg = data.get('msg') or data.get('message') or f'code={data.get("code")}'
-        raise CollectionError(f'启动图形化环境失败：{msg}（请关闭部分已打开的实验环境后重试）')
+        limit_hit = ('上限' in msg) or (data.get('code') == -5)
+        if limit_hit and auto_release and classroom:
+            print(f'      ! 环境数已达上限，自动释放本课堂已打开的环境…')
+            try:
+                n = await release_all_envs(client, classroom)
+                print(f'      已释放 {n} 个环境，等待 5 秒后重试启动')
+            except CollectionError as exc:
+                print(f'      释放环境失败：{exc}')
+            await asyncio.sleep(5)
+            data = await _start()
+        if data.get('code') not in (None, 0):
+            msg = data.get('msg') or data.get('message') or f'code={data.get("code")}'
+            hint = '（已尝试自动释放环境；请稍后重试或手动关闭网页端实验环境）' if limit_hit else ''
+            raise CollectionError(f'启动图形化环境失败：{msg}{hint}')
     if not data.get('ssh_address') or not data.get('password'):
         raise CollectionError('start.json 未返回 SSH 连接信息。')
     return data
@@ -267,7 +287,7 @@ async def release_all_envs(client, classroom):
 
 
 async def submit_graphic_game(client, hw_id, gid, detail, content, target_path, step,
-                              apply, stats, poll_timeout):
+                              apply, stats, poll_timeout, classroom=None):
     """SSH 写 .mdj → git commit → 触发评测；返回是否评测通过。"""
     challenge = detail.get('challenge') or {}
     user = detail.get('user') or {}
@@ -290,7 +310,7 @@ async def submit_graphic_game(client, hw_id, gid, detail, content, target_path, 
         return False
 
     try:
-        conn = await get_ssh_connection(client, detail)
+        conn = await get_ssh_connection(client, detail, classroom)
         written, git_msg = ssh_write_and_commit(conn, content, targets)
     except Exception as exc:
         stats['failed'] += 1
@@ -506,7 +526,7 @@ async def _ssh_write_commit(ssh, content, rel_paths, msg='submit'):
 
 
 async def solve_level_from_grader(client, hw_id, gid, detail, target, step, apply,
-                                  stats, poll_timeout):
+                                  stats, poll_timeout, classroom=None):
     """抓评测脚本 → 逆向构造 .mdj → 提交；返回是否通过。"""
     challenge = detail.get('challenge') or {}
     targets = write_targets(challenge.get('path'), target, step)
@@ -515,7 +535,7 @@ async def solve_level_from_grader(client, hw_id, gid, detail, target, step, appl
         print(f'      [dry-run] UML {gid}：抓评测脚本逆向构造答案并提交。')
         return False
 
-    conn = await get_ssh_connection(client, detail)
+    conn = await get_ssh_connection(client, detail, classroom)
     ssh = _ssh_connect(conn)
     try:
         # 0) 优先用已缓存的评测脚本（避免每次触发评测去抓，pod 重建后易失败）
@@ -613,7 +633,8 @@ def save_mdj_answer(exp_name, step, content):
 
 
 async def process_experiment(client, hw, apply, stats, poll_timeout, limit=None,
-                             experiment_filter=None, use_ai=True, release_pods=True, delay=5.0):
+                             experiment_filter=None, use_ai=True, release_pods=True,
+                             delay=5.0, classroom=None):
     """处理一个实验的图形化关卡。"""
     name = hw.get('name') or ''
     if experiment_filter and experiment_filter not in name:
@@ -688,7 +709,8 @@ async def process_experiment(client, hw, apply, stats, poll_timeout, limit=None,
             content = None
             try:
                 content = await solve_level_from_grader(client, hw_id, gid, detail, target,
-                                                        step, apply, stats, poll_timeout)
+                                                        step, apply, stats, poll_timeout,
+                                                        classroom=classroom)
             except CollectionError as exc:
                 print(f'      ✗ {subject}：{exc}')
             except Exception as exc:
@@ -716,7 +738,8 @@ async def process_experiment(client, hw, apply, stats, poll_timeout, limit=None,
                     print(f'      目标 {target}  <-  AI 生成')
                     try:
                         passed = await submit_graphic_game(client, hw_id, gid, detail, content,
-                                                           target, step, apply, stats, poll_timeout)
+                                                           target, step, apply, stats, poll_timeout,
+                                                           classroom=classroom)
                     except CollectionError as exc:
                         stats['failed'] += 1
                         print(f'      ✗ {subject}：{exc}')
@@ -733,7 +756,8 @@ async def process_experiment(client, hw, apply, stats, poll_timeout, limit=None,
         stats['processed'] += 1
         try:
             await submit_graphic_game(client, hw_id, gid, detail, content, target,
-                                      step, apply, stats, poll_timeout)
+                                      step, apply, stats, poll_timeout,
+                                      classroom=classroom)
         except CollectionError as exc:
             stats['failed'] += 1
             print(f'      ✗ {subject}：{exc}')
@@ -763,7 +787,8 @@ async def run(apply, classroom, limit, poll_timeout, experiment_filter, use_ai,
         for hw in rows:
             await process_experiment(client, hw, apply, stats, poll_timeout,
                                      limit=limit, experiment_filter=experiment_filter,
-                                     use_ai=use_ai, release_pods=release_pods, delay=delay)
+                                     use_ai=use_ai, release_pods=release_pods,
+                                     delay=delay, classroom=classroom)
     print('\n===== 汇总 =====')
     for key, value in stats.items():
         print(f'  {key}: {value}')

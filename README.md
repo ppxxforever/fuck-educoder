@@ -143,7 +143,14 @@ uv run python -m educoder_reminder.submit_uml --apply --release-envs   # 清理�
 ```
 
 注意：每个图形化实验占用一个 VNC 环境，平台对并发数有上限（实测约 5 个）。
-报「用户创建实验环境数已达上限」时用 `--release-envs` 先释放，或分批跑。
+遇到「用户创建实验环境数已达上限」时程序会**自动释放本课堂已打开的环境 pod 并重试一次**
+（等待 5 秒）；仍失败则提示稍后再试。也可手动先清理：
+
+```bash
+uv run python -m educoder_reminder.submit_uml --release-envs
+```
+
+每个实验结束默认也会自动释放它的环境（`--no-release` 可关闭）。
 
 ### 一键提交
 
