@@ -65,15 +65,29 @@ def strip_prefix(path: str) -> str:
     return path
 
 
+def _safe_dir(name: str) -> str:
+    return re.sub(r'[^\w\u4e00-\u9fff-]+', '_', (name or 'unnamed')).strip('_')[:60] or 'unnamed'
+
+
 def collect_mdj(base: Path) -> dict:
-    """扫描目录下所有 stepN.mdj / stepN/res.txt，返回 {step号: 文件绝对路径}。"""
+    """扫描本地答案，返回 {key: 文件绝对路径}。
+
+    两种目录布局都支持：
+    - stepN/stepN.mdj（按关卡序号）
+    - <关卡标题>/answer.mdj（按标题，解决同一实验里多个关卡 step 号相同的问题）
+    查找时优先用标题，其次用 step 号。
+    """
     out = {}
     if not base or not base.is_dir():
         return out
     for f in sorted(base.rglob('*')):
         if f.suffix.lower() not in ('.mdj', '.txt'):
             continue
-        m = re.search(r'step_?(\d+)', str(f.relative_to(base)))
+        rel = f.relative_to(base)
+        parts = rel.parts
+        if len(parts) >= 2 and rel.name in ('answer.mdj', 'answer.txt'):
+            out.setdefault(str(parts[0]), str(f))
+        m = re.search(r'step_?(\d+)', str(rel))
         if m:
             out.setdefault(int(m.group(1)), str(f))
     return out
@@ -100,7 +114,8 @@ def extract_target(challenge_path, task_pass):
         rel_dir = re.sub(r'[/／]?(?:文件夹)?下$', '', rel_dir).rstrip('/')
         fname = m_name.group(1)
         file_name = fname if fname.endswith('.mdj') else f'{fname}.mdj'
-        step_m = re.search(r'step_?(\d+)', fname)
+        # step 号可能只在目录名里（如 submit_step_3/step.mdj），从完整路径提取
+        step_m = re.search(r'step(?:_detail)?_?(\d+)', f'{rel_dir}/{file_name}')
         return f'{rel_dir}/{file_name}', int(step_m.group(1)) if step_m else None
 
     # 写法一：答案保存为：/data/workspace/myshixun/answer/step0/step0.mdj
@@ -557,7 +572,7 @@ async def _capture_grader_script(ssh, step, expect_target=None):
     scan = ('for f in $(find /data/workspace/myshixun/secret /data/workspace/myshixun/pingce '
             '-name "*.py" 2>/dev/null); do s=$(wc -c < "$f" 2>/dev/null); '
             'if [ "$s" != "0" ]; then echo "### $f"; cat "$f"; fi; done')
-    for _ in range(25):
+    for _ in range(40):
         blocks = []
         _, o, _ = ssh.exec_command(f'cat {fixed} 2>/dev/null')
         txt = o.read().decode('utf-8', 'replace')
@@ -668,6 +683,12 @@ async def solve_level_from_grader(client, hw_id, gid, detail, target, step, appl
                                                       'ownedElements': []}), targets, 'probe')
             await _trigger_eval(client, detail, hw_id, gid)
             script = await _capture_grader_script(ssh, step, target)
+            if not script:
+                # 评测脚本挂载有延迟，重新触发一次评测再抓
+                print('      · 未抓到评测脚本，重新触发评测后重试')
+                await asyncio.sleep(3)
+                await _trigger_eval(client, detail, hw_id, gid)
+                script = await _capture_grader_script(ssh, step, target)
         if not script:
             stats['failed'] += 1
             print(f'      ✗ UML {gid}：未抓到评测脚本。')
@@ -761,14 +782,27 @@ async def ai_solve_uml(task_pass, example):
     return j
 
 
-def save_mdj_answer(exp_name, step, content):
-    """评测通过后把 .mdj 存回本地题库。"""
+def save_mdj_answer(exp_name, step, content, subject=None):
+    """评测通过后把答案存回本地题库。
+
+    优先按「关卡标题/answer.mdj」保存：同一实验里不同关卡的 step 号可能相同
+    （例如 系统流程图 的三关都解析成 step2），用 step 目录会互相覆盖。
+    没有标题时才退回 stepN/stepN.mdj。
+    """
     base = resolve_answer_base(exp_name)
     if base is None:
         base = ROOT / 'answer' / exp_name
-    d = base / f'step{step}'
+    if subject and subject.strip():
+        d = base / _safe_dir(subject)
+        name = 'answer'
+    elif step is not None:
+        d = base / f'step{step}'
+        name = f'step{step}'
+    else:
+        d = base / 'unnamed'
+        name = 'answer'
     d.mkdir(parents=True, exist_ok=True)
-    p = d / f'step{step}.mdj'
+    p = d / f'{name}.mdj'
     p.write_text(content, encoding='utf-8')
     return p
 
@@ -803,8 +837,9 @@ async def process_experiment(client, hw, apply, stats, poll_timeout, limit=None,
     example = None
     if mdj:
         try:
-            example = Path(mdj[min(mdj.keys())]).read_text(encoding='utf-8')
-        except OSError:
+            first_key = next(iter(mdj))
+            example = Path(mdj[first_key]).read_text(encoding='utf-8')
+        except (OSError, StopIteration):
             example = None
     print(f'\n== {name} ==（本地答案 {len(mdj)} 个 step）')
     if base is None:
@@ -843,7 +878,8 @@ async def process_experiment(client, hw, apply, stats, poll_timeout, limit=None,
             print(f'  - [跳过] {subject}：无法解析保存路径（非 .mdj 绘图题？）。')
             continue
 
-        if step is None or step not in mdj:
+        local_path = mdj.get(subject) or (mdj.get(step) if step is not None else None)
+        if not local_path:
             # 无本地答案：优先抓评测脚本逆向构造（不消耗 AI），失败再尝试 AI
             print(f'  ▸ {subject}（抓评测脚本逆向构造）')
             stats['processed'] += 1
@@ -858,7 +894,7 @@ async def process_experiment(client, hw, apply, stats, poll_timeout, limit=None,
                 stats['failed'] += 1
                 print(f'      ✗ {subject}：{exc}')
             if content:
-                p = save_mdj_answer(name, step, content)
+                p = save_mdj_answer(name, step, content, subject)
                 print(f'      ↳ 答案已保存到本地题库：{p}')
                 continue
             if not use_ai:
@@ -886,14 +922,14 @@ async def process_experiment(client, hw, apply, stats, poll_timeout, limit=None,
                         print(f'      ✗ {subject}：{exc}')
                         passed = False
                     if passed:
-                        p = save_mdj_answer(name, step, content)
+                        p = save_mdj_answer(name, step, content, subject)
                         print(f'      ↳ AI 答案已保存到本地题库：{p}')
             continue
 
         # 有本地答案
-        content = Path(mdj[step]).read_text(encoding='utf-8')
+        content = Path(local_path).read_text(encoding='utf-8')
         print(f'  ▸ {subject}')
-        print(f'      目标 {target}  <-  {mdj[step]}')
+        print(f'      目标 {target}  <-  {local_path}')
         stats['processed'] += 1
         passed = False
         try:
@@ -915,7 +951,7 @@ async def process_experiment(client, hw, apply, stats, poll_timeout, limit=None,
                 print(f'      ✗ {subject}：{exc}')
                 ref = None
             if ref:
-                saved = save_mdj_answer(name, step, ref)
+                saved = save_mdj_answer(name, step, ref, subject)
                 print(f'      ↳ 已用逆向构造结果覆盖本地答案：{saved}')
 
     # 处理完一个实验后释放其环境 pod，避免并发环境数触发上限
