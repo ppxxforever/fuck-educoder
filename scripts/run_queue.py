@@ -127,17 +127,41 @@ def cmd_add(args):
     print(f'已添加账号 {args.account}（共 {len(accounts)} 个）')
 
 
+def cmd_import_env(args):
+    """把 .env 里当前的登录账号/密码导入队列（免去重新输入）。"""
+    from dotenv import dotenv_values
+    values = dotenv_values(ENV_PATH, interpolate=False)
+    account = values.get('EDUCODER_LOGIN_ACCOUNT') or os.environ.get('EDUCODER_LOGIN_ACCOUNT')
+    password = values.get('EDUCODER_LOGIN_PASSWORD') or os.environ.get('EDUCODER_LOGIN_PASSWORD')
+    if not account or not password:
+        raise SystemExit('当前 .env 里没有可用的 EDUCODER_LOGIN_ACCOUNT / EDUCODER_LOGIN_PASSWORD。')
+    accounts = load_json(ACCOUNTS, [])
+    for a in accounts:
+        if a.get('account') == account:
+            a['password'] = password
+            if args.note:
+                a['note'] = args.note
+            save_json(ACCOUNTS, accounts)
+            print(f'已更新队列中的账号 {account}')
+            return
+    accounts.append({'account': account, 'password': password, 'note': args.note or ''})
+    save_json(ACCOUNTS, accounts)
+    print(f'已从 .env 导入账号 {account}（共 {len(accounts)} 个）')
+
+
 def cmd_list(args):
     accounts = load_json(ACCOUNTS, [])
     state = load_json(STATE, {})
     if not accounts:
         print('队列为空。用 --add 添加账号。')
         return
-    print(f'{"账号":<16}{"备注":<12}{"状态":<10}最后运行')
+    print(f'{"账号":<16}{"备注":<12}{"状态":<10}{"密码":<8}最后运行')
     for a in accounts:
         acc = a.get('account', '')
         st = state.get(acc, {})
-        print(f'{acc:<16}{(a.get("note") or ""):<12}{st.get("status", "-"):<10}{st.get("finished_at", "-")}')
+        has_pwd = '已设置' if a.get('password') else '缺失'
+        print(f'{acc:<16}{(a.get("note") or ""):<12}{st.get("status", "-"):<10}'
+              f'{has_pwd:<8}{st.get("finished_at", "-")}')
 
 
 async def run_one(account, password, args, state):
@@ -224,6 +248,8 @@ def main():
     parser.add_argument('--password', help='配合 --add 使用的密码')
     parser.add_argument('--note', default='', help='配合 --add 的备注')
     parser.add_argument('--list', action='store_true', help='查看队列')
+    parser.add_argument('--import-env', action='store_true',
+                        help='把 .env 里当前的账号密码导入队列')
     parser.add_argument('--apply', action='store_true', help='真实提交（不加只打印计划）')
     parser.add_argument('--only', help='只处理指定账号')
     parser.add_argument('--skip-done', action='store_true', help='跳过已完成账号')
@@ -242,6 +268,9 @@ def main():
             import getpass
             args.password = getpass.getpass('密码（不回显）: ')
         cmd_add(args)
+        return
+    if args.import_env:
+        cmd_import_env(args)
         return
     if args.list:
         cmd_list(args)
