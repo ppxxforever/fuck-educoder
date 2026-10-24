@@ -323,8 +323,24 @@ async def submit_code_game(client, hw_id, gid, code, detail, apply, stats, poll_
         return False
     path = paths[0]
     if path.endswith('.sql') and code:
-        # 统一后处理：补数据库、补 DROP（本地答案也要走这一步）
-        code = postprocess_sql(code, None, challenge.get('task_pass'))
+        # SQL 必须在初始模板上补充：模板里的 use 提供数据库上下文，重写会报
+        # No database selected / Unknown database。优先用本地缓存的原始模板
+        # （远端提交后会被覆盖，所以第一次读到就存一份）。
+        subject = (challenge.get('subject') or '').strip()
+        step_no = None
+        m_step = re.search(r'step[_]?(\d+)', path)
+        if m_step:
+            step_no = int(m_step.group(1))
+        tpl = load_template(subject, step_no)
+        if tpl is None:
+            fresh = await read_remote_file(client, gid, hw_id, path)
+            # 远端内容看起来还是模板（含 use 且没被我们填过）才缓存
+            if fresh.strip() and re.search(r'^\s*use\s+', fresh, re.M | re.I):
+                tpl = fresh
+                save_template(subject, step_no, fresh)
+        if tpl:
+            code = merge_sql_template(tpl, code)
+        code = postprocess_sql(code, tpl, challenge.get('task_pass'))
     if not apply:
         stats['would_submit'] += 1
         print(f'      [dry-run] 代码题 {gid}：写入 {path}（{len(code)} 字符）并触发评测。')
@@ -525,10 +541,72 @@ async def read_remote_file(client, gid, hw_id, path):
     return base64.b64decode(content).decode('utf-8', 'replace') if content else ''
 
 
+TEMPLATE_DIR = ROOT / 'templates'
+
+
+def merge_sql_template(template, answer):
+    """把答案合并进「初始模板」骨架，而不是整体替换。
+
+    评测依赖模板提供的上下文，重写会失败：
+    - 模板里的 `use X;` 提供数据库上下文，缺了会报 No database selected
+    - 答案如果自己编了别的库名，会被模板里的库名替换掉
+    - 模板的结尾标记（/* end of your code */）保留不动
+
+    示例：
+      模板: use finance1;\n-- 注释\n/* end of your code */
+      答案: CREATE OR REPLACE VIEW v AS SELECT 1;
+      结果: use finance1;
+            CREATE OR REPLACE VIEW v AS SELECT 1;
+            /* end of your code */
+    """
+    if not template or not template.strip():
+        return answer
+    if not answer or not answer.strip():
+        return answer
+
+    # 1) 数据库上下文：以模板的 use 为准
+    tpl_use = re.search(r'^\s*use\s+`?(\w+)`?\s*;[ \t]*$', template, re.M | re.I)
+    if tpl_use:
+        tpl_db = tpl_use.group(1)
+        ans_use = re.search(r'^\s*use\s+`?(\w+)`?\s*;[ \t]*$', answer, re.M | re.I)
+        if not ans_use:
+            answer = tpl_use.group(0).strip() + '\n' + answer
+        elif ans_use.group(1) != tpl_db:
+            # 答案臆造了别的库名 → 换回模板的库
+            answer = (answer[:ans_use.start()] + tpl_use.group(0).strip()
+                      + answer[ans_use.end():])
+
+    # 2) 结尾标记：模板有就保留
+    tail = re.search(r'/\*+\s*(?:end|End)[^*]*\*+/\s*$', template, re.S)
+    if tail and not re.search(r'/\*+\s*(?:end|End)', answer, re.I):
+        answer = answer.rstrip() + '\n' + tail.group(0).strip()
+
+    return answer
+
+
+def save_template(name, step, content):
+    """缓存关卡初始模板（远端提交后会被覆盖，必须提前存一份）。"""
+    try:
+        TEMPLATE_DIR.mkdir(parents=True, exist_ok=True)
+        safe = re.sub(r'[^\w\u4e00-\u9fff-]+', '_', name or 'x')[:60]
+        (TEMPLATE_DIR / f'{safe}_step{step}.sql').write_text(content, encoding='utf-8')
+    except OSError:
+        pass
+
+
+def load_template(name, step):
+    try:
+        safe = re.sub(r'[^\w\u4e00-\u9fff-]+', '_', name or 'x')[:60]
+        return (TEMPLATE_DIR / f'{safe}_step{step}.sql').read_text(encoding='utf-8')
+    except OSError:
+        return None
+
+
 def postprocess_sql(code, template, task_pass):
-    """SQL 后处理：补 use 语句 + CREATE 前加 DROP（幂等）。"""
+    """SQL 后处理：合并模板骨架 + 补数据库 + CREATE 前加 DROP（幂等）。"""
     if not code:
         return code
+    code = merge_sql_template(template, code)
     code = ensure_sql_use(code, template, guess_db_name(task_pass))
     code = ensure_sql_drop_before_create(code)
     return code

@@ -176,6 +176,44 @@ AI_MODEL='deepseek-chat'
 AI 生成代码时会同时参考：题目要求、当前文件模板、评测脚本（`main.py`/`test.py`/`evaluate.py`）、
 平台预期输出、以及失败后的实际报错。评测通过后答案写回 `answers.json` 或 `answer/`。
 
+### SQL 题：必须在初始模板上补充
+
+头歌的 SQL 关卡（MySQL 系列）编辑器里**预置了初始模板**，评测依赖它提供的上下文：
+
+```sql
+use finance1;
+-- 创建包含所有保险资产记录的详细信息的视图v_insurance_detail...
+-- 请用1条SQL语句完成上述任务：
+
+
+
+
+/*   end  of your code  */
+```
+
+**不能整体重写**，否则会失败：
+
+| 做法 | 结果 |
+|------|------|
+| 只写 `CREATE OR REPLACE VIEW ...` | ❌ `No database selected` |
+| 自己编库名 `USE insurance_db;` | ❌ `Unknown database 'insurance_db'` |
+| 保留 `use finance1;` + 视图定义 | ✅ 通过 |
+
+程序里已按这个规则强制处理（`submit.py`）：
+
+1. **`merge_sql_template(template, answer)`** —— 把答案合并进模板骨架
+   - 答案缺 `use` → 补上模板的
+   - 答案臆造了别的库名 → 换回模板的库名
+   - 保留模板的结尾标记（`/* end of your code */`）
+2. **模板缓存 `templates/<关卡>_stepN.sql`** —— 远端提交后模板会被覆盖，
+   所以第一次读到就存一份，后续都用缓存的原始模板（该目录随仓库提交）
+3. **`postprocess_sql`** —— 在模板合并之后再做补齐：
+   - 有 `use X;` → 前面加 `CREATE DATABASE IF NOT EXISTS X;`（pod 重建库会丢）
+   - 没有 `use` 且要建表 → 按题目猜库名补库
+   - 没有 `use` 的纯查询/建视图 → 不动（平台预置库才有表，贸然建空库会报 `Table doesn't exist`）
+   - `CREATE TABLE` 前加 `DROP TABLE IF EXISTS`（避免重复提交时表已存在）
+4. **AI 提示**：明确要求保留模板的 `use`、注释和结尾标记，不要臆造库名
+
 ## 切换账号
 
 ```bash
