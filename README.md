@@ -266,7 +266,9 @@ uv run python scripts/run_queue.py --apply --classroom D9Z6O8GR
 
 工作方式（`scripts/run_queue.py`）：
 
-1. 账号清单 `data/accounts.json`（`[{"account","password","note"}]`）
+1. 账号清单 `data/accounts.json`（`[{"account","password","note"}]`，**明文保存**，
+   方便查看核对；数据只在本地，`data/` 已 gitignore。想加密存储可加 `--encrypt`，
+   密钥放 `data/.queue_key`）
 2. 逐个账号：写入凭据 → **清空上一个账号的 Token/Cookie/课堂地址** →
    清该账号的登录冷却 → 跑一遍 `submit_all` → 记录结果
 3. 进度存 `data/queue_state.json`，每个账号跑完立即落盘，中断后可继续

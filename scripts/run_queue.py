@@ -69,10 +69,10 @@ def _fernet():
     return Fernet(key)
 
 
-def encrypt_password(plain):
-    """把明文密码加密成 enc:<token>；空值原样返回。"""
-    if not plain:
-        return ''
+def encrypt_password(plain, enabled=False):
+    """把明文密码加密成 enc:<token>；enabled=False 时原样返回（默认明文）。"""
+    if not plain or not enabled:
+        return plain
     if plain.startswith(_PREFIX):
         return plain
     from cryptography.fernet import Fernet  # noqa: F401
@@ -92,8 +92,13 @@ def decrypt_password(stored):
         raise SystemExit(f'无法解密队列中的密码（密钥文件可能被替换）：{exc}') from None
 
 
-def mask_password(stored):
-    return '已加密' if (stored or '').startswith(_PREFIX) else ('已设置(明文)' if stored else '缺失')
+def show_password(stored):
+    """列表里显示密码：加密记录标注，明文直接显示（本地工具，方便核对）。"""
+    if not stored:
+        return '缺失'
+    if stored.startswith(_PREFIX):
+        return '已加密'
+    return stored
 
 
 def load_json(path, default):
@@ -103,12 +108,12 @@ def load_json(path, default):
         return default
 
 
-def save_accounts(accounts):
-    """写入账号清单，密码一律加密存储。"""
+def save_accounts(accounts, encrypt=False):
+    """写入账号清单。默认明文（数据只在本地，方便查看）；--encrypt 时加密。"""
     out = []
     for a in accounts:
         item = dict(a)
-        item['password'] = encrypt_password(item.get('password', ''))
+        item['password'] = encrypt_password(item.get('password', ''), enabled=encrypt)
         out.append(item)
     save_json(ACCOUNTS, out)
 
@@ -181,7 +186,7 @@ def cmd_add(args):
         raise SystemExit(f'账号 {args.account} 已在队列中。')
     accounts.append({'account': args.account, 'password': args.password,
                      'note': args.note or ''})
-    save_accounts(accounts)
+    save_accounts(accounts, args.encrypt)
     print(f'已添加账号 {args.account}（共 {len(accounts)} 个）')
 
 
@@ -199,11 +204,11 @@ def cmd_import_env(args):
             a['password'] = password
             if args.note:
                 a['note'] = args.note
-            save_accounts(accounts)
+            save_accounts(accounts, getattr(args, 'encrypt', False))
             print(f'已更新队列中的账号 {account}')
             return
     accounts.append({'account': account, 'password': password, 'note': args.note or ''})
-    save_accounts(accounts)
+    save_accounts(accounts, getattr(args, 'encrypt', False))
     print(f'已从 .env 导入账号 {account}（共 {len(accounts)} 个）')
 
 
@@ -213,12 +218,13 @@ def cmd_list(args):
     if not accounts:
         print('队列为空。用 --add 添加账号。')
         return
-    print(f'{"账号":<16}{"备注":<12}{"状态":<10}{"密码":<12}最后运行')
+    print(f'{"账号":<16}{"密码":<18}{"备注":<10}{"状态":<8}最后运行')
     for a in accounts:
         acc = a.get('account', '')
         st = state.get(acc, {})
-        print(f'{acc:<16}{(a.get("note") or ""):<12}{st.get("status", "-"):<10}'
-              f'{mask_password(a.get("password")):<12}{st.get("finished_at", "-")}')
+        pwd = show_password(a.get('password'))
+        print(f'{acc:<16}{pwd:<18}{(a.get("note") or ""):<10}'
+              f'{st.get("status", "-"):<8}{st.get("finished_at", "-")}')
 
 
 async def run_one(account, password, args, state):
@@ -308,6 +314,8 @@ def main():
     parser.add_argument('--list', action='store_true', help='查看队列')
     parser.add_argument('--import-env', action='store_true',
                         help='把 .env 里当前的账号密码导入队列')
+    parser.add_argument('--encrypt', action='store_true',
+                        help='把密码加密存储（默认明文，本地方便查看）')
     parser.add_argument('--apply', action='store_true', help='真实提交（不加只打印计划）')
     parser.add_argument('--only', help='只处理指定账号')
     parser.add_argument('--skip-done', action='store_true', help='跳过已完成账号')
