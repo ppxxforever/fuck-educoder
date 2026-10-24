@@ -196,10 +196,14 @@ async def submit_choice(client, identifier, answers, challenge_id, subject_id, a
 
 
 def verdict_signature(detail):
-    """评测结果签名：用于判断 test_sets 是否已更新（区分新旧评测）。"""
+    """评测结果签名：用于区分「上一次评测」与「本次评测」。
+
+    关键是用 game.evaluate_count（评测次数）——只看 test_sets 内容不够：
+    如果本次评测失败且报错信息与上次完全相同，内容签名不变会被误判成旧结果。
+    """
     game = detail.get('game') or {}
     tests = detail.get('test_sets') or []
-    return (game.get('status'),
+    return (game.get('status'), game.get('evaluate_count'),
             tuple((str(t.get('result')), str(t.get('actual_output'))) for t in tests))
 
 
@@ -223,10 +227,23 @@ async def wait_for_verdict(client, identifier, timeout=90, poll=2, baseline=None
         tests = detail.get('test_sets') or []
         rated = [t for t in tests if t.get('result') is not None]
         if tests and len(rated) == len(tests):
-            # 与提交前一致 → 一定是上一次的旧结果，继续等（只信 game.status）
-            if baseline is not None and verdict_signature(detail) == baseline:
-                continue
+            if baseline is not None:
+                now_sig = verdict_signature(detail)
+                if now_sig == baseline:
+                    continue      # 完全是旧结果，继续等
+                # evaluate_count 变了但 test_sets 内容没变：评测已执行、结果还没刷新，
+                # 再等一小会儿；若持续不变则认为本次结果确实与上次相同
+                if now_sig[2] == baseline[2] and time.monotonic() - started < 20:
+                    continue
             return all(bool(t.get('result')) for t in tests), detail
+    # 超时：用最后读到的结果兜底判断，避免只报「超时」而没有任何结论
+    if last_detail:
+        tests = last_detail.get('test_sets') or []
+        rated = [t for t in tests if t.get('result') is not None]
+        if tests and len(rated) == len(tests):
+            same = baseline is not None and verdict_signature(last_detail) == baseline
+            if not same:
+                return all(bool(t.get('result')) for t in tests), last_detail
     return None, last_detail
 
 

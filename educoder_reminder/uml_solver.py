@@ -181,26 +181,42 @@ def _parse_owned_path(script, field):
     return None, None
 
 
+_SKIP_NAMES = {'__main__', 'main'}
+
+
 def _extract_names(block):
     names = []
-    for m in re.finditer(r"(?:if|elif)\s+\w+\s*==\s*['\"]([^'\"]+)['\"]", block):
-        v = m.group(1)
-        if v not in names:
+    for m in re.finditer(r"(?:if|elif)\s+(\w+)\s*==\s*['\"]([^'\"]+)['\"]", block):
+        if m.group(1) == '__name__':
+            continue
+        v = m.group(2)
+        if v not in names and v not in _SKIP_NAMES:
             names.append(v)
     return names
 
 
+def _placeholder():
+    """占位元素：只含一张默认类图，不会被评测脚本误判。"""
+    return {'_type': 'UMLModel', '_id': _gid(), 'name': 'Model',
+            'ownedElements': [{'_type': 'UMLClassDiagram', '_id': _gid(),
+                               'name': 'Main', 'defaultDiagram': True}]}
+
+
 def _build_chain(path, leaf, extra_tail):
-    """按索引链构造 Project.ownedElements，使 path 指向 leaf。"""
+    """按索引链构造 Project.ownedElements，使 path 指向 leaf。
+
+    例如 path=[0,1,0] 生成：
+      Project.ownedElements[0].ownedElements[1].ownedElements[0] = leaf
+    中间层索引大于 0 时，前面必须用占位元素补齐，否则评测脚本取下标会越界。
+    """
     node = leaf
-    for i in range(len(path) - 1, 0, -1):
-        node = {'_type': 'UMLModel', '_id': _gid(), 'name': f'Model{i}',
-                'ownedElements': [node]}
-    models = []
-    for i in range(path[0]):
-        models.append({'_type': 'UMLModel', '_id': _gid(), 'name': f'Model{i}',
-                       'ownedElements': [{'_type': 'UMLClassDiagram', '_id': _gid(),
-                                          'name': 'Main', 'defaultDiagram': True}]})
+    # 由内向外逐层包装（path[1:]，path[0] 是 Project 层）
+    for idx in reversed(path[1:]):
+        container = {'_type': 'UMLModel', '_id': _gid(), 'name': 'Model',
+                     'ownedElements': [_placeholder() for _ in range(idx)]}
+        container['ownedElements'].insert(idx, node)
+        node = container
+    models = [_placeholder() for _ in range(path[0])]
     models.append(node)
     models.extend(extra_tail)
     return models
@@ -214,11 +230,29 @@ def solve_by_owned_path(script):
     if not path_p:
         return None
     path_m, _ = _parse_owned_path(script, 'messages')
-    end_of_part = script.find("['messages']", end_p)
-    if end_of_part == -1:
-        end_of_part = end_p
+    if path_m:
+        end_of_part = script.find("['messages']", end_p)
+        if end_of_part == -1:
+            end_of_part = len(script)
+    else:
+        # 没有 messages 的脚本（只检查生命线）：participants 名字取到脚本末尾
+        end_of_part = len(script)
     part_names = _extract_names(script[end_p:end_of_part])
     msg_names = _extract_names(script[end_of_part:]) if path_m else []
+    if not part_names:
+        # 脚本也可能不用 if/elif，而是 analyze_element(list_var, '名称', '类型')
+        var_field = {}
+        for m in re.finditer(r"(\w+)\s*=\s*.*\['(\w+)'\]", script):
+            var_field[m.group(1)] = m.group(2)
+        for m in re.finditer(
+                r"analyze_element\(\s*(\w+)\s*,\s*['\"]([^'\"]+)['\"]\s*,"
+                r"\s*['\"]([^'\"]+)['\"]\s*\)", script):
+            var, name, typ = m.groups()
+            field = var_field.get(var)
+            if field == 'participants' and name not in part_names:
+                part_names.append(name)
+            elif field == 'ownedElements' and name not in msg_names:
+                msg_names.append(name)
     if not part_names:
         return None
     path = path_p

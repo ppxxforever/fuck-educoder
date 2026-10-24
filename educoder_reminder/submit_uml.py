@@ -209,8 +209,12 @@ async def get_ssh_connection(client, detail, classroom=None, auto_release=True):
     return data
 
 
-def _ssh_connect(conn, retries=6, delay=3):
-    """带重试的 SSH 连接（pod 启动后端口可能延迟就绪）。"""
+def _ssh_connect(conn, retries=12, delay=4):
+    """带重试的 SSH 连接。
+
+    VNC pod 启动后 SSH 网关端口要几十秒才就绪，期间会报
+    「Unable to connect to port xxx」，因此这里做足够长的重试。
+    """
     import paramiko
     last_exc = None
     for i in range(retries):
@@ -218,7 +222,7 @@ def _ssh_connect(conn, retries=6, delay=3):
         ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
         try:
             ssh.connect(conn['ssh_address'], port=int(conn['port']), username=conn['username'],
-                        password=conn['password'], timeout=15, look_for_keys=False, allow_agent=False)
+                        password=conn['password'], timeout=20, look_for_keys=False, allow_agent=False)
             return ssh
         except Exception as exc:
             last_exc = exc
@@ -226,9 +230,24 @@ def _ssh_connect(conn, retries=6, delay=3):
                 ssh.close()
             except Exception:
                 pass
+            if i == 0:
+                print(f'      · SSH 端口未就绪，等待环境启动…（{conn.get("ssh_address")}:{conn.get("port")}）')
             if i < retries - 1:
                 time.sleep(delay)
     raise last_exc
+
+
+async def _connect_or_restart(client, detail, classroom=None, label=''):
+    """先连 SSH；连不上就重新申请一次环境（端口可能已变）再连。"""
+    conn = await get_ssh_connection(client, detail, classroom)
+    try:
+        return _ssh_connect(conn)
+    except Exception as exc:
+        print(f'      · SSH 连接失败（{type(exc).__name__}），重新申请环境后重试')
+        await release_myshixun_pod(client, (detail.get('myshixun') or {}).get('identifier'))
+        await asyncio.sleep(3)
+        conn = await get_ssh_connection(client, detail, classroom)
+        return _ssh_connect(conn, retries=15, delay=4)
 
 
 def ssh_write_and_commit(conn, content, rel_paths):
@@ -310,8 +329,34 @@ async def submit_graphic_game(client, hw_id, gid, detail, content, target_path, 
         return False
 
     try:
-        conn = await get_ssh_connection(client, detail, classroom)
-        written, git_msg = ssh_write_and_commit(conn, content, targets)
+        ssh = await _connect_or_restart(client, detail, classroom)
+        write_dirs = sorted({r.rsplit('/', 1)[0] for r in targets
+                             if '/' in r and not r.startswith('pingce/')})
+        if write_dirs:
+            cmd = 'mkdir -p ' + ' '.join(shlex.quote(f'{WORKSPACE}/{d}') for d in write_dirs)
+            _, mo, _ = ssh.exec_command(cmd)
+            mo.read()
+        sftp = ssh.open_sftp()
+        written = []
+        for rel in targets:
+            if rel.startswith('pingce/'):
+                print(f'      ! 跳过写入受保护路径 {rel}')
+                continue
+            try:
+                with sftp.file(f'{WORKSPACE}/{rel}', 'w') as f:
+                    f.write(content)
+                written.append(rel)
+            except Exception as exc:
+                print(f'      ! 写入 {rel} 失败：{exc}')
+        sftp.close()
+        _, out, _ = ssh.exec_command(
+            f'cd {WORKSPACE} && git add -A >/dev/null 2>&1; '
+            f'git -c user.email=auto@educoder -c user.name=auto '
+            f'commit -m solve --no-verify >/dev/null 2>&1; git status --porcelain')
+        left = out.read().decode('utf-8', 'replace').strip()
+        ssh.close()
+        if left:
+            print(f'      ! git 仍有未提交改动：{left[:120]}')
     except Exception as exc:
         stats['failed'] += 1
         print(f'      ✗ UML {gid}：SSH 写文件失败：{exc}')
@@ -535,8 +580,7 @@ async def solve_level_from_grader(client, hw_id, gid, detail, target, step, appl
         print(f'      [dry-run] UML {gid}：抓评测脚本逆向构造答案并提交。')
         return False
 
-    conn = await get_ssh_connection(client, detail, classroom)
-    ssh = _ssh_connect(conn)
+    ssh = await _connect_or_restart(client, detail, classroom)
     try:
         # 0) 优先用已缓存的评测脚本（避免每次触发评测去抓，pod 重建后易失败）
         subject = ((detail.get('challenge') or {}).get('subject') or '').strip()
