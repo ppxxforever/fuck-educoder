@@ -4931,7 +4931,7 @@
               "answered": true,
               "answer": {
                 "language": "",
-                "code": "# -*- coding: utf-8 -*-\n\nimport numpy as np\nfrom sklearn.neighbors import KNeighborsRegressor\n\n\ndef getRegressor(X, y):\n    # 请在此添加代码 完成本关任务\n    #\n    # ********** Begin *********#\n    regressor = KNeighborsRegressor(n_neighbors=2, weights=\"distance\", p=1)\n    regressor.fit(X, y)\n    return regressor\n    # ********** End **********#\n"
+                "code": "# -*- coding: utf-8 -*-\n\nimport numpy as np\nfrom sklearn.neighbors import KNeighborsRegressor\n\n\ndef getRegressor(X, y):\n    # 请在此添加代码 完成本关任务\n    #\n    # ********** Begin *********#\n    reg = KNeighborsRegressor(n_neighbors=1)\n    reg.fit(X, y)\n    return reg\n    # ********** End **********#\n"
               }
             }
           ]
