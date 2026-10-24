@@ -602,6 +602,28 @@ def load_template(name, step):
         return None
 
 
+def strip_postprocess_artifacts(sql):
+    """去掉提交时临时添加的内容（CREATE DATABASE / DROP TABLE IF EXISTS）。
+
+    answers.json 只保存「用户答案」，这些补齐项必须在提交时动态生成，
+    否则会污染答案：例如给 aircon 这类平台预置库额外 CREATE DATABASE
+    会得到空库，反而报 Table doesn't exist。
+    """
+    if not sql:
+        return sql
+    lines = sql.split('\n')
+    out = []
+    for line in lines:
+        st = line.strip()
+        if re.match(r'^CREATE\s+DATABASE\s+IF\s+NOT\s+EXISTS\b', st, re.I):
+            continue
+        if re.match(r'^DROP\s+TABLE\s+IF\s+EXISTS\b', st, re.I):
+            continue
+        out.append(line)
+    cleaned = '\n'.join(out)
+    return re.sub(r'\n{3,}', '\n\n', cleaned).strip() + '\n'
+
+
 def postprocess_sql(code, template, task_pass):
     """SQL 后处理：合并模板骨架 + 补数据库 + CREATE 前加 DROP（幂等）。"""
     if not code:
@@ -871,6 +893,9 @@ def save_level_answer(data, classroom_code, hw_name, subject, kind, answer):
             exp = {'name': hw_name, 'levels': []}
             experiments.append(exp)
         levels = exp.setdefault('levels', [])
+        if kind == 'code' and isinstance(answer, dict) and answer.get('code', '').lstrip().upper().startswith(
+                ('CREATE', 'USE', 'SELECT', 'INSERT', 'DELETE', 'UPDATE', 'DROP', 'ALTER')):
+            answer = {**answer, 'code': strip_postprocess_artifacts(answer['code'])}
         for lv in levels:
             if (lv.get('title') or '').strip() == subject.strip():
                 lv['answered'] = True

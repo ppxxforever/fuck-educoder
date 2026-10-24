@@ -1425,10 +1425,10 @@
               "identifiers": [
                 "b8ofvk6ux2ns"
               ],
-              "answered": false,
+              "answered": true,
               "answer": {
                 "language": "",
-                "code": ""
+                "code": "# 您可以从以下答案中选择\n# 功能需求 性能需求 可靠性需求 可用性需求 出错处理需求 \n# 接口需求 约束 逆向需求 将来可能提出的需求\n\n# 一、乘客应当能够随时打印自己已经办好登机手续的所有航段的登机牌，\n# 如果乘客信息没有指定座位偏好，机票预订系统就应当为它分配\n\n你的第一题回答为:(功能需求)\n\n# 二、机票预定系统在一个月内发生故障的次数低于三次，\n# 系统中存储的数据应该避免发生缺失\n\n你的第二题回答为:(可靠性需求)\n\n# 三、机票预定系统在处理一个业务请求平均响应时间为100ms，\n# 系统支持的QPS（Query Per Second，每\n# 秒处理请求数）在500以上\n\n你的第三题回答为:(性能需求)\n\n# 四、因乘客身份认证未通过导致机票预定失败时，机票预定系统会给用户\n# 显示错误提示并给出反馈，同时通知人工客服来进行进一步核实\n\n你的第四题回答为:(出错处理需求)\n\n# 五、在任何时刻机票预定系统中的服务器或备份服务器至少有一个是可用的，\n#一个月内系统中的不可用时间不能超过系统运行总时间的3%\n\n你的第五题回答为:(可用性需求)\n\n# 六、机票预定系统应该提供第三方的登录和支付接口\n\n你的第六题回答为:(接口需求)\n\n# 七、乘客不能预定同一时间点的多张机票\n\n你的第七题回答为:(逆向需求)\n\n# 八、机票预定系统需要按照国际化（用户界面提供多种语言）进行开发\n\n你的第八题回答为:(约束)\n\n# 九、机票预定系统应该为以后多家航空公司的入驻提供预留空间\n\n你的第九题回答为:(将来可能提出的需求)"
               },
               "source": "unknown"
             },
@@ -2137,7 +2137,7 @@
               "answered": true,
               "answer": {
                 "language": "",
-                "code": "//多条语句写在同一行,可读性低\nwhile(x) {\n  x -= (x&-x);\n  ++res;\n}\n//请在下方重构代码，将一行语句分为多行，并保持代码功能不变"
+                "code": "public class source {\n    public static int count(int x) {\n        int res = 0;\n        while (x > 0) {\n            x -= (x & -x);\n            ++res;\n        }\n        return res;\n    }\n}"
               },
               "source": "export"
             }
@@ -5654,7 +5654,7 @@
               "answered": true,
               "answer": {
                 "language": "",
-                "code": "use finance1;\nCREATE OR REPLACE VIEW v_insurance_detail AS\nSELECT c.c_name, c.c_id_card, i.i_name, i.i_project, p.pro_status, p.pro_quantity, i.i_amount, i.i_year, p.pro_income, p.pro_purchase_time\nFROM property p\nJOIN client c ON p.pro_c_id = c.c_id\nJOIN insurance i ON p.pro_pif_id = i.i_id\nWHERE p.pro_type = 2;"
+                "code": "use finance1;\nCREATE OR REPLACE VIEW v_insurance_detail AS\nSELECT c.c_name, c.c_id_card, i.i_name, i.i_project, p.pro_status, p.pro_quantity, i.i_amount, i.i_year, p.pro_income, p.pro_purchase_time\nFROM property p\nJOIN client c ON p.pro_c_id = c.c_id\nJOIN insurance i ON p.pro_pif_id = i.i_id\nWHERE p.pro_type = 2;\n"
               }
             },
             {
@@ -5663,7 +5663,7 @@
               "answered": true,
               "answer": {
                 "language": "",
-                "code": "CREATE OR REPLACE VIEW v_insurance_detail AS\nSELECT c.c_name, c.c_id_card, i.i_name, i.i_project, p.pro_status, p.pro_quantity, i.i_amount, i.i_year, p.pro_income, p.pro_purchase_time\nFROM property p\nJOIN client c ON p.pro_c_id = c.c_id\nJOIN insurance i ON p.pro_pif_id = i.i_id\nWHERE p.pro_type = 2;\nSELECT c_name, c_id_card, SUM(i_amount * pro_quantity) AS insurance_total_amount, SUM(pro_income) AS insurance_total_revenue\nFROM v_insurance_detail\nGROUP BY c_name, c_id_card\nORDER BY insurance_total_amount DESC;"
+                "code": "CREATE OR REPLACE VIEW v_insurance_detail AS\nSELECT c.c_name, c.c_id_card, i.i_name, i.i_project, p.pro_status, p.pro_quantity, i.i_amount, i.i_year, p.pro_income, p.pro_purchase_time\nFROM property p\nJOIN client c ON p.pro_c_id = c.c_id\nJOIN insurance i ON p.pro_pif_id = i.i_id\nWHERE p.pro_type = 2;\nSELECT c_name, c_id_card, SUM(i_amount * pro_quantity) AS insurance_total_amount, SUM(pro_income) AS insurance_total_revenue\nFROM v_insurance_detail\nGROUP BY c_name, c_id_card\nORDER BY insurance_total_amount DESC;\n"
               }
             }
           ]
@@ -5677,7 +5677,7 @@
               "answered": true,
               "answer": {
                 "language": "",
-                "code": "use finance1;\ninsert into client(c_id, c_name, c_mail, c_id_card, c_phone, c_password) values\n(1, '林惠雯', '960323053@qq.com', '411014196712130323', '15609032348', 'Mop5UPkl'),\n(2, '吴婉瑜', '1613230826@gmail.com', '420152196802131323', '17605132307', 'QUTPhxgVNlXtMxN'),\n(3, '蔡贞仪', '252323341@foxmail.com', '160347199005222323', '17763232321', 'Bwe3gyhEErJ7');"
+                "code": "use finance1;\ninsert into client(c_id, c_name, c_mail, c_id_card, c_phone, c_password) values\n(1, '林惠雯', '960323053@qq.com', '411014196712130323', '15609032348', 'Mop5UPkl'),\n(2, '吴婉瑜', '1613230826@gmail.com', '420152196802131323', '17605132307', 'QUTPhxgVNlXtMxN'),\n(3, '蔡贞仪', '252323341@foxmail.com', '160347199005222323', '17763232321', 'Bwe3gyhEErJ7');\n"
               }
             },
             {
@@ -5686,7 +5686,7 @@
               "answered": true,
               "answer": {
                 "language": "",
-                "code": "use finance1;\ninsert into client(c_id, c_name, c_phone, c_id_card, c_password) values(33, '蔡依婷', '18820762130', '350972199204227621', 'MKwEuc1sc6');"
+                "code": "use finance1;\ninsert into client(c_id, c_name, c_phone, c_id_card, c_password) values(33, '蔡依婷', '18820762130', '350972199204227621', 'MKwEuc1sc6');\n"
               }
             },
             {
@@ -5695,7 +5695,7 @@
               "answered": true,
               "answer": {
                 "language": "",
-                "code": "use finance1;\nDELETE FROM client WHERE c_id NOT IN (SELECT b_c_id FROM bank_card WHERE b_c_id IS NOT NULL);\n\n/* the end of your code */"
+                "code": "use finance1;\nDELETE FROM client WHERE c_id NOT IN (SELECT b_c_id FROM bank_card);\n"
               }
             },
             {
@@ -5704,7 +5704,7 @@
               "answered": true,
               "answer": {
                 "language": "",
-                "code": "use finance1;\n-- 已知表new_client保存了一批新客户信息，该表与client表结构完全相同。请用一条SQL语句将new_client表的全部客户信息插入到客户表(client):\n\nINSERT INTO client SELECT * FROM new_client;\n\n/* the end of your code */"
+                "code": "use finance1;\n-- 已知表new_client保存了一批新客户信息，该表与client表结构完全相同。请用一条SQL语句将new_client表的全部客户信息插入到客户表(client):\n\nINSERT INTO client SELECT * FROM new_client;\n\n/* the end of your code */\n"
               }
             },
             {
@@ -5713,7 +5713,7 @@
               "answered": true,
               "answer": {
                 "language": "",
-                "code": "use finance1;\n-- 请用一条update语句将手机号码为“13686431238”的这位客户的投资资产(理财、保险与基金)的状态置为“冻结”。：\n\nupdate property\nset pro_status = '冻结'\nwhere pro_c_id = (select c_id from client where c_phone = '13686431238')\n  and pro_type in (1, 2, 3);\n\n/* the end of your code */"
+                "code": "use finance1;\n-- 请用一条update语句将手机号码为“13686431238”的这位客户的投资资产(理财、保险与基金)的状态置为“冻结”。：\n\nupdate property\nset pro_status = '冻结'\nwhere pro_c_id = (select c_id from client where c_phone = '13686431238')\n  and pro_type in (1, 2, 3);\n\n/* the end of your code */\n"
               }
             },
             {
@@ -5722,7 +5722,7 @@
               "answered": true,
               "answer": {
                 "language": "",
-                "code": "use finance1;\n-- 在金融应用场景数据库中，已在表property(资产表)中添加了客户身份证列，列名为pro_id_card，类型为char(18)，该列目前全部留空(null)。\n\n-- 请用一条update语句，根据client表中提供的身份证号(c_id_card)，填写property表中对应的身份证号信息(pro_id_card)。\n\nupdate property p\njoin client c on p.pro_c_id = c.c_id\nset p.pro_id_card = c.c_id_card;\n\n/* the end of your code */"
+                "code": "use finance1;\n-- 在金融应用场景数据库中，已在表property(资产表)中添加了客户身份证列，列名为pro_id_card，类型为char(18)，该列目前全部留空(null)。\n\n-- 请用一条update语句，根据client表中提供的身份证号(c_id_card)，填写property表中对应的身份证号信息(pro_id_card)。\n\nupdate property p\njoin client c on p.pro_c_id = c.c_id\nset p.pro_id_card = c.c_id_card;\n\n/* the end of your code */\n"
               }
             }
           ]
@@ -5754,7 +5754,7 @@
               "answered": true,
               "answer": {
                 "language": "",
-                "code": "CREATE DATABASE IF NOT EXISTS `aircon`;\nuse aircon;\n-- 实现以下查询的SQL语句：\n-- 查询1.5匹，即功率3500W的冷暖空调，列出型号，生产厂家和价格，依价格从低到高排序。\n-- 请在此处添加实现代码\nSELECT model, manufacturer, price\nFROM products\nWHERE model LIKE 'KFR%-35%'\nORDER BY price ASC;\n\n\n\n\n-- EOF"
+                "code": "use aircon;\n-- 实现以下查询的SQL语句：\n-- 查询1.5匹，即功率3500W的冷暖空调，列出型号，生产厂家和价格，依价格从低到高排序。\n-- 请在此处添加实现代码\nSELECT model, manufacturer, price\nFROM products\nWHERE model LIKE 'KFR%-35%'\nORDER BY price ASC;\n\n-- EOF\n"
               }
             },
             {
@@ -5763,7 +5763,7 @@
               "answered": true,
               "answer": {
                 "language": "",
-                "code": "CREATE DATABASE IF NOT EXISTS `aircon`;\nuse aircon;\n-- 实现以下查询的SQL语句：\n-- 任务1：查查询产品表(products)表中，有多少厂家(manufacturer)的产品，一个厂家只列一次，即便该厂家有多个型号的产品。查询结果依厂家名称排序输出。\n-- 请在此处添加实现代码\nSELECT DISTINCT manufacturer FROM products ORDER BY manufacturer;\n\n-- 任务2：查询出生日期(出生日期)未填写(值为NULL)的员工编号，姓名。查询结果依姓名排序输出。\n-- 请在此处添加实现代码\nSELECT sid, sname FROM staff WHERE dob IS NULL ORDER BY sname;\n\n-- EOF"
+                "code": "use aircon;\nSELECT DISTINCT manufacturer FROM products ORDER BY manufacturer;\nSELECT sid, sname FROM staff WHERE dob IS NULL ORDER BY sname;\n"
               }
             }
           ]
@@ -5804,7 +5804,7 @@
               "answered": true,
               "answer": {
                 "language": "",
-                "code": "CREATE DATABASE IF NOT EXISTS `aircon`;\nuse aircon;\n-- 任务1: 写出能完成以下任务的语句：\n-- 查询所有雇员的姓名,性别，手机号。按年龄降序排列，即年龄越大的越靠前。\n-- 请在此处添加实现代码\nselect sname, gender, mobile from staff order by dob asc;\n\n\n-- EOF"
+                "code": "use aircon;\n-- 任务1: 写出能完成以下任务的语句：\n-- 查询所有雇员的姓名,性别，手机号。按年龄降序排列，即年龄越大的越靠前。\n-- 请在此处添加实现代码\nselect sname, gender, mobile from staff order by dob asc;\n\n-- EOF\n"
               }
             },
             {
@@ -5813,7 +5813,7 @@
               "answered": true,
               "answer": {
                 "language": "",
-                "code": "CREATE DATABASE IF NOT EXISTS `aircon`;\nuse aircon;\n-- 任务1: 写出能完成以下查询任务的SQL语句:\n-- 查询10，40，70号产品(空调)的型号、生产厂家和价格，依价格从低到高排序。\n-- 请在此处添加实现代码\nSELECT model, manufacturer, price\nFROM products\nWHERE pid IN (10, 40, 70)\nORDER BY price ASC;\n\n\n\n\n-- EOF"
+                "code": "use aircon;\n-- 任务1: 写出能完成以下查询任务的SQL语句:\n-- 查询10，40，70号产品(空调)的型号、生产厂家和价格，依价格从低到高排序。\n-- 请在此处添加实现代码\nSELECT model, manufacturer, price\nFROM products\nWHERE pid IN (10, 40, 70)\nORDER BY price ASC;\n\n-- EOF\n"
               }
             }
           ]
@@ -5836,7 +5836,7 @@
               "answered": true,
               "answer": {
                 "language": "",
-                "code": "CREATE DATABASE IF NOT EXISTS MyDb;\nUSE MyDb;\n\nDROP TABLE IF EXISTS products;\n\nCREATE TABLE products(\n    pid char(10) PRIMARY KEY,\n    name varchar(32),\n    brand char(10),\n    price int,\n    CONSTRAINT CK_products_brand CHECK(brand in ('A','B')),\n    CONSTRAINT CK_products_price CHECK(price > 0)\n);"
+                "code": "USE MyDb;\n\nCREATE TABLE products(\n    pid char(10) PRIMARY KEY,\n    name varchar(32),\n    brand char(10),\n    price int,\n    CONSTRAINT CK_products_brand CHECK(brand in ('A','B')),\n    CONSTRAINT CK_products_price CHECK(price > 0)\n);\n"
               }
             },
             {
@@ -5845,7 +5845,7 @@
               "answered": true,
               "answer": {
                 "language": "",
-                "code": "CREATE DATABASE IF NOT EXISTS MyDb;\nUSE MyDb;\n\nDROP TABLE IF EXISTS s;\n\nCREATE TABLE s(\n    sno char(10) PRIMARY KEY,\n    name varchar(32) NOT NULL,\n    ID char(18),\n    CONSTRAINT uni_ID UNIQUE(ID)\n);"
+                "code": "USE MyDb;\n\nCREATE TABLE s(\n    sno char(10) PRIMARY KEY,\n    name varchar(32) NOT NULL,\n    ID char(18),\n    CONSTRAINT uni_ID UNIQUE(ID)\n);\n"
               }
             },
             {
@@ -5886,7 +5886,7 @@
               "answered": true,
               "answer": {
                 "language": "",
-                "code": "USE TestDb1;\n\n#请在以下空白处添加恰当的语句，将表名your_table更改为my_table:\n\nALTER TABLE your_table RENAME TO my_table;"
+                "code": "USE TestDb1;\n\n#请在以下空白处添加恰当的语句，将表名your_table更改为my_table:\n\nALTER TABLE your_table RENAME TO my_table;\n"
               }
             },
             {
@@ -5895,7 +5895,7 @@
               "answered": true,
               "answer": {
                 "language": "",
-                "code": "use MyDb;\n\n#请在以下空白处添加适当的SQL代码，实现编程要求\n#语句1：删除表orderDetail中的列orderDate\nALTER TABLE orderDetail DROP COLUMN orderDate;\n\n#语句2：添加列unitPrice\nALTER TABLE orderDetail ADD COLUMN unitPrice numeric(10,2);"
+                "code": "use MyDb;\n\n#请在以下空白处添加适当的SQL代码，实现编程要求\n#语句1：删除表orderDetail中的列orderDate\nALTER TABLE orderDetail DROP COLUMN orderDate;\n\n#语句2：添加列unitPrice\nALTER TABLE orderDetail ADD COLUMN unitPrice numeric(10,2);\n"
               }
             },
             {
@@ -5904,7 +5904,7 @@
               "answered": true,
               "answer": {
                 "language": "",
-                "code": "use MyDb;\n\nalter table addressBook modify QQ char(12);\n\nalter table addressBook rename column weixin to wechat;"
+                "code": "use MyDb;\n\nalter table addressBook modify QQ char(12);\n\nalter table addressBook rename column weixin to wechat;\n"
               }
             },
             {
@@ -5913,7 +5913,7 @@
               "answered": true,
               "answer": {
                 "language": "",
-                "code": "use MyDb;\n#请在以下空白处填写适当的诘句，实现编程要求。\n#(1) 为表Staff添加主码\nalter table Staff add primary key(staffNo);\n\n#(2) Dept.mgrStaffNo是外码，对应的主码是Staff.staffNo,请添加这个外码，名字为FK_Dept_mgrStaffNo:\nalter table Dept add constraint FK_Dept_mgrStaffNo foreign key(mgrStaffNo) references Staff(staffNo);\n\n#(3) Staff.dept是外码，对应的主码是Dept.deptNo. 请添加这个外码，名字为FK_Staff_dept:\nalter table Staff add constraint FK_Staff_dept foreign key(dept) references Dept(deptNo);\n\n#(4) 为表Staff添加check约束，规则为：gender的值只能为F或M；约束名为CK_Staff_gender:\nalter table Staff add constraint CK_Staff_gender check(gender in ('F','M'));\n\n#(5) 为表Dept添加unique约束：deptName不允许重复。约束名为UN_Dept_deptName：\nalter table Dept add constraint UN_Dept_deptName unique(deptName);"
+                "code": "use MyDb;\n#请在以下空白处填写适当的诘句，实现编程要求。\n#(1) 为表Staff添加主码\nalter table Staff add primary key(staffNo);\n\n#(2) Dept.mgrStaffNo是外码，对应的主码是Staff.staffNo,请添加这个外码，名字为FK_Dept_mgrStaffNo:\nalter table Dept add constraint FK_Dept_mgrStaffNo foreign key(mgrStaffNo) references Staff(staffNo);\n\n#(3) Staff.dept是外码，对应的主码是Dept.deptNo. 请添加这个外码，名字为FK_Staff_dept:\nalter table Staff add constraint FK_Staff_dept foreign key(dept) references Dept(deptNo);\n\n#(4) 为表Staff添加check约束，规则为：gender的值只能为F或M；约束名为CK_Staff_gender:\nalter table Staff add constraint CK_Staff_gender check(gender in ('F','M'));\n\n#(5) 为表Dept添加unique约束：deptName不允许重复。约束名为UN_Dept_deptName：\nalter table Dept add constraint UN_Dept_deptName unique(deptName);\n"
               }
             }
           ]
