@@ -48,11 +48,69 @@ AUTH_DB = ROOT / 'data' / 'auth.sqlite3'
 SESSION_KEYS = ('EDUCODER_TOKEN', 'EDUCODER_COOKIE', 'EDUCODER_CLASSROOMS_URL')
 
 
+
+KEY_FILE = ROOT / 'data' / '.queue_key'
+_PREFIX = 'enc:'
+
+
+def _fernet():
+    """加载/生成队列加密密钥（600 权限，与 accounts.json 分开存放）。"""
+    from cryptography.fernet import Fernet
+    if KEY_FILE.exists():
+        key = KEY_FILE.read_bytes().strip()
+    else:
+        key = Fernet.generate_key()
+        KEY_FILE.parent.mkdir(mode=0o700, parents=True, exist_ok=True)
+        KEY_FILE.write_bytes(key)
+        try:
+            KEY_FILE.chmod(0o600)
+        except OSError:
+            pass
+    return Fernet(key)
+
+
+def encrypt_password(plain):
+    """把明文密码加密成 enc:<token>；空值原样返回。"""
+    if not plain:
+        return ''
+    if plain.startswith(_PREFIX):
+        return plain
+    from cryptography.fernet import Fernet  # noqa: F401
+    token = _fernet().encrypt(plain.encode('utf-8')).decode('ascii')
+    return _PREFIX + token
+
+
+def decrypt_password(stored):
+    """解密；兼容历史上的明文记录（读到明文会自动重新加密）。"""
+    if not stored:
+        return ''
+    if not stored.startswith(_PREFIX):
+        return stored
+    try:
+        return _fernet().decrypt(stored[len(_PREFIX):].encode('ascii')).decode('utf-8')
+    except Exception as exc:
+        raise SystemExit(f'无法解密队列中的密码（密钥文件可能被替换）：{exc}') from None
+
+
+def mask_password(stored):
+    return '已加密' if (stored or '').startswith(_PREFIX) else ('已设置(明文)' if stored else '缺失')
+
+
 def load_json(path, default):
     try:
         return json.loads(path.read_text(encoding='utf-8'))
     except (OSError, ValueError):
         return default
+
+
+def save_accounts(accounts):
+    """写入账号清单，密码一律加密存储。"""
+    out = []
+    for a in accounts:
+        item = dict(a)
+        item['password'] = encrypt_password(item.get('password', ''))
+        out.append(item)
+    save_json(ACCOUNTS, out)
 
 
 def save_json(path, data, mode=0o600):
@@ -123,7 +181,7 @@ def cmd_add(args):
         raise SystemExit(f'账号 {args.account} 已在队列中。')
     accounts.append({'account': args.account, 'password': args.password,
                      'note': args.note or ''})
-    save_json(ACCOUNTS, accounts)
+    save_accounts(accounts)
     print(f'已添加账号 {args.account}（共 {len(accounts)} 个）')
 
 
@@ -141,11 +199,11 @@ def cmd_import_env(args):
             a['password'] = password
             if args.note:
                 a['note'] = args.note
-            save_json(ACCOUNTS, accounts)
+            save_accounts(accounts)
             print(f'已更新队列中的账号 {account}')
             return
     accounts.append({'account': account, 'password': password, 'note': args.note or ''})
-    save_json(ACCOUNTS, accounts)
+    save_accounts(accounts)
     print(f'已从 .env 导入账号 {account}（共 {len(accounts)} 个）')
 
 
@@ -155,13 +213,12 @@ def cmd_list(args):
     if not accounts:
         print('队列为空。用 --add 添加账号。')
         return
-    print(f'{"账号":<16}{"备注":<12}{"状态":<10}{"密码":<8}最后运行')
+    print(f'{"账号":<16}{"备注":<12}{"状态":<10}{"密码":<12}最后运行')
     for a in accounts:
         acc = a.get('account', '')
         st = state.get(acc, {})
-        has_pwd = '已设置' if a.get('password') else '缺失'
         print(f'{acc:<16}{(a.get("note") or ""):<12}{st.get("status", "-"):<10}'
-              f'{has_pwd:<8}{st.get("finished_at", "-")}')
+              f'{mask_password(a.get("password")):<12}{st.get("finished_at", "-")}')
 
 
 async def run_one(account, password, args, state):
@@ -227,7 +284,8 @@ async def cmd_run(args):
     print(f'共 {len(accounts)} 个账号待处理（串行执行，账号间隔 {args.gap}s）')
     ok = 0
     for idx, a in enumerate(accounts):
-        acc, pwd = a.get('account'), a.get('password')
+        acc = a.get('account')
+        pwd = decrypt_password(a.get('password') or '')
         if not acc or not pwd:
             print(f'跳过无效账号记录：{a}')
             continue
