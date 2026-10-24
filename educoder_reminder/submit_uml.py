@@ -30,8 +30,8 @@ from .ai import AIError, ai_chat, ai_configured, extract_json_block
 from .client import open_client
 from .errors import CollectionError
 from .submit import (
-    fetch_homework_rows, resolve_entry, verdict_signature, walk_prev_to_head,
-    wait_for_verdict,
+    fetch_homework_rows, is_level_passed, resolve_entry, verdict_signature,
+    walk_prev_to_head, wait_for_verdict,
 )
 from .uml_solver import solve_from_grader
 
@@ -868,7 +868,7 @@ async def process_experiment(client, hw, apply, stats, poll_timeout, limit=None,
 
         if not is_graphic(detail):
             continue
-        if game.get('status') == 2:
+        if is_level_passed(detail):
             stats['skipped_passed'] += 1
             print(f'  [跳过] {subject}：已通过。')
             continue

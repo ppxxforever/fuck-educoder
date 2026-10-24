@@ -195,6 +195,25 @@ async def submit_choice(client, identifier, answers, challenge_id, subject_id, a
     return 'failed', list(answers)
 
 
+def is_level_passed(detail):
+    """关卡是否已通过（统一判定口径）。
+
+    平台有几种表现，只看 game.status 会漏判：
+    - 正常通过：game.status == 2
+    - 测试集全部通过但 status 没同步（实测出现过 final_score>0、status=0）
+    - test_sets 全为 True
+    漏判会导致已通过的关卡被反复重新提交。
+    """
+    game = detail.get('game') or {}
+    if game.get('status') == 2:
+        return True
+    if (game.get('final_score') or 0) > 0:
+        return True
+    tests = [t for t in (detail.get('test_sets') or [])
+             if t.get('result') is not None]
+    return bool(tests) and all(t.get('result') for t in tests)
+
+
 def verdict_signature(detail):
     """评测结果签名：用于区分「上一次评测」与「本次评测」。
 
@@ -224,6 +243,9 @@ async def wait_for_verdict(client, identifier, timeout=90, poll=2, baseline=None
             return True, detail
         if status == 3:
             return False, detail
+        # status 未同步但已经拿到分数，也算通过
+        if (game.get('final_score') or 0) > 0:
+            return True, detail
         tests = detail.get('test_sets') or []
         rated = [t for t in tests if t.get('result') is not None]
         if tests and len(rated) == len(tests):
@@ -1085,7 +1107,7 @@ async def process_experiment(client, hw_row, experiment, apply, stats, poll_time
         stats['processed'] = stats.get('processed', 0) + 1
 
         mutated = False
-        if game.get('status') == 2:
+        if is_level_passed(detail):
             stats['skipped_passed'] += 1
             print(f'      [跳过] {subject}：已通过。')
         elif level is not None and level.get('answered'):

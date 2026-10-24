@@ -4985,6 +4985,31 @@
                 "language": "",
                 "code": "import numpy as np\nfrom sklearn.datasets import make_regression\nfrom sklearn.model_selection import train_test_split\nnp.random.seed(1)\n\n\ndef lr(x_train, x_test, y_train, y_test):\n    \"\"\"\n    :param x_train: 训练集\n    :param x_test: 训练集标签\n    :param y_train: 测试集\n    :param y_test: 测试集标签\n    :return: 预测值与测试集标签的均方误差\n    \"\"\"\n    # 请根据提示在下面补全代码\n    # ********** Begin ********* #\n    # 使用正规方程公式求得theta\n    theta = np.linalg.inv(x_train.T @ x_train) @ x_train.T @ y_train\n\n    # 使用theta预测结果\n    y_pred = x_test @ theta\n\n    # 求出预测值与目标值的均方误差\n    mse = np.mean((y_pred - y_test) ** 2)\n\n    # ********** End ********* #\n    return mse\n\n\nif __name__ == '__main__':\n    X, Y = make_regression(n_samples=500, n_features=1, n_targets=1, noise=1.5)\n    x_train, x_test, y_train, y_test = train_test_split(X, Y)\n    mse = lr(x_train, x_test, y_train, y_test)\n    print(mse)\n"
               }
+            },
+            {
+              "title": "线性回归",
+              "kind": "choice",
+              "answered": true,
+              "answer": [
+                {
+                  "number": 1,
+                  "selected": [
+                    "BC"
+                  ]
+                },
+                {
+                  "number": 2,
+                  "selected": [
+                    "ABC"
+                  ]
+                },
+                {
+                  "number": 3,
+                  "selected": [
+                    "A"
+                  ]
+                }
+              ]
             }
           ]
         }
@@ -5722,7 +5747,7 @@
               "answered": true,
               "answer": {
                 "language": "",
-                "code": "use finance1;\n-- 在金融应用场景数据库中，已在表property(资产表)中添加了客户身份证列，列名为pro_id_card，类型为char(18)，该列目前全部留空(null)。\n\n-- 请用一条update语句，根据client表中提供的身份证号(c_id_card)，填写property表中对应的身份证号信息(pro_id_card)。\n\nupdate property p\njoin client c on p.pro_c_id = c.c_id\nset p.pro_id_card = c.c_id_card;\n\n/* the end of your code */\n"
+                "code": "use finance1;\n\nupdate property p, client c\nset p.pro_id_card = c.c_id_card\nwhere p.pro_c_id = c.c_id;\n\n/* the end of your code */\n"
               }
             }
           ]
@@ -5745,7 +5770,7 @@
               "answered": true,
               "answer": {
                 "language": "",
-                "code": "-- 实现以下查询的SQL语句：\n-- 查询“美的”、“格力”或 “志高”价格在3000(含)以下，功率为3500W的空调信息，列出厂家，型号，价格。查询结果依价格从低到高排序。\n-- 请在此处添加实现代码\nSELECT manufacturer, model, price\nFROM products\nWHERE manufacturer IN ('美的', '格力', '志高')\n  AND price <= 3000\n  AND model LIKE '%35%'\nORDER BY price;\n\n\n\n\n-- EOF"
+                "code": "SELECT manufacturer, model, price\nFROM products\nWHERE manufacturer IN ('美的', '格力', '志高')\n  AND price <= 3000\n  AND model LIKE '%35%'\nORDER BY price;\n"
               }
             },
             {
@@ -5904,7 +5929,7 @@
               "answered": true,
               "answer": {
                 "language": "",
-                "code": "use MyDb;\n\nalter table addressBook modify QQ char(12);\n\nalter table addressBook rename column weixin to wechat;\n"
+                "code": "use MyDb;\n\nalter table addressBook modify QQ char(12);\n\nalter table addressBook change column weixin wechat char(12);\n"
               }
             },
             {
