@@ -254,12 +254,12 @@ uv run python scripts/run_queue.py --add 13800000000 --note 同学A
 # 查看队列和进度
 uv run python scripts/run_queue.py --list
 
-# 依次刷所有账号
+# 依次刷所有账号（默认自动跳过已完成的账号，不浪费间隔等待）
 uv run python scripts/run_queue.py --apply
 
 # 常用选项
-uv run python scripts/run_queue.py --apply --skip-done      # 跳过已完成的
 uv run python scripts/run_queue.py --apply --only 138xxx    # 只刷某个
+uv run python scripts/run_queue.py --apply --force          # 强制重跑已完成的账号
 uv run python scripts/run_queue.py --apply --limit 10       # 每账号限 10 关
 uv run python scripts/run_queue.py --apply --classroom D9Z6O8GR
 ```
@@ -271,7 +271,8 @@ uv run python scripts/run_queue.py --apply --classroom D9Z6O8GR
    密钥放 `data/.queue_key`）
 2. 逐个账号：写入凭据 → **清空上一个账号的 Token/Cookie/课堂地址** →
    清该账号的登录冷却 → 跑一遍 `submit_all` → 记录结果
-3. 进度存 `data/queue_state.json`，每个账号跑完立即落盘，中断后可继续
+3. 进度存 `data/queue_state.json`，每个账号跑完立即落盘，中断后可继续；
+   已标记 `done` 的账号**默认自动跳过**（不会为它等账号间隔），需要重跑加 `--force`
 4. 单个账号失败（密码错、验证码、网络）不影响后续账号
 
 注意：自动登录有频率限制（同账号 30 分钟一次、24 小时 3 次），队列会在切换时自动清理

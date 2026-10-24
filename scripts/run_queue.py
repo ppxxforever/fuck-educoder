@@ -283,26 +283,35 @@ async def cmd_run(args):
         if not accounts:
             raise SystemExit(f'队列中没有账号 {args.only}')
     state = load_json(STATE, {})
-    if args.skip_done:
+    if not args.force:
         before = len(accounts)
-        accounts = [a for a in accounts if state.get(a.get('account'), {}).get('status') != 'done']
-        print(f'跳过已完成账号 {before - len(accounts)} 个')
+        done_list = [a for a in accounts
+                     if state.get(a.get('account'), {}).get('status') == 'done']
+        accounts = [a for a in accounts if a not in done_list]
+        if done_list:
+            names = '、'.join(a.get('account', '') for a in done_list)
+            print(f'跳过已完成账号 {len(done_list)} 个（{names}）；要重跑加 --force')
+    if not accounts:
+        print('没有待处理的账号。')
+        return
 
     for a in accounts:
         _NOTES[a.get('account', '')] = a.get('note') or ''
     print(f'共 {len(accounts)} 个账号待处理（串行执行，账号间隔 {args.gap}s）')
     ok = 0
-    for idx, a in enumerate(accounts):
+    ran = 0
+    for a in accounts:
         acc = a.get('account')
         pwd = decrypt_password(a.get('password') or '')
         if not acc or not pwd:
             print(f'跳过无效账号记录：{a}')
             continue
-        if idx > 0 and args.gap > 0:
+        if ran > 0 and args.gap > 0:
             wait = args.gap + random.randint(0, max(1, args.gap // 4))
             print(f'\n等待 {wait // 60} 分 {wait % 60} 秒再处理下一个账号'
                   f'（降低同 IP 连续登录的风控风险）…')
             await asyncio.sleep(wait)
+        ran += 1
         if await run_one(acc, pwd, args, state):
             ok += 1
         save_json(STATE, state)                   # 每个账号后立即落盘，支持断点续跑
@@ -329,7 +338,10 @@ def main():
                         help='把密码加密存储（默认明文，本地方便查看）')
     parser.add_argument('--apply', action='store_true', help='真实提交（不加只打印计划）')
     parser.add_argument('--only', help='只处理指定账号')
-    parser.add_argument('--skip-done', action='store_true', help='跳过已完成账号')
+    parser.add_argument('--force', action='store_true',
+                        help='强制重跑已完成账号（默认自动跳过，不再等待切换）')
+    parser.add_argument('--skip-done', action='store_true',
+                        help='（已默认开启，保留兼容）跳过已完成账号')
     parser.add_argument('--classroom', default=None, help='只处理指定课堂 code')
     parser.add_argument('--limit', type=int, default=None, help='每个账号最多处理多少关卡')
     parser.add_argument('--poll-timeout', type=int, default=120, help='评测等待秒数')
