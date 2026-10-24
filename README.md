@@ -242,6 +242,70 @@ uv run python -m educoder_reminder.courses                   # 验证身份
 自动登录限制（同账号 30 分钟一次、24 小时最多 3 次）按账号分别记录，换账号不受影响；
 同账号反复失败可用 `--clear-limit` 清冷却记录。
 
+## 多账号队列（批量刷题）
+
+适合帮多个同学刷题，或换账号不想手动切。串行执行，任何时刻只有一个账号在用浏览器。
+
+```bash
+# 添加账号（密码会写入 data/accounts.json，权限 600，不进 Git）
+uv run python scripts/run_queue.py --add 13800000000 --note 同学A
+# 不加 --password 会交互式输入（不回显）
+
+# 查看队列和进度
+uv run python scripts/run_queue.py --list
+
+# 依次刷所有账号
+uv run python scripts/run_queue.py --apply
+
+# 常用选项
+uv run python scripts/run_queue.py --apply --skip-done      # 跳过已完成的
+uv run python scripts/run_queue.py --apply --only 138xxx    # 只刷某个
+uv run python scripts/run_queue.py --apply --limit 10       # 每账号限 10 关
+uv run python scripts/run_queue.py --apply --classroom D9Z6O8GR
+```
+
+工作方式（`scripts/run_queue.py`）：
+
+1. 账号清单 `data/accounts.json`（`[{"account","password","note"}]`）
+2. 逐个账号：写入凭据 → **清空上一个账号的 Token/Cookie/课堂地址** →
+   清该账号的登录冷却 → 跑一遍 `submit_all` → 记录结果
+3. 进度存 `data/queue_state.json`，每个账号跑完立即落盘，中断后可继续
+4. 单个账号失败（密码错、验证码、网络）不影响后续账号
+
+注意：自动登录有频率限制（同账号 30 分钟一次、24 小时 3 次），队列会在切换时自动清理
+该账号的冷却记录。若某账号密码错误，会停在 `failed` 并继续下一个。
+
+### 部署到小规格服务器（实测阿里云 2C4G 1M）
+
+可以胜任，但要**串行**跑：
+
+| 资源 | 占用 | 说明 |
+|------|------|------|
+| 内存 | Chromium ~500MB + Python ~200MB | 4G 充裕，建议再加 2G swap |
+| CPU | 单线程，几乎不占 | 2 核够 |
+| 带宽 | 仅登录时加载网页（~3MB），其余是 JSON API（几 KB） | 1Mbps 慢但可用 |
+| 磁盘 | 代码 + 缓存 <100MB | 充足 |
+
+建议：
+
+```bash
+# 1) 装依赖
+sudo apt install -y python3.12-venv
+uv sync --locked
+uv run playwright install chromium
+sudo .venv/bin/python -m playwright install-deps chromium
+
+# 2) 加 2G swap（可选，内存小时更稳）
+sudo fallocate -l 2G /swapfile && sudo chmod 600 /swapfile
+sudo mkswap /swapfile && sudo swapon /swapfile
+
+# 3) 队列后台跑（nohup 或 systemd，别用 tmux 之外的交互终端）
+nohup uv run python scripts/run_queue.py --apply --skip-done > data/queue.log 2>&1 &
+tail -f data/queue.log
+```
+
+**不要并发跑多个账号**：1Mbps 带宽 + 4G 内存撑不住并发 Chromium。
+
 ## 推送与定时运行
 
 `.env` 除认证信息外需配置：
