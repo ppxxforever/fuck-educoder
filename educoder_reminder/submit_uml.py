@@ -91,6 +91,16 @@ def resolve_answer_base(exp_name: str):
 def extract_target(challenge_path, task_pass):
     """从题目描述解析 (工作区相对路径, step号)；无法解析返回 (None, None)。"""
     text = re.sub(r'<[^>]+>', ' ', task_pass or '')
+    # 写法零：保存在 .../submit/ 文件夹下，并将文件名改为 step2
+    m_dir = re.search(r'保存在[^，。；]*?(workspace/myshixun/[^\s，。；]+)[，。；]', text)
+    m_name = re.search(r'文件名改为\s*([A-Za-z0-9_]+)', text)
+    if m_dir and m_name:
+        rel_dir = strip_prefix(m_dir.group(1).strip().rstrip('，。；/')).strip('/')
+        fname = m_name.group(1)
+        file_name = fname if fname.endswith('.mdj') else f'{fname}.mdj'
+        step_m = re.search(r'step_?(\d+)', fname)
+        return f'{rel_dir}/{file_name}', int(step_m.group(1)) if step_m else None
+
     # 写法一：答案保存为：/data/workspace/myshixun/answer/step0/step0.mdj
     m = re.search(r'答案保存为[：:]\s*[`"\']?([^\s`"\'，。；）)]*\.(?:mdj|txt))', text, re.I)
     if m:
@@ -223,6 +233,10 @@ def _ssh_connect(conn, retries=12, delay=4):
         try:
             ssh.connect(conn['ssh_address'], port=int(conn['port']), username=conn['username'],
                         password=conn['password'], timeout=20, look_for_keys=False, allow_agent=False)
+            try:
+                ssh.get_transport().set_keepalive(30)
+            except Exception:
+                pass
             return ssh
         except Exception as exc:
             last_exc = exc
@@ -248,6 +262,35 @@ async def _connect_or_restart(client, detail, classroom=None, label=''):
         await asyncio.sleep(3)
         conn = await get_ssh_connection(client, detail, classroom)
         return _ssh_connect(conn, retries=15, delay=4)
+
+
+def write_files(ssh, content, rel_paths):
+    """把内容写到多个相对路径（跳过受保护路径），返回实际写入列表。"""
+    write_dirs = sorted({r.rsplit('/', 1)[0] for r in rel_paths
+                         if '/' in r and not r.startswith('pingce/')})
+    if write_dirs:
+        cmd = 'mkdir -p ' + ' '.join(shlex.quote(f'{WORKSPACE}/{d}') for d in write_dirs)
+        _, mo, _ = ssh.exec_command(cmd)
+        mo.read()
+    sftp = ssh.open_sftp()
+    written = []
+    for rel in rel_paths:
+        if rel.startswith('pingce/'):
+            print(f'      ! 跳过写入受保护路径 {rel}')
+            continue
+        with sftp.file(f'{WORKSPACE}/{rel}', 'w') as f:
+            f.write(content)
+        written.append(rel)
+    sftp.close()
+    return written
+
+
+def git_commit(ssh, msg='solve'):
+    _, out, _ = ssh.exec_command(
+        f'cd {WORKSPACE} && git add -A >/dev/null 2>&1; '
+        f'git -c user.email=auto@educoder -c user.name=auto '
+        f'commit -m {msg} --no-verify >/dev/null 2>&1; git status --porcelain')
+    return out.read().decode('utf-8', 'replace').strip()
 
 
 def ssh_write_and_commit(conn, content, rel_paths):
@@ -314,6 +357,13 @@ async def submit_graphic_game(client, hw_id, gid, detail, content, target_path, 
     myshixun = detail.get('myshixun') or {}
 
     targets = write_targets(challenge.get('path'), target_path, step)
+    # 如果缓存里有本关的评测脚本，以脚本要求的路径为准
+    subject = (challenge.get('subject') or '').strip()
+    cached = load_grader_cache(gid, subject, step)
+    if cached:
+        real_target = parse_target_from_script(cached)
+        if real_target:
+            targets = write_targets(challenge.get('path'), real_target, step)
 
     baseline = None
     if apply:
@@ -330,33 +380,24 @@ async def submit_graphic_game(client, hw_id, gid, detail, content, target_path, 
 
     try:
         ssh = await _connect_or_restart(client, detail, classroom)
-        write_dirs = sorted({r.rsplit('/', 1)[0] for r in targets
-                             if '/' in r and not r.startswith('pingce/')})
-        if write_dirs:
-            cmd = 'mkdir -p ' + ' '.join(shlex.quote(f'{WORKSPACE}/{d}') for d in write_dirs)
-            _, mo, _ = ssh.exec_command(cmd)
-            mo.read()
-        sftp = ssh.open_sftp()
-        written = []
-        for rel in targets:
-            if rel.startswith('pingce/'):
-                print(f'      ! 跳过写入受保护路径 {rel}')
-                continue
+        try:
+            written = write_files(ssh, content, targets)
+            left = git_commit(ssh, 'solve')
+        except Exception as exc:
+            print(f'      · 写入失败（{type(exc).__name__}），重连后重试')
             try:
-                with sftp.file(f'{WORKSPACE}/{rel}', 'w') as f:
-                    f.write(content)
-                written.append(rel)
-            except Exception as exc:
-                print(f'      ! 写入 {rel} 失败：{exc}')
-        sftp.close()
-        _, out, _ = ssh.exec_command(
-            f'cd {WORKSPACE} && git add -A >/dev/null 2>&1; '
-            f'git -c user.email=auto@educoder -c user.name=auto '
-            f'commit -m solve --no-verify >/dev/null 2>&1; git status --porcelain')
-        left = out.read().decode('utf-8', 'replace').strip()
-        ssh.close()
+                ssh.close()
+            except Exception:
+                pass
+            ssh = await _connect_or_restart(client, detail, classroom)
+            written = write_files(ssh, content, targets)
+            left = git_commit(ssh, 'solve')
         if left:
             print(f'      ! git 仍有未提交改动：{left[:120]}')
+        try:
+            ssh.close()
+        except Exception:
+            pass
     except Exception as exc:
         stats['failed'] += 1
         print(f'      ✗ UML {gid}：SSH 写文件失败：{exc}')
@@ -495,7 +536,16 @@ def _read_static_grader(ssh, step):
     return None
 
 
-async def _capture_grader_script(ssh, step):
+def _script_target_dir(script):
+    """从脚本内容解析它读取的目录（相对工作区），用于精确匹配关卡。"""
+    m = re.search(r"file_path\s*=\s*['\"]([^'\"]+)['\"]", script)
+    if not m:
+        return None
+    rel = strip_prefix(m.group(1).strip()).strip('/')
+    return rel
+
+
+async def _capture_grader_script(ssh, step, expect_target=None):
     """评测期间轮询读取评测脚本。
 
     不同实验位置不同：secret/codeReview/codeN.py、secret/<实验>/evaluate/demo*.py 等，
@@ -518,6 +568,15 @@ async def _capture_grader_script(ssh, step):
                 continue
             blocks.append(chunk)
         if blocks:
+            # 0) 最可靠：按「题目要求写入的目录」匹配脚本的 file_path
+            #    （同一实验里 demo.py/demo2.py 分别对应不同 submit 目录）
+            if expect_target:
+                want_dir = expect_target.rsplit('/', 1)[0].rstrip('/')
+                for b in blocks:
+                    body = b.split('\n', 1)[-1]
+                    got = _script_target_dir(body)
+                    if got and got.rstrip('/') == want_dir:
+                        return body
             # 1) 文件名精确匹配 demo{step}.py / code{step}.py / analyse_step{step}.py
             want = {f'demo{step}.py', f'code{step}.py',
                     f'analyse_step{step}.py', f'step{step}.py'}
@@ -584,7 +643,15 @@ async def solve_level_from_grader(client, hw_id, gid, detail, target, step, appl
     try:
         # 0) 优先用已缓存的评测脚本（避免每次触发评测去抓，pod 重建后易失败）
         subject = ((detail.get('challenge') or {}).get('subject') or '').strip()
+        # 用题目解析出的目标路径判断期望目录（targets 是排序后的集合，[0] 不可靠）
+        expect_dir = (target.rsplit('/', 1)[0].rstrip('/')) if target else None
         script = load_grader_cache(gid, subject, step)
+        if script and expect_dir:
+            # 校验缓存是否真的是本关的脚本（同一实验多个 demo 脚本易混）
+            got = _script_target_dir(script)
+            if got and got.rstrip('/') != expect_dir:
+                print(f'      · 缓存脚本路径不匹配（{got} ≠ {expect_dir}），重新抓取')
+                script = None
         if script:
             print(f'      · 使用缓存的评测脚本')
         else:
@@ -594,7 +661,7 @@ async def solve_level_from_grader(client, hw_id, gid, detail, target, step, appl
             await _ssh_write_commit(ssh, json.dumps({'_type': 'Project', 'name': 'probe',
                                                       'ownedElements': []}), targets, 'probe')
             await _trigger_eval(client, detail, hw_id, gid)
-            script = await _capture_grader_script(ssh, step)
+            script = await _capture_grader_script(ssh, step, target)
         if not script:
             stats['failed'] += 1
             print(f'      ✗ UML {gid}：未抓到评测脚本。')
@@ -605,10 +672,34 @@ async def solve_level_from_grader(client, hw_id, gid, detail, target, step, appl
             stats['failed'] += 1
             print(f'      ✗ UML {gid}：无法从评测脚本解析出答案。')
             return False
-        # 2) 写正确答案并提交
-        await _ssh_write_commit(ssh, content, targets, 'solve')
+        # 评测脚本里写明了它实际读取的路径，以它为准（题目描述常与评测器不一致，
+        # 例如题目说 step3.mdj 但评测器读 step.mdj）
+        real_target = parse_target_from_script(script)
+        if real_target:
+            targets = write_targets(challenge.get('path'), real_target, step)
+            print(f'      · 按评测脚本路径写入：{real_target}')
+        # 2) 写正确答案并提交（SSH 可能被服务端断开，失败则重连重试一次）
+        try:
+            write_files(ssh, content, targets)
+            left = git_commit(ssh, 'solve')
+            if left:
+                print(f'      ! git 仍有未提交改动：{left[:100]}')
+        except Exception as exc:
+            print(f'      · 写入失败（{type(exc).__name__}），重连后重试')
+            try:
+                ssh.close()
+            except Exception:
+                pass
+            ssh = await _connect_or_restart(client, detail, classroom)
+            write_files(ssh, content, targets)
+            left = git_commit(ssh, 'solve')
+            if left:
+                print(f'      ! git 仍有未提交改动：{left[:100]}')
     finally:
-        ssh.close()
+        try:
+            ssh.close()
+        except Exception:
+            pass
 
     await _trigger_eval(client, detail, hw_id, gid)
     print(f'      UML {gid}：已按评测脚本构造并提交，等待结果…')
