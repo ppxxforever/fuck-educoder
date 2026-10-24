@@ -310,6 +310,14 @@ async def cmd_run(args):
 
 
 def main():
+    # nohup / 重定向到文件时 stdout 是块缓冲，日志会延迟很久才出现；
+    # 改成行缓冲，tail -f 能实时看到进度
+    for stream in (sys.stdout, sys.stderr):
+        try:
+            stream.reconfigure(line_buffering=True)
+        except Exception:
+            pass
+
     parser = argparse.ArgumentParser(description='多账号队列刷题')
     parser.add_argument('--add', metavar='ACCOUNT', help='添加账号')
     parser.add_argument('--password', help='配合 --add 使用的密码')
