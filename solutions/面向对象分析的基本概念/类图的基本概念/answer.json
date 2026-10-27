@@ -1,0 +1,30 @@
+{
+  "title": "类图的基本概念",
+  "kind": "choice",
+  "answer": [
+    {
+      "number": 1,
+      "selected": [
+        "D"
+      ]
+    },
+    {
+      "number": 2,
+      "selected": [
+        "A"
+      ]
+    },
+    {
+      "number": 3,
+      "selected": [
+        "C"
+      ]
+    },
+    {
+      "number": 4,
+      "selected": [
+        "C"
+      ]
+    }
+  ]
+}

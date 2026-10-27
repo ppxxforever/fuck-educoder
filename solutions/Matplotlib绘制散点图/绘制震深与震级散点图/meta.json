@@ -1,0 +1,12 @@
+{
+  "experiment": "Matplotlib绘制散点图",
+  "subject": "绘制震深与震级散点图",
+  "gid": "q9tejmsuyr5w",
+  "path": "sc1/sc1.py",
+  "kind": "code",
+  "classroom": "",
+  "source": "submit",
+  "completed_at": "2026-10-26T20:16:49+08:00",
+  "file": "answer.py",
+  "note": "图像对比关卡（已平台确认 status=2）：eqList2022.csv 在工作区根目录；默认 marker 大小；标题 24 号；ylabel「地震级别」。"
+}

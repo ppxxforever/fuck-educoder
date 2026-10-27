@@ -1,0 +1,11 @@
+{
+  "experiment": "MySQL-数据的插入、修改与删除(Insert,Update,Delete)",
+  "subject": "插入不完整的客户信息",
+  "gid": "uzhxfn84576r",
+  "path": "src/test2/test2.sql",
+  "kind": "code",
+  "classroom": "",
+  "source": "submit",
+  "completed_at": "2026-10-26T01:16:25+08:00",
+  "file": "answer.sql"
+}

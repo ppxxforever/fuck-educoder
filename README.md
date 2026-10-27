@@ -14,6 +14,13 @@ uv run python -m educoder_reminder.homeworks
 uv run python -m unittest discover -s tests
 ```
 
+想一次看到全部状态并直接跑命令，用控制台 TUI（Textual，见下节）：
+
+```bash
+uv run python -m educoder_reminder.tui          # 启动界面
+uv run python -m educoder_reminder.tui --dump   # 只打印本地状态摘要（无界面、不联网）
+```
+
 日常采集使用 Playwright APIRequestContext 直接请求课堂接口；仅自动恢复登录时启动 Chromium。
 只访问配置的本人课堂接口，固定 status=processing，遍历分页并再次排除 is_end=true。
 结果保存为 data/courses.json，包括 ID、名称、课堂标识、链接和可访问状态。
@@ -22,6 +29,80 @@ uv run python -m unittest discover -s tests
 据此生成个人课堂地址和课堂接口参数。无需手工填写账号标识或课堂地址。
 `EDUCODER_CLASSROOMS_URL` 仅作为自动维护的账号缓存：旧值与会话不一致时，会通过
 账号密码重新登录，以新登录返回的 `login` 更新缓存；不会继续使用旧账号地址。
+
+## 控制台 TUI
+
+`educoder_reminder/tui/` 是 Textual 版总控制台，把分散的子命令收拢到一个界面里。
+界面只读本地数据（`data/`、`.env`），刷新不会触发网络请求；所有联网 / 提交 / 推送
+都通过子进程调用现有 CLI，界面进程本身不启动 Playwright。
+
+```bash
+uv run python -m educoder_reminder.tui
+```
+
+界面不使用按钮控件：每页底部是一行 `[按键] 动作` 操作条，可以直接鼠标点击，
+也可以按对应按键；`1`–`5` 或点击标题切换分页，`Ctrl+Q` 退出，`F1` 查看帮助，
+建议终端至少 110×30。
+
+| 分页 | 内容与操作条 |
+|------|--------------|
+| 概览 | 当前账号 / Token·Cookie / AI / 推送 / 登录冷却、作业与提醒统计、队列概况、最近待办（回车跳到作业清单）<br>`[r]` 刷新 `[c]` 同步课堂 `[h]` 同步作业 `[p]` 提醒预览 `[k]` 校验配置 `[a]` 认证检查<br>`[P]` 爬题预览 `[G]` 预生成答案 |
+| 课堂·作业 | 本地数据库里的作业清单，可按名称搜索、按状态和类型筛选<br>`[/]` 搜索 `[o]` 打开选中作业 `[r]` 刷新 |
+| 多账号队列 | 账号增删改、手动设置状态、当前账号、验证密码，**每个账号单独选课程**<br>`[u]` 设为当前 `[v]` 验证密码 `[i]` 修改信息 `[t]` 设置状态 `[m]` 显示密码 `[d]` 删除<br>`[g]` 选择课程 `[s]` 提交选中账号 `[b]` 全部开始提交 `[e]` 保存到队列 |
+| 执行任务 | 选择现成命令（采集、提醒、提交、题库预生成、队列、修复未记通关）→ 填参数 → 运行，日志实时滚动<br>`[n]` 禁用 AI `[l]` 先释放环境 pod `[F5]` 运行 `[x]`/`Ctrl+S` 停止<br>`[P]` 爬题预览 `[G]` 预生成答案（跳到题库任务并运行，复用上面的课堂/limit/实验参数） |
+| 实时日志 | 跟踪 `data/queue.log` 与 `data/tui.log`<br>`[r]` 刷新 `[f]` 跟随最新 `[y]` 清空视图 |
+
+### 按账号指定课程
+
+队列页选中账号后按 `[g]` 打开课堂多选：空格 / 回车切换，`a` 全选，`n` 清空，`s` 保存
+（不选 = 该账号处理全部课堂）。选择结果写入 `data/accounts.json` 的 `classrooms` 字段：
+
+```json
+{"account": "13800000000", "password": "xxx", "note": "同学A",
+ "classrooms": ["2i6ng7vp", "数据库原理"]}
+```
+
+右侧「添加 / 更新账号」表单也能直接填课程 code/名称（逗号分隔）。更新已有账号时
+表单课程留空会**保留**原有设置；要清空请用 `[g]` 里按 `n` 再保存。
+
+### 修改账号信息
+
+选中账号按 `[i] 修改信息`：表单会载入该账号、密码、备注和课程，账号本身也可以改名
+（队列状态会一起迁移）。改完按 `[e] 保存修改`，按 `[esc]` 或点 `[esc] 取消编辑` 放弃。
+密码留空表示保留原密码；加密密码无法解密时也会提示留空保存。
+
+### 手动设置状态
+
+选中账号按 `[t] 设置状态`：
+
+- `[p] 待处理`：重新进入队列；
+- `[d] 已完成`：`run_queue` 默认跳过该账号；
+- `[f] 失败`：记录为“手动标记失败”；
+- `[z] 清空进度`：状态改为待处理，同时把提交/失败/跳过计数清零。
+
+只修改本地 `data/queue_state.json`（`manual` 字段标记为手动设置），不改变平台作业状态；
+下次真实运行该账号时会写回新的运行结果。
+
+### 提交：单个账号或全部
+
+- `[s] 提交选中账号`：只跑队列里选中的账号，使用该账号自己的课程设置。
+  确认框里的命令会显式带上课程，例如：
+  `run_queue.py --apply --only 138xxx --force --classroom 2i6ng7vp --classroom 数据库`
+- `[b] 全部开始提交`：按队列顺序串行提交所有账号，每个账号用自己的课程设置，
+  已完成的账号会跳过（要强制重跑用 `[s]`）。一条命令无法表达每个账号不同的课程，
+  所以不带 `--classroom`；`run_queue.py` 会在日志开头打印「课程安排」，
+  并在每个账号开始时再打印一次实际使用的课程；
+- 两者都会弹确认框，显示账号与课程；`limit` / `poll-timeout` / 账号间隔 / 禁用 AI
+  取自「执行任务」页。
+
+其他要点：
+
+- 「执行任务」页的课堂筛选是**全局覆盖**；队列页的两个提交动作不使用它，按账号自己的设置；
+- 不相关的输入框会按任务自动禁用，确认框会显示将要执行的完整命令；
+- TUI 里跑过的任务会同时追加到 `data/tui.log`，退出后仍可在「实时日志」查看；
+- 后台 systemd 服务运行时，真实提交/推送会与它共用登录会话与进程锁，
+  建议先 `sudo systemctl stop educoder-reminder` 再在 TUI 里提交；
+- 需要一个极简、只依赖标准库的队列界面时，仍可用 `scripts/tui.py`（curses，仅多账号队列）。
 
 ## 作业采集
 
@@ -119,7 +200,9 @@ uv run python -m educoder_reminder.submit --apply --poll-timeout 120
 ```
 
 安全策略：跳过 `answered=false` 或无答案的关卡、平台已通过（`game.status==2`）的关卡、
-已标记完成（`shixun_finished_status==1`）的实验；代码题只处理单文件关卡，多文件关卡跳过以免半提交。
+已标记完成（`shixun_finished_status==1`）的实验，以及**已截止 / 已归档的实验**
+（按 `end_time_s`（优先）或 `end_time` 判断）。确需补交时加 `--include-expired`；
+代码题只处理单文件关卡，多文件关卡跳过以免半提交。
 选择题先按 answers.json 直接提交，若格式导致未全对，会用平台在提交响应里回吐的标准答案键兜底重交一次；
 代码题评测默认等待 90 秒，超时或未通过请在平台确认。
 
@@ -160,7 +243,280 @@ uv run python -m educoder_reminder.submit_all --apply    # 真实提交
 ```
 
 平台驱动：检测本人进行中的课堂（`created_at` 早于 `COURSE_CUTOFF` 的旧学期课堂会跳过）
-→ 拉实验列表 → 与平台实时核对已通过状态 → 对未通过关卡分派到选择/代码题与 UML 题流程。
+→ 拉实验列表 → **跳过已截止/已归档实验**（`--include-expired` 可强制处理）
+→ 与平台实时核对已通过状态 → 对未通过关卡分派到选择/代码题与 UML 题流程。
+
+### 评测通过但平台仍显示「未通关」
+
+官网提交代码的流程是：`update_file.json` 带 `evaluate=1` 保存 → 用响应里的 `sec_key`
+调用 `game_build.json` 触发评测。旧版本用空 `sec_key` 提交，平台仍会评测并给分，
+但经常不把该关卡写成 `status=2`，页面上就一直显示「未通关」。
+
+现在已按官网流程修正（`evaluate=1` + `sec_key` + `resubmit`/`content_modified`），
+并把评测轮询改到官网前端使用的 `/api/tasks/{gid}/game_status.json`。
+
+历史上已经变成「有分数但 status=0」的关卡不会自动重交（工具把它们当作已通过，
+避免每次运行都重复提交）。需要修正时执行一次：
+
+```bash
+uv run python -m educoder_reminder.submit_all --apply --repair-status
+uv run python -m educoder_reminder.submit_all --apply --repair-status --classroom 2i6ng7vp
+uv run python scripts/run_queue.py --apply --repair-status
+```
+
+`--repair-status` 只重交「测试已通过、但 `game.status != 2`」且有本地答案的关卡。
+TUI 的「执行任务」页也有同名任务；先不加 `--apply` 可以预览。
+
+#### 「评测通过 ✔」之后还会再确认一次通关
+
+`wait_for_verdict()` 认可两种「评测通过」信号（`status==2` / `test_sets` 全过），
+但平台只把 `game.status==2` 当「已通关」。两者不一致时旧版本只打
+一行「评测通过 ✔」，看起来像已经稳了。现在：
+
+1. **sec_key 缺了就重试**：`update_file` 响应没带 key 时先连续问 `game_status.json`，
+   再不行就重跑一次 `update_file(evaluate=1)`，仍拿不到则打印
+   `⚠ 拿不到 sec_key，平台可能只评分不记通关`。
+2. **通过后等通关**：`wait_for_completion()` 轮询详情等 `status==2`
+   （宽限秒数 `EVAL_CONFIRM_TIMEOUT`，默认 20，设 0 可关闭）。
+   等不到就打印
+   `⚠ 评测通过，但平台未把关卡记为已通关（status≠2）；下一轮会重交，也可以稍后用 --repair-status 重修`，
+   并计入汇总里的 `unconfirmed`。
+3. **平台进度对账**：每个课堂跑完再拉一次作业列表，若本轮动过的实验仍是
+   `shixun_finished_status != 1`，打印 `⚠ 平台仍显示未完成：<实验>` 并计入
+   `stale_homework`。`scripts/run_queue.py` 会把这两个计数写进 `queue_state.json`，
+   `scripts/queue_status.py` 在账号状态里直接显示。
+
+这两类告警不影响「账号本轮完成」的判定（历史行为：有分数没 status 的关卡不重复重交，
+避免把提交次数烧在平台同步问题上），但不会再静默。
+
+> 2026-10-26 修正：判定口径里删掉了 `final_score>0`。`final_score` 是关卡分值，
+> 不是通关信号——「绘制销售额饼图」当时 `status=0`、`final_score=100`、
+> 唯一测试集 `result=false`（图像对比不一致），旧口径把它当成已通过，
+> 之后每轮都「[跳过] 已通过」，平台永远停在未通关。
+> 图像对比类（Matplotlib）关卡的 `solutions/` 也只收 `status==2` 确认过的答案。
+
+> 2026-10-26 修正（第二个根因）：`game_build` 以前没带官网前端的顶层字段
+> `homework_common_id`（`update_file` 的 extras 也少了 `smart_plan_page_item_bank_id`）。
+> 少了它，平台照样评测、照样给分、`test_sets` 也显示通过，但**不把
+> `game.status` 写成 2**——这就是「评测通过 ✔ / 测试集全过，平台却仍显示未完成」
+> 的直接原因。现在两个请求的 payload 已与浏览器实测抓包对齐。
+
+#### 图像对比关卡的排查方法
+
+Matplotlib 这类关卡是像素级比图（`图像对比不一致，请检查你的代码`），
+测试脚本本身读不到，但平台会把**标准图**和**你生成的图**都放在页面上：
+
+```text
+GET /api/tasks/<gid>/picture_display.json[?homework_common_id=<hw>]
+  -> {"answer_picture": [{"pic_url": "..."}], "user_picture": [{"pic_url": "..."}]}
+GET https://data.educoder.net< pic_url >   # 带登录 Cookie 下载 PNG
+```
+
+把两张 640×480 的 PNG 做像素 diff，就能直接量出差异：标题字号、
+柱宽、`explode`、图例文字、坐标轴标签字号，一次就能对齐。
+2026-10-26 用这个方法把本课程 11 个 Matplotlib 关卡全部修到 `status==2`
+（其中「简单柱状图」「并列柱状图」「单/多折线图」的标准图是 matplotlib 3.7
+渲染的，平台是 3.1.1，文字基线差 1~2px，答案里按像素对齐了）。
+
+### 实验收尾校验（防「关卡被静默漏掉」）
+
+选择/代码题链（`submit.py`）和图形题链（`submit_uml.py`）各自遍历关卡链，
+任何一方遇到「不归我管」的关卡都会让出去。2026-10-25 就踩到过：图形化实验里的
+选择题关卡（`软件详细设计-2` 的 McCabe方法/Halstead方法、`面向数据流的设计方法-2`
+的事务型结构图）两边都没认领，图形题全部「评测通过」、选择题一题没交，
+实验在平台上永远是「未提交」，而整轮运行退出码还是 0。
+
+现在这条路径被堵死了，共三层：
+
+1. **统一题型判定**：`educoder_reminder/levels.py` 的 `classify_level()` 是全项目唯一口径
+   （choice / code / graphic / unknown），先看 `answers.json` 记录的题型，
+   再看 `chooses`，最后才看环境/路径。带 VNC 环境的选择题不会再被当成绘图题。
+2. **无主关卡必须上报**：两条链都会把「我处理了什么」写进 `levels.Coverage`；
+   判不出题型的关卡不再 `continue` 静默跳过，而是打印 `✗ [无主关卡]` 并计入 `unowned`。
+3. **实验收尾校验**：每个实验跑完，`submit_all` 会独立从入口关卡重新走一遍关卡链
+   （不依赖上面两条链的遍历结果），把「未通关」的关卡全部列出来；
+   入口只解析一次，三条链共用（平台换尝试时 gid 会整体换新，各解析一次会出现
+   「提交打在旧链、审计看新链」）；「详情读不全」不算未通关，而是计入
+   `audit_error`，下一轮重查：
+
+```text
+✗ 实验收尾校验：软件详细设计-2 仍未完成，还剩 1 关
+    · 事务型结构图（choice，submit，attempted）
+```
+
+后果是硬性的，不会再「看起来成功」：
+
+- 未完成明细写入 `data/unfinished.json`，TUI 概览页会显示「上次校验 N 个实验 / M 关未完成」；
+- 有未通关关卡 / 无主关卡 / 无法校验时，`submit_all` 退出码为 1，
+  队列里该账号状态置为 `pending`（下一轮自动重试，不会被 `--skip-done` 跳过）；
+- `uv run python scripts/queue_status.py` 会直接列出未完成关卡数。
+
+预览（不加 `--apply`）时同样会跑收尾校验，只是把「待提交」当成预览信息，不计入失败；
+但「无主关卡」在任何模式下都算错误。
+
+对应的回归测试在 `tests/test_levels.py`（题型判定、Coverage、审计、run_all 报告落盘）。
+
+### 关卡详情残缺时不再「判不出题型」（2026-10-26 紧耦合&高内聚）
+
+平台换了一轮尝试（同一个「内聚和耦合」的 gid 实测从 `cbymif92phj4` →
+`fjavozk5ml7t` → `l9i3eofnfmpc`）之后，第一次 `GET /api/tasks/{gid}.json`
+常常只回 `game` + 精简 `challenge`：没有 `subject`、没有 `chooses`、没有 `path`，
+几秒后才补全。旧版本直接拿这份残缺详情去匹配标题，结果这一关被判成
+`unknown`、记成「无主关卡」，而本地 `answers.json` / `solutions/` 里明明存着答案：
+
+```text
+✗ [无主关卡] ：题型无法判定（没有选择题/代码题线索，也不像图形题），本次未处理；请人工确认。
+✗ 实验收尾校验：紧耦合&高内聚 仍未完成，还剩 1 关
+    · 内聚和耦合（unknown，无人负责（工具漏处理），unknown）
+```
+
+现在改成四层兜底：
+
+1. `submit.detail_of()`：详情里没有任何线索时重读几次（默认 3 × 1.5s），
+   拿到带 `subject`/`chooses` 的完整详情再往下走；`submit_uml` 也用同一入口。
+2. `levels.recorded_kind()`：`answers.json` 记过的题型优先，`uml` 也折成 `graphic`，
+   不再让残缺详情猜出来的题型把答案交错关卡。
+3. `levels.match_unlabelled_level()`：若平台始终不给标题，且关卡链长度 == 本地记录数，
+   就按关卡顺序配对本地答案；数量对不上宁可报 `unknown`，也不乱配。
+4. `submit_choice_game()`：拿不到 `chooses` 时直接报错跳过，绝不提交空答案。
+
+### 未通过关卡存档（attempts/）
+
+代码题 / UML 题评测未通过（含评测启动失败、平台未记通关）时，会自动把本次答案和平台反馈
+按「实验 → 关卡」存到：
+
+```
+attempts/<实验名>/<关卡标题>/
+    answer.py|.sql|.java|.c|...   # UML/图形题是 answer.mdj；选择题是 answer.json
+    feedback.txt                  # 平台返回的编译/测试输出
+    meta.json                     # 课堂、gid、远端路径、时间、是否已通过
+```
+
+复用规则：
+
+- 普通运行：`answers.json` 没有该关卡答案时，代码题优先读 `attempts/.../answer.*`；
+  UML 在 `answer/`、`submit_*/` 都找不到 `.mdj` 时也会读 `attempts/.../answer.mdj`；
+- `--repair-status`：优先用 `attempts/` 里的存档重交，适合「改完 answer.* 再重跑」；
+- 提交通过后 `meta.json` 的 `passed` 变成 `true`，之后不再自动复用（文件保留作参考）；
+- 想放弃存档、让工具重新用 AI 生成，删除对应的关卡文件夹即可；
+- 少数图形关卡平台没有返回保存路径（`challenge.path` 为空），工具默认跳过。
+  如果确实要提交，在对应关卡文件夹里新建 `target.txt`（写工作区相对路径，
+  如 `程序流程图/submit/step_4/step4.mdj`）或在 `meta.json` 的 `path` 里填写，
+  再用 `--repair-status` 重交。
+
+已有的未通过关卡可以一次性只读归档（不提交、不改平台数据）：
+
+```bash
+# 只列出未通过 / 未记通关的关卡
+uv run python scripts/archive_failures.py --no-archive --classroom 2i6ng7vp
+
+# 归档：本地有答案就存本地答案；缺答案的图形题可用 AI 生成一份初始 .mdj
+uv run python scripts/archive_failures.py --classroom HCEAP94S --classroom 2i6ng7vp
+uv run python scripts/archive_failures.py --classroom 2i6ng7vp --generate-missing
+```
+
+TUI 的「执行任务」页也有「采集 · 归档未通过关卡」。
+
+### 已完成答案库（solutions/）
+
+平台确认已通关（`game.status == 2`）后，答案会另外存一份到：
+
+```
+solutions/<实验名>/<关卡标题>/
+    answer.py|.sql|.java|.mdj|.json
+    meta.json   # 课堂、gid、远端路径、来源、完成时间
+```
+
+- 与 `attempts/` 分开：`attempts/` 只留未通过的尝试，`solutions/` 只放已通关答案；
+- 代码 / UML / 选择题提交通过后都会自动写入；
+- 历史已完成关卡可一次性归档（只读，不提交）：
+
+```bash
+uv run python scripts/archive_solutions.py --classroom 2i6ng7vp
+uv run python scripts/archive_solutions.py --classroom HCEAP94S --classroom 2i6ng7vp
+uv run python scripts/archive_solutions.py --classroom 2i6ng7vp --cleanup-attempts
+uv run python scripts/archive_solutions.py --no-archive     # 只列出
+```
+
+`--cleanup-attempts` 会在归档成功后删除 `attempts/` 里对应关卡的旧失败存档，
+让 `attempts/` 只保留当前仍未通过的关卡。TUI「执行任务」页也有同名任务。
+
+### 按课程爬题 + 集中预生成 AI 答案（prepared/）
+
+正常提交是「走到哪一关、当场拿哪一关问 AI」，调用分散在一整轮提交里。
+`educoder_reminder.prepare` 反过来：先把一门课的题目爬下来，集中把缺答案的关卡
+生成好，之后正常提交直接复用，不再烧 AI。**只写本地 `prepared/`，不提交、不触发评测。**
+
+```bash
+# 预览：只读平台，列出每关是否已有本地答案、要不要 AI（不写文件、不调 AI）
+uv run python -m educoder_reminder.prepare --dry-run --classroom 2i6ng7vp
+
+# 真跑：爬题 + 集中生成缺的答案（已有本地答案的关卡不会调用 AI）
+uv run python -m educoder_reminder.prepare --classroom 2i6ng7vp
+uv run python -m educoder_reminder.prepare --classroom 数据库 --experiment 视图 --limit 5
+uv run python -m educoder_reminder.prepare --classroom 2i6ng7vp --no-ai   # 只爬题
+uv run python -m educoder_reminder.prepare --classroom 2i6ng7vp --overwrite
+```
+
+生成了什么：
+
+```
+prepared/<实验名>/<关卡标题>/
+    question.md          # 爬到的题目原文（题干 / 选项 / 目标文件 / gid / 题型）
+    answer.py|.sql|.mdj|.json
+    meta.json            # 课堂、gid、题型、目标路径、来源、生成时间
+```
+
+规则：
+
+- **已有本地答案就跳过 AI**：`answers.json` / `answer/` / `solutions/` / `attempts/` /
+  已生成的 `prepared/` 都算「本地已有」，命中直接打印来源并跳过；
+- 已通关（`game.status==2`）的关卡、已完成/已截止的实验默认跳过（`--include-expired` 例外）；
+- 不指定 `--classroom` 时只处理本学季课堂，避免历史课堂把 AI 额度烧光；
+- 按题型生成：选择题由 AI 选字母；代码题先读测试文件提取参考答案，再 AI 参考模板/评测脚本/预期输出；
+  图形题先用 `graders/` 里缓存的评测脚本逆向构造（不烧 AI），没有缓存才让 AI 按题面生成 `.mdj`；
+- **平台只放出「当前可到达」的关卡链**（前一关没过，下一关不给详情），所以一次运行覆盖的是
+  每个实验当前可到达的关卡（通常是已通关的 + 当前这一关）。通过后重跑一次就会继续补齐后面的关卡；
+- 预生成的答案如果**提交没通过**，会在 `meta.json` 里标 `rejected`，提交链不再复用它
+  （文件保留供人工查看），下一轮重新跑 `prepare` 或直接提交都会改用 AI / 逆向构造重做，
+  不会被一份错误答案反复重交；
+- `prepared/` 是可再生的中间产物，已在 `.gitignore` 里；跨机器复用请以 `answers.json` / `solutions/` 为准。
+
+TUI「执行任务」页也有两个同名任务（题库）：**预览：课程爬题查缺答案** 和
+**课程爬题 + 集中预生成 AI 答案**。
+
+### 闭环：AI 刷一次，之后一直复用
+
+本地没有的新课程，第一次靠 AI 刷通；答案必须能被**下一次**直接捡起来用，
+否则每换一个账号 / 换一台机器就要再烧一遍 AI 调用。这条闭环由三段组成：
+
+**1）落库**——AI 刷通后写两个地方：
+
+| 位置 | 内容 | 说明 |
+|------|------|------|
+| `answers.json` | 代码 / 选择题答案（按课堂 code + 实验名 + 关卡标题） | 随仓库提交，换机器直接可用 |
+| `solutions/<实验>/<关卡>/` | 代码 / 选择题 / UML 的已通关答案 | 跨账号、跨机器复用，也便于人工核对 |
+| `answer/<实验>/` | UML 的 `.mdj` | 图形题的实际复用来源（`.mdj` 体积大，不塞进 answers.json） |
+
+课堂不在 `answers.json` 里时会在落库时**自动新建条目**（带真实课堂名）。
+以前这里会静默丢弃——AI 白做，下一轮又从头来。
+
+**2）复用**——答案来源优先级（高 → 低）：
+
+```
+answers.json → answer/（UML .mdj）→ solutions/ → attempts/（未通过的存档）
+            → prepared/（预生成的 AI 答案）→ 现场调用 AI
+```
+
+命中 `solutions/` 或 `prepared/` 后如果评测通过，会**回填 `answers.json`**，之后连
+`solutions/` 都不用再读。所以同一门课第二轮起就是纯本地命中，零 AI 调用。
+
+**3）换账号 / 换机器**——按课堂 **code** 匹配不到时按**课堂名**匹配；
+同名课堂换班（code 变了）时沿用旧条目并更新 code，不会越存越多条。
+所以只要把 `answers.json`、`answer/`、`solutions/` 一起带走（或提交进仓库），
+换环境后第一次运行就全是本地命中。
+
+对应的回归测试在 `tests/test_closed_loop.py`。
 
 ### AI 自动做题（题库缺答案时）
 
@@ -169,7 +525,7 @@ uv run python -m educoder_reminder.submit_all --apply    # 真实提交
 ```dotenv
 AI_API_KEY='你的 key'
 AI_BASE_URL='https://api.deepseek.com'
-AI_MODEL='deepseek-chat'
+AI_MODEL='deepseek-flash'
 ```
 
 不填 `AI_API_KEY` 则自动禁用；运行时可用 `--no-ai` 临时关闭。
@@ -261,16 +617,22 @@ uv run python scripts/run_queue.py --apply
 uv run python scripts/run_queue.py --apply --only 138xxx    # 只刷某个
 uv run python scripts/run_queue.py --apply --force          # 强制重跑已完成的账号
 uv run python scripts/run_queue.py --apply --limit 10       # 每账号限 10 关
-uv run python scripts/run_queue.py --apply --classroom D9Z6O8GR
+uv run python scripts/run_queue.py --apply --classroom D9Z6O8GR   # 覆盖所有账号
+uv run python scripts/run_queue.py --apply --include-expired       # 连已截止实验也刷
+
+# 给单个账号指定课程（用 code 或课程名，可多次传/逗号分隔）
+uv run python scripts/run_queue.py --set-classrooms 138xxx --classroom D9Z6O8GR --classroom 数据库
+uv run python scripts/run_queue.py --set-classrooms 138xxx   # 清空，恢复全部课堂
 ```
 
 工作方式（`scripts/run_queue.py`）：
 
 1. 账号清单 `data/accounts.json`（`[{"account","password","note"}]`，**明文保存**，
    方便查看核对；数据只在本地，`data/` 已 gitignore。想加密存储可加 `--encrypt`，
-   密钥放 `data/.queue_key`）
+   密钥放 `data/.queue_key`）。每个账号可选带 `classrooms: [...]`，只刷指定课堂；
+   不配表示全部课堂。命令行 `--classroom` 会覆盖所有账号各自的设置
 2. 逐个账号：写入凭据 → **清空上一个账号的 Token/Cookie/课堂地址** →
-   清该账号的登录冷却 → 跑一遍 `submit_all` → 记录结果
+   清该账号的登录冷却 → 按该账号自己的 `classrooms` 跑一遍 `submit_all` → 记录结果
 3. 进度存 `data/queue_state.json`，每个账号跑完立即落盘，中断后可继续；
    已标记 `done` 的账号**默认自动跳过**（不会为它等账号间隔），需要重跑加 `--force`
 4. 单个账号失败（密码错、验证码、网络）不影响后续账号

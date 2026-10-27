@@ -1,0 +1,52 @@
+共有1组测试集，其中有1组测试结果不匹配。详情如下：
+
+test 1 result=False:
+/usr/local/lib/python3.6/site-packages/matplotlib/backends/backend_agg.py:211: RuntimeWarning: Glyph 24180 missing from current font.
+  font.set_text(s, 0.0, flags=flags)
+/usr/local/lib/python3.6/site-packages/matplotlib/backends/backend_agg.py:211: RuntimeWarning: Glyph 24230 missing from current font.
+  font.set_text(s, 0.0, flags=flags)
+/usr/local/lib/python3.6/site-packages/matplotlib/backends/backend_agg.py:211: RuntimeWarning: Glyph 25968 missing from current font.
+  font.set_text(s, 0.0, flags=flags)
+/usr/local/lib/python3.6/site-packages/matplotlib/backends/backend_agg.py:211: RuntimeWarning: Glyph 25454 missing from current font.
+  font.set_text(s, 0.0, flags=flags)
+/usr/local/lib/python3.6/site-packages/matplotlib/backends/backend_agg.py:211: RuntimeWarning: Glyph 25240 missing from current font.
+  font.set_text(s, 0.0, flags=flags)
+/usr/local/lib/python3.6/site-packages/matplotlib/backends/backend_agg.py:211: RuntimeWarning: Glyph 32447 missing from current font.
+  font.set_text(s, 0.0, flags=flags)
+/usr/local/lib/python3.6/site-packages/matplotlib/backends/backend_agg.py:211: RuntimeWarning: Glyph 22270 missing from current font.
+  font.set_text(s, 0.0, flags=flags)
+/usr/local/lib/python3.6/site-packages/matplotlib/backends/backend_agg.py:211: RuntimeWarning: Glyph 20221 missing from current font.
+  font.set_text(s, 0.0, flags=flags)
+/usr/local/lib/python3.6/site-packages/matplotlib/backends/backend_agg.py:180: RuntimeWarning: Glyph 24180 missing from current font.
+  font.set_text(s, 0, flags=flags)
+/usr/local/lib/python3.6/site-packages/matplotlib/backends/backend_agg.py:180: RuntimeWarning: Glyph 20221 missing from current font.
+  font.set_text(s, 0, flags=flags)
+/usr/local/lib/python3.6/site-packages/matplotlib/backends/backend_agg.py:211: RuntimeWarning: Glyph 20540 missing from current font.
+  font.set_text(s, 0.0, flags=flags)
+/usr/local/lib/python3.6/site-packages/matplotlib/backends/backend_agg.py:180: RuntimeWarning: Glyph 25968 missing from current font.
+  font.set_text(s, 0, flags=flags)
+/usr/local/lib/python3.6/site-packages/matplotlib/backends/backend_agg.py:180: RuntimeWarning: Glyph 20540 missing from current font.
+  font.set_text(s, 0, flags=flags)
+/usr/local/lib/python3.6/site-packages/matplotlib/backends/backend_agg.py:211: RuntimeWarning: Glyph 26368 missing from current font.
+  font.set_text(s, 0.0, flags=flags)
+/usr/local/lib/python3.6/site-packages/matplotlib/backends/backend_agg.py:211: RuntimeWarning: Glyph 39640 missing from current font.
+  font.set_text(s, 0.0, flags=flags)
+/usr/local/lib/python3.6/site-packages/matplotlib/backends/backend_agg.py:211: RuntimeWarning: Glyph 28857 missing from current font.
+  font.set_text(s, 0.0, flags=flags)
+/usr/local/lib/python3.6/site-packages/matplotlib/backends/backend_agg.py:180: RuntimeWarning: Glyph 26368 missing from current font.
+  font.set_text(s, 0, flags=flags)
+/usr/local/lib/python3.6/site-packages/matplotlib/backends/backend_agg.py:180: RuntimeWarning: Glyph 39640 missing from current font.
+  font.set_text(s, 0, flags=flags)
+/usr/local/lib/python3.6/site-packages/matplotlib/backends/backend_agg.py:180: RuntimeWarning: Glyph 28857 missing from current font.
+  font.set_text(s, 0, flags=flags)
+/usr/local/lib/python3.6/site-packages/matplotlib/backends/backend_agg.py:180: RuntimeWarning: Glyph 24230 missing from current font.
+  font.set_text(s, 0, flags=flags)
+/usr/local/lib/python3.6/site-packages/matplotlib/backends/backend_agg.py:180: RuntimeWarning: Glyph 25454 missing from current font.
+  font.set_text(s, 0, flags=flags)
+/usr/local/lib/python3.6/site-packages/matplotlib/backends/backend_agg.py:180: RuntimeWarning: Glyph 25240 missing from current font.
+  font.set_text(s, 0, flags=flags)
+/usr/local/lib/python3.6/site-packages/matplotlib/backends/backend_agg.py:180: RuntimeWarning: Glyph 32447 missing from current font.
+  font.set_text(s, 0, flags=flags)
+/usr/local/lib/python3.6/site-packages/matplotlib/backends/backend_agg.py:180: RuntimeWarning: Glyph 22270 missing from current font.
+  font.set_text(s, 0, flags=flags)
+图像对比不一致，请检查你的代码

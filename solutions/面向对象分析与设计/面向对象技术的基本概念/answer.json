@@ -1,0 +1,36 @@
+{
+  "title": "面向对象技术的基本概念",
+  "kind": "choice",
+  "answer": [
+    {
+      "number": 1,
+      "selected": [
+        "B"
+      ]
+    },
+    {
+      "number": 2,
+      "selected": [
+        "A"
+      ]
+    },
+    {
+      "number": 3,
+      "selected": [
+        "D"
+      ]
+    },
+    {
+      "number": 4,
+      "selected": [
+        "D"
+      ]
+    },
+    {
+      "number": 5,
+      "selected": [
+        "C"
+      ]
+    }
+  ]
+}

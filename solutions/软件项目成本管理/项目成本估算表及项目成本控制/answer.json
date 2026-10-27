@@ -1,0 +1,18 @@
+{
+  "title": "项目成本估算表及项目成本控制",
+  "kind": "choice",
+  "answer": [
+    {
+      "number": 1,
+      "selected": [
+        "B"
+      ]
+    },
+    {
+      "number": 2,
+      "selected": [
+        "D"
+      ]
+    }
+  ]
+}

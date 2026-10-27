@@ -1,0 +1,12 @@
+{
+  "experiment": "MySQL-数据库、表与完整性约束的定义(Create)",
+  "subject": "DEFAULT约束",
+  "gid": "rhqtu7fnmi3k",
+  "path": "src/step5/step5.sql",
+  "kind": "code",
+  "classroom": "",
+  "passed": true,
+  "updated_at": "2026-10-24T21:16:53+08:00",
+  "file": "answer.sql",
+  "passed_at": "2026-10-26T02:23:30+08:00"
+}

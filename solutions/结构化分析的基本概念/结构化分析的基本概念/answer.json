@@ -1,0 +1,24 @@
+{
+  "title": "结构化分析的基本概念",
+  "kind": "choice",
+  "answer": [
+    {
+      "number": 1,
+      "selected": [
+        "A"
+      ]
+    },
+    {
+      "number": 2,
+      "selected": [
+        "B"
+      ]
+    },
+    {
+      "number": 3,
+      "selected": [
+        "AB"
+      ]
+    }
+  ]
+}

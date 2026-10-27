@@ -1,0 +1,30 @@
+{
+  "title": "PERT计划评审技术（三点估计法）",
+  "kind": "choice",
+  "answer": [
+    {
+      "number": 1,
+      "selected": [
+        "B"
+      ]
+    },
+    {
+      "number": 2,
+      "selected": [
+        "A"
+      ]
+    },
+    {
+      "number": 3,
+      "selected": [
+        "A"
+      ]
+    },
+    {
+      "number": 4,
+      "selected": [
+        "D"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,7 @@
+共有1组测试集，其中有1组测试结果不匹配。详情如下：
+
+test 1 result=False:
+创建file1文件失败
+创建file2文件失败
+删除oldFile1文件失败
+删除oldFile2文件失败

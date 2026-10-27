@@ -1,0 +1,18 @@
+{
+  "title": "kNN算法原理",
+  "kind": "choice",
+  "answer": [
+    {
+      "number": 1,
+      "selected": [
+        "AD"
+      ]
+    },
+    {
+      "number": 2,
+      "selected": [
+        "A"
+      ]
+    }
+  ]
+}

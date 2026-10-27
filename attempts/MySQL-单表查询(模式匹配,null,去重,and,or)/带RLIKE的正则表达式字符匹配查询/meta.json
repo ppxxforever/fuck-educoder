@@ -1,0 +1,12 @@
+{
+  "experiment": "MySQL-单表查询(模式匹配,null,去重,and,or)",
+  "subject": "带RLIKE的正则表达式字符匹配查询",
+  "gid": "pvnikz3coeqy",
+  "path": "src/step2/test.sql",
+  "kind": "code",
+  "classroom": "",
+  "passed": true,
+  "updated_at": "2026-10-26T01:20:20+08:00",
+  "file": "answer.sql",
+  "passed_at": "2026-10-26T01:21:03+08:00"
+}

@@ -1,0 +1,12 @@
+{
+  "experiment": "Pandas数据结构创建",
+  "subject": "创建Series对象",
+  "gid": "tpu4qk9yowhf",
+  "path": "p1/p1.py",
+  "kind": "code",
+  "classroom": "",
+  "passed": false,
+  "answer_sha256": "62ec6e953d844f8fb1a4f7d1bc5f27f755cffeff97860fc12a69c22d633c7872",
+  "updated_at": "2026-10-26T21:45:52+08:00",
+  "file": "answer.py"
+}

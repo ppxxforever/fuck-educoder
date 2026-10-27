@@ -1,0 +1,33 @@
+共有1组测试集，其中有1组测试结果不匹配。详情如下：
+
+test 1 result=False:
+Traceback (most recent call last):
+  File "step4/main.py", line 33, in <module>
+    predict = student.digit_predict(X_train, y_train, X_test)
+  File "/data/workspace/myshixun/step4/student.py", line 40, in digit_predict
+    search.fit(X_train, train_label)
+  File "/usr/local/lib/python3.6/site-packages/sklearn/model_selection/_search.py", line 639, in fit
+    cv.split(X, y, groups)))
+  File "/usr/local/lib/python3.6/site-packages/sklearn/externals/joblib/parallel.py", line 779, in __call__
+    while self.dispatch_one_batch(iterator):
+  File "/usr/local/lib/python3.6/site-packages/sklearn/externals/joblib/parallel.py", line 625, in dispatch_one_batch
+    self._dispatch(tasks)
+  File "/usr/local/lib/python3.6/site-packages/sklearn/externals/joblib/parallel.py", line 588, in _dispatch
+    job = self._backend.apply_async(batch, callback=cb)
+  File "/usr/local/lib/python3.6/site-packages/sklearn/externals/joblib/_parallel_backends.py", line 111, in apply_async
+    result = ImmediateResult(func)
+  File "/usr/local/lib/python3.6/site-packages/sklearn/externals/joblib/_parallel_backends.py", line 332, in __init__
+    self.results = batch()
+  File "/usr/local/lib/python3.6/site-packages/sklearn/externals/joblib/parallel.py", line 131, in __call__
+    return [func(*args, **kwargs) for func, args, kwargs in self.items]
+  File "/usr/local/lib/python3.6/site-packages/sklearn/externals/joblib/parallel.py", line 131, in <listcomp>
+    return [func(*args, **kwargs) for func, args, kwargs in self.items]
+  File "/usr/local/lib/python3.6/site-packages/sklearn/model_selection/_validation.py", line 458, in _fit_and_score
+    estimator.fit(X_train, y_train, **fit_params)
+  File "/usr/local/lib/python3.6/site-packages/sklearn/pipeline.py", line 250, in fit
+    self._final_estimator.fit(Xt, y, **fit_params)
+  File "/usr/local/lib/python3.6/site-packages/sklearn/linear_model/logistic.py", line 1222, in fit
+    self.dual)
+  File "/usr/local/lib/python3.6/site-packages/sklearn/linear_model/logistic.py", line 434, in _check_solver_option
+    "ovr, got %s" % multi_class)
+ValueError: multi_class should be either multinomial or ovr, got auto

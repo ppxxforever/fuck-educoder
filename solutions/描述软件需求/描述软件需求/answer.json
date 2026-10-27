@@ -1,0 +1,60 @@
+{
+  "title": "描述软件需求",
+  "kind": "choice",
+  "answer": [
+    {
+      "number": 1,
+      "selected": [
+        "A"
+      ]
+    },
+    {
+      "number": 2,
+      "selected": [
+        "B"
+      ]
+    },
+    {
+      "number": 3,
+      "selected": [
+        "C"
+      ]
+    },
+    {
+      "number": 4,
+      "selected": [
+        "D"
+      ]
+    },
+    {
+      "number": 5,
+      "selected": [
+        "D"
+      ]
+    },
+    {
+      "number": 6,
+      "selected": [
+        "C"
+      ]
+    },
+    {
+      "number": 7,
+      "selected": [
+        "C"
+      ]
+    },
+    {
+      "number": 8,
+      "selected": [
+        "D"
+      ]
+    },
+    {
+      "number": 9,
+      "selected": [
+        "B"
+      ]
+    }
+  ]
+}

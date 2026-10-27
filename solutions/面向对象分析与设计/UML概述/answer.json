@@ -1,0 +1,36 @@
+{
+  "title": "UML概述",
+  "kind": "choice",
+  "answer": [
+    {
+      "number": 1,
+      "selected": [
+        "A"
+      ]
+    },
+    {
+      "number": 2,
+      "selected": [
+        "B"
+      ]
+    },
+    {
+      "number": 3,
+      "selected": [
+        "D"
+      ]
+    },
+    {
+      "number": 4,
+      "selected": [
+        "C"
+      ]
+    },
+    {
+      "number": 5,
+      "selected": [
+        "B"
+      ]
+    }
+  ]
+}

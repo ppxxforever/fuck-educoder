@@ -1,0 +1,20 @@
+{
+  "title": "欠拟合与过拟合",
+  "kind": "choice",
+  "answer": [
+    {
+      "number": 1,
+      "selected": [
+        "B"
+      ]
+    },
+    {
+      "number": 2,
+      "selected": [
+        "A",
+        "B",
+        "D"
+      ]
+    }
+  ]
+}

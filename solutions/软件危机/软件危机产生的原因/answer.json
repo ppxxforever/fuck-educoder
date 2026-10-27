@@ -1,0 +1,24 @@
+{
+  "title": "软件危机产生的原因",
+  "kind": "choice",
+  "answer": [
+    {
+      "number": 1,
+      "selected": [
+        "B"
+      ]
+    },
+    {
+      "number": 2,
+      "selected": [
+        "B"
+      ]
+    },
+    {
+      "number": 3,
+      "selected": [
+        "A"
+      ]
+    }
+  ]
+}

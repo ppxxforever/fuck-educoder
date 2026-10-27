@@ -1,0 +1,66 @@
+{
+  "title": "用例图",
+  "kind": "choice",
+  "answer": [
+    {
+      "number": 1,
+      "selected": [
+        "A"
+      ]
+    },
+    {
+      "number": 2,
+      "selected": [
+        "A"
+      ]
+    },
+    {
+      "number": 3,
+      "selected": [
+        "D"
+      ]
+    },
+    {
+      "number": 4,
+      "selected": [
+        "B"
+      ]
+    },
+    {
+      "number": 5,
+      "selected": [
+        "D"
+      ]
+    },
+    {
+      "number": 6,
+      "selected": [
+        "B"
+      ]
+    },
+    {
+      "number": 7,
+      "selected": [
+        "C"
+      ]
+    },
+    {
+      "number": 8,
+      "selected": [
+        "D"
+      ]
+    },
+    {
+      "number": 9,
+      "selected": [
+        "D"
+      ]
+    },
+    {
+      "number": 10,
+      "selected": [
+        "B"
+      ]
+    }
+  ]
+}

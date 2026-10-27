@@ -1,0 +1,24 @@
+{
+  "title": "经济可行性分析的基本概念以及软件成本预估",
+  "kind": "choice",
+  "answer": [
+    {
+      "number": 1,
+      "selected": [
+        "C"
+      ]
+    },
+    {
+      "number": 2,
+      "selected": [
+        "ABD"
+      ]
+    },
+    {
+      "number": 3,
+      "selected": [
+        "A"
+      ]
+    }
+  ]
+}

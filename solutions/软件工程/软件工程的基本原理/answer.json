@@ -1,0 +1,30 @@
+{
+  "title": "软件工程的基本原理",
+  "kind": "choice",
+  "answer": [
+    {
+      "number": 1,
+      "selected": [
+        "C"
+      ]
+    },
+    {
+      "number": 2,
+      "selected": [
+        "C"
+      ]
+    },
+    {
+      "number": 3,
+      "selected": [
+        "B"
+      ]
+    },
+    {
+      "number": 4,
+      "selected": [
+        "ABCD"
+      ]
+    }
+  ]
+}

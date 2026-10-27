@@ -1,0 +1,9 @@
+CREATE DATABASE IF NOT EXISTS TestDb;
+USE TestDb;
+DROP TABLE IF EXISTS `t_emp`;
+CREATE TABLE IF NOT EXISTS t_emp (
+    id INT PRIMARY KEY,
+    name VARCHAR(32),
+    deptId INT,
+    salary FLOAT
+);

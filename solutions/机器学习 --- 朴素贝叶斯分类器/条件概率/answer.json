@@ -1,0 +1,18 @@
+{
+  "title": "条件概率",
+  "kind": "choice",
+  "answer": [
+    {
+      "number": 1,
+      "selected": [
+        "A"
+      ]
+    },
+    {
+      "number": 2,
+      "selected": [
+        "C"
+      ]
+    }
+  ]
+}

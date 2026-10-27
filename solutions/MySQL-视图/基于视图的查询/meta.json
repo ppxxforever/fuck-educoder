@@ -1,0 +1,11 @@
+{
+  "experiment": "MySQL-视图",
+  "subject": "基于视图的查询",
+  "gid": "er89mvz6uyl4",
+  "path": "src/step2/test2.sql",
+  "kind": "code",
+  "classroom": "",
+  "source": "submit",
+  "completed_at": "2026-10-26T01:15:33+08:00",
+  "file": "answer.sql"
+}

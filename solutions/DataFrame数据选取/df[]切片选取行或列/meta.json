@@ -1,0 +1,11 @@
+{
+  "experiment": "DataFrame数据选取",
+  "subject": "df[]切片选取行或列",
+  "gid": "feu9tkrwlzqj",
+  "path": "F3/F3.py",
+  "kind": "code",
+  "classroom": "",
+  "source": "submit",
+  "completed_at": "2026-10-26T21:41:26+08:00",
+  "file": "answer.py"
+}

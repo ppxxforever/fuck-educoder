@@ -1,0 +1,11 @@
+{
+  "experiment": "MySQL-数据的插入、修改与删除(Insert,Update,Delete)",
+  "subject": "冻结客户资产",
+  "gid": "iufej2xhs3fo",
+  "path": "src/test5/test5.sql",
+  "kind": "code",
+  "classroom": "",
+  "source": "submit",
+  "completed_at": "2026-10-26T01:19:29+08:00",
+  "file": "answer.sql"
+}

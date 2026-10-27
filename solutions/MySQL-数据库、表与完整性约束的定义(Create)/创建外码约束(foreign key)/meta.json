@@ -1,0 +1,11 @@
+{
+  "experiment": "MySQL-数据库、表与完整性约束的定义(Create)",
+  "subject": "创建外码约束(foreign key)",
+  "gid": "us4a6t7rxi8f",
+  "path": "src/step3/test3.sql",
+  "kind": "code",
+  "classroom": "",
+  "source": "submit",
+  "completed_at": "2026-10-26T01:53:42+08:00",
+  "file": "answer.sql"
+}

@@ -1,0 +1,24 @@
+{
+  "title": "线性回归",
+  "kind": "choice",
+  "answer": [
+    {
+      "number": 1,
+      "selected": [
+        "BC"
+      ]
+    },
+    {
+      "number": 2,
+      "selected": [
+        "ABC"
+      ]
+    },
+    {
+      "number": 3,
+      "selected": [
+        "A"
+      ]
+    }
+  ]
+}

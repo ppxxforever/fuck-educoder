@@ -1,0 +1,36 @@
+{
+  "title": "进度管理图示方法-网络图与关键路径",
+  "kind": "choice",
+  "answer": [
+    {
+      "number": 1,
+      "selected": [
+        "B"
+      ]
+    },
+    {
+      "number": 2,
+      "selected": [
+        "B"
+      ]
+    },
+    {
+      "number": 3,
+      "selected": [
+        "C"
+      ]
+    },
+    {
+      "number": 4,
+      "selected": [
+        "C"
+      ]
+    },
+    {
+      "number": 5,
+      "selected": [
+        "D"
+      ]
+    }
+  ]
+}

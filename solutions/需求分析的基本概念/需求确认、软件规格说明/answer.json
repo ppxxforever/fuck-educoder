@@ -1,0 +1,30 @@
+{
+  "title": "需求确认、软件规格说明",
+  "kind": "choice",
+  "answer": [
+    {
+      "number": 1,
+      "selected": [
+        "C"
+      ]
+    },
+    {
+      "number": 2,
+      "selected": [
+        "B"
+      ]
+    },
+    {
+      "number": 3,
+      "selected": [
+        "D"
+      ]
+    },
+    {
+      "number": 4,
+      "selected": [
+        "D"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,7 @@
+共有1组测试集，其中有1组测试结果不匹配。详情如下：
+
+test 1 result=False:
+创建newDir1目录失败
+创建newDir2目录失败
+删除oldDir1目录件失败
+删除oldDir2目录失败

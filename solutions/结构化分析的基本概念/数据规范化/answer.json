@@ -1,0 +1,30 @@
+{
+  "title": "数据规范化",
+  "kind": "choice",
+  "answer": [
+    {
+      "number": 1,
+      "selected": [
+        "D"
+      ]
+    },
+    {
+      "number": 2,
+      "selected": [
+        "D"
+      ]
+    },
+    {
+      "number": 3,
+      "selected": [
+        "A"
+      ]
+    },
+    {
+      "number": 4,
+      "selected": [
+        "B"
+      ]
+    }
+  ]
+}

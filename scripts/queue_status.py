@@ -98,6 +98,8 @@ def show_queue(accounts, state):
             done += 1
         elif status == 'failed':
             failed += 1
+        elif status == 'invalid':
+            failed += 1
         else:
             pending += 1
         note = (a.get('note') or '')[:8]
@@ -109,7 +111,15 @@ def show_queue(accounts, state):
         if status == 'done':
             print(f'{"":14}└ 提交 {st.get("submitted", 0)} / 失败 {st.get("failed", 0)}'
                   f' / 跳过已通过 {st.get("skipped_passed", 0)}')
-        elif status == 'failed':
+            if st.get('unconfirmed') or st.get('stale_homework'):
+                print(f'{"":14}└ ⚠ 评测通过但平台未记通关：关卡 {st.get("unconfirmed", 0)} / '
+                      f'实验 {st.get("stale_homework", 0)}（可 --repair-status 重修）')
+        elif status == 'pending' and (st.get('unfinished') or st.get('unowned')
+                                     or st.get('audit_error')):
+            print(f'{"":14}└ 未完成：未通关关卡 {st.get("unfinished", 0)} / '
+                  f'无主关卡 {st.get("unowned", 0)} / '
+                  f'无法校验 {st.get("audit_error", 0)}（见 data/unfinished.json）')
+        elif status == 'failed' or status == 'invalid':
             print(f'{"":14}└ 错误：{st.get("error", "")[:70]}')
     print('-' * 72)
     print(f'总计 {len(accounts)} 个：完成 {done}，失败 {failed}，待处理 {pending}')

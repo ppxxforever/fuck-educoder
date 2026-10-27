@@ -1,0 +1,12 @@
+{
+  "experiment": "MySQL-单表查询(模式匹配,null,去重,and,or)",
+  "subject": "带 AND 与 OR 的多条件查询",
+  "gid": "lz5rmjxkb83y",
+  "path": "src/step4/test.sql",
+  "kind": "code",
+  "classroom": "",
+  "passed": true,
+  "updated_at": "2026-10-26T01:39:06+08:00",
+  "file": "answer.sql",
+  "passed_at": "2026-10-26T01:40:00+08:00"
+}

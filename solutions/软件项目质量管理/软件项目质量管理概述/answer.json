@@ -1,0 +1,36 @@
+{
+  "title": "软件项目质量管理概述",
+  "kind": "choice",
+  "answer": [
+    {
+      "number": 1,
+      "selected": [
+        "C"
+      ]
+    },
+    {
+      "number": 2,
+      "selected": [
+        "C"
+      ]
+    },
+    {
+      "number": 3,
+      "selected": [
+        "D"
+      ]
+    },
+    {
+      "number": 4,
+      "selected": [
+        "D"
+      ]
+    },
+    {
+      "number": 5,
+      "selected": [
+        "B"
+      ]
+    }
+  ]
+}

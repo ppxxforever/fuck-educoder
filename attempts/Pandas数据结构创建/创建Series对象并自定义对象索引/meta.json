@@ -1,0 +1,13 @@
+{
+  "experiment": "Pandas数据结构创建",
+  "subject": "创建Series对象并自定义对象索引",
+  "gid": "s8xt5gbev6z3",
+  "path": "p2/p2.py",
+  "kind": "code",
+  "classroom": "",
+  "passed": true,
+  "answer_sha256": "2d7d92b45ffd26e6feaa046110e568d539bc04d20b9d9575bf1e2ce99a750cac",
+  "updated_at": "2026-10-26T21:46:28+08:00",
+  "file": "answer.py",
+  "passed_at": "2026-10-26T21:46:53+08:00"
+}

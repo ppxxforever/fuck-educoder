@@ -1,0 +1,24 @@
+{
+  "title": "人机交互",
+  "kind": "choice",
+  "answer": [
+    {
+      "number": 1,
+      "selected": [
+        "C"
+      ]
+    },
+    {
+      "number": 2,
+      "selected": [
+        "A"
+      ]
+    },
+    {
+      "number": 3,
+      "selected": [
+        "ACD"
+      ]
+    }
+  ]
+}

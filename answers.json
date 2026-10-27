@@ -1928,6 +1928,12 @@
               "answered": true,
               "answer": [
                 {
+                  "number": 1,
+                  "selected": [
+                    "B"
+                  ]
+                },
+                {
                   "number": 2,
                   "selected": [
                     "A",
@@ -1937,7 +1943,7 @@
                   ]
                 }
               ],
-              "source": "ai"
+              "source": "platform"
             },
             {
               "level_id": "L005",
@@ -1974,7 +1980,7 @@
                   ]
                 }
               ],
-              "source": "unknown"
+              "source": "platform"
             }
           ]
         },
@@ -1993,6 +1999,30 @@
               "answered": true,
               "answer": [
                 {
+                  "number": 1,
+                  "selected": [
+                    "A"
+                  ]
+                },
+                {
+                  "number": 2,
+                  "selected": [
+                    "B"
+                  ]
+                },
+                {
+                  "number": 3,
+                  "selected": [
+                    "C"
+                  ]
+                },
+                {
+                  "number": 4,
+                  "selected": [
+                    "D"
+                  ]
+                },
+                {
                   "number": 5,
                   "selected": [
                     "A",
@@ -2004,12 +2034,13 @@
                 {
                   "number": 6,
                   "selected": [
+                    "A",
                     "B",
                     "C"
                   ]
                 }
               ],
-              "source": "ai"
+              "source": "platform"
             }
           ]
         },
@@ -3852,7 +3883,7 @@
               "answered": true,
               "answer": {
                 "language": "",
-                "code": "import torch\n\n\ndef rnn(input, state, params):\n    \"\"\"\n    循环神经网络的前向传播\n    :param input: 输入，形状为 [ batch_size,num_inputs ]\n    :param state: 上一时刻循环神经网络的状态，形状为 [ batch_size,num_hiddens ]\n    :param params: 循环神经网络的所使用的权重以及偏置\n    :return: 输出结果和此时刻网络的状态\n    \"\"\"\n    W_xh, W_hh, b_h, W_hq, b_q = params\n    H = state\n    ########## Begin ##########\n    # 输入层到隐藏层（同时用到上一时刻的状态），再过 tanh 激活\n    H = torch.tanh(torch.matmul(input, W_xh) + torch.matmul(H, W_hh) + b_h)\n    # 隐藏层到输出层\n    Y = torch.matmul(H, W_hq) + b_q\n    ########## End ##########\n    return Y, H\n\n\ndef init_rnn_state(num_inputs, num_hiddens):\n    \"\"\"\n    循环神经网络的初始状态的初始化\n    :param num_inputs: 输入层中神经元的个数\n    :param num_hiddens: 隐藏层中神经元的个数\n    :return: 循环神经网络初始状态\n    \"\"\"\n    ########## Begin ##########\n    init_state = torch.zeros((num_inputs, num_hiddens))\n    ########## End ##########\n    return init_state\n"
+                "code": "import torch\n\n\ndef rnn(input, state, params):\n    \"\"\"\n    循环神经网络的前向传播\n    :param input: 输入，形状为 [ batch_size,num_inputs ]\n    :param state: 上一时刻循环神经网络的状态，形状为 [ batch_size,num_hiddens ]\n    :param params: 循环神经网络的所使用的权重以及偏置\n    :return: 输出结果和此时刻网络的状态\n    \"\"\"\n    W_xh, W_hh, b_h, W_hq, b_q = params\n    H = state\n    ########## Begin ##########\n    H = torch.tanh(torch.matmul(input, W_xh) + torch.matmul(H, W_hh) + b_h)\n    Y = torch.matmul(H, W_hq) + b_q\n    ########## End ##########\n    return Y, H\n\n\ndef init_rnn_state(num_inputs, num_hiddens):\n    \"\"\"\n    循环神经网络的初始状态的初始化\n    :param num_inputs: 输入层中神经元的个数\n    :param num_hiddens: 隐藏层中神经元的个数\n    :return: 循环神经网络初始状态\n    \"\"\"\n    ########## Begin ##########\n    init_state = torch.zeros((num_inputs, num_hiddens))\n    ########## End ##########\n    return init_state"
               },
               "source": "ai"
             },
@@ -3867,7 +3898,7 @@
               "answered": true,
               "answer": {
                 "language": "",
-                "code": "import torch\n\ndef lstm(X, state, params):\n    W_xi, W_hi, b_i, W_xf, W_hf, b_f, W_xo, W_ho, b_o, W_xc, W_hc, b_c, W_hq, b_q = params\n    (H, C) = state\n    I = torch.sigmoid(torch.matmul(X, W_xi) + torch.matmul(H, W_hi) + b_i)\n    F = torch.sigmoid(torch.matmul(X, W_xf) + torch.matmul(H, W_hf) + b_f)\n    O = torch.sigmoid(torch.matmul(X, W_xo) + torch.matmul(H, W_ho) + b_o)\n    C_tilda = torch.tanh(torch.matmul(X, W_xc) + torch.matmul(H, W_hc) + b_c)\n    C = F * C + I * C_tilda\n    H = O * torch.tanh(C)\n    Y = torch.matmul(H, W_hq) + b_q\n    return Y, (H, C)\n"
+                "code": "import torch\nfrom torch import  nn\nimport numpy as np\n\n\ndef lstm(X, state, params):\n    [W_xi, W_hi, b_i, W_xf, W_hf, b_f, W_xo, W_ho, b_o, W_xc, W_hc, b_c, W_hq, b_q] = params\n    (H, C) = state\n    I = torch.sigmoid(torch.matmul(X, W_xi) + torch.matmul(H, W_hi) + b_i)\n    F = torch.sigmoid(torch.matmul(X, W_xf) + torch.matmul(H, W_hf) + b_f)\n    O = torch.sigmoid(torch.matmul(X, W_xo) + torch.matmul(H, W_ho) + b_o)\n    C_tilda = torch.tanh(torch.matmul(X, W_xc) + torch.matmul(H, W_hc) + b_c)\n    C = F * C + I * C_tilda\n    H = O * C.tanh()\n    Y = torch.matmul(H, W_hq) + b_q\n    return Y, (H, C)\n\n"
               },
               "source": "ai"
             }
@@ -4119,7 +4150,7 @@
               "answered": true,
               "answer": {
                 "language": "",
-                "code": "#encoding=utf8\nfrom sklearn.tree import DecisionTreeClassifier\nfrom sklearn.ensemble import AdaBoostClassifier\ndef ada_classifier(train_data,train_label,test_data):\n    '''\n    input:train_data(ndarray):训练数据\n          train_label(ndarray):训练标签\n          test_data(ndarray):测试标签\n    output:predict(ndarray):预测结果\n    '''\n    #********* Begin *********#\n    clf = AdaBoostClassifier(DecisionTreeClassifier(max_depth=3), n_estimators=100)\n    clf.fit(train_data, train_label)\n    predict = clf.predict(test_data)\n    #********* End *********# \n    return predict"
+                "code": "#encoding=utf8\nfrom sklearn.ensemble import AdaBoostClassifier\n\ndef ada_classifier(train_data,train_label,test_data):\n    '''\n    input:train_data(ndarray):训练数据\n          train_label(ndarray):训练标签\n          test_data(ndarray):测试标签\n    output:predict(ndarray):预测结果\n    '''\n    #********* Begin *********#\n    clf = AdaBoostClassifier(n_estimators=200, learning_rate=0.5, random_state=42)\n    clf.fit(train_data, train_label)\n    predict = clf.predict(test_data)\n    #********* End *********# \n    return predict"
               },
               "source": "ai"
             }
@@ -4237,7 +4268,7 @@
               "answered": true,
               "answer": {
                 "language": "",
-                "code": "#encoding=utf8\nimport numpy as np\n\n# 计算一个样本与数据集中所有样本的欧氏距离的平方\ndef euclidean_distance(one_sample, X):\n    one_sample = one_sample.reshape(1, -1)\n    distances = np.power(np.tile(one_sample, (X.shape[0], 1)) - X, 2).sum(axis=1)\n    return distances\n\nclass Kmeans():\n    \"\"\"Kmeans聚类算法.\n    Parameters:\n    -----------\n    k: int\n        聚类的数目.\n    max_iterations: int\n        最大迭代次数. \n    varepsilon: float\n        判断是否收敛, 如果上一次的所有k个聚类中心与本次的所有k个聚类中心的差都小于varepsilon, \n        则说明算法已经收敛\n    \"\"\"\n    def __init__(self, k=2, max_iterations=500, varepsilon=0.0001):\n        self.k = k\n        self.max_iterations = max_iterations\n        self.varepsilon = varepsilon\n        np.random.seed(1)\n    #********* Begin *********#\n    # 从所有样本中随机选取self.k样本作为初始的聚类中心\n    def init_random_centroids(self, X):\n        n_samples, n_features = np.shape(X)\n        centroids = np.zeros((self.k, n_features))\n        for i in range(self.k):\n            centroids[i] = X[np.random.choice(range(n_samples))]\n        return centroids\n\n    # 返回距离该样本最近的一个中心索引[0, self.k)\n    def _closest_centroid(self, sample, centroids):\n        distances = [np.linalg.norm(sample - c) for c in centroids]\n        return int(np.argmin(distances))\n\n    # 将所有样本进行归类，归类规则就是将该样本归类到与其最近的中心\n    def create_clusters(self, centroids, X):\n        n_samples = np.shape(X)[0]\n        clusters = [[] for _ in range(self.k)]\n        for i in range(n_samples):\n            clusters[self._closest_centroid(X[i], centroids)].append(i)\n        return clusters\n\n    # 对中心进行更新\n    def update_centroids(self, clusters, X):\n        n_features = np.shape(X)[1]\n        centroids = np.zeros((self.k, n_features))\n        for i, cluster in enumerate(clusters):\n            if len(cluster) == 0:\n                centroids[i] = X[np.random.choice(range(np.shape(X)[0]))]\n            else:\n                centroids[i] = np.mean(X[cluster], axis=0)\n        return centroids\n\n    # 将所有样本进行归类，其所在的类别的索引就是其类别标签\n    def get_cluster_labels(self, clusters, X):\n        y_pred = np.zeros(np.shape(X)[0])\n        for cluster_i, cluster in enumerate(clusters):\n            for sample_i in cluster:\n                y_pred[sample_i] = cluster_i\n        return y_pred\n\n    # 对整个数据集X进行Kmeans聚类，返回其聚类的标签\n    def predict(self, X):\n        # 从所有样本中随机选取self.k样本作为初始的聚类中心\n        centroids = self.init_random_centroids(X)\n\n        # 迭代，直到算法收敛(上一次的聚类中心和这一次的聚类中心几乎重合)或者达到最大迭代次数\n        for _ in range(self.max_iterations):\n            # 将所有进行归类，归类规则就是将该样本归类到与其最近的中心\n            clusters = self.create_clusters(centroids, X)\n\n            # 计算新的聚类中心\n            prev_centroids = centroids\n            centroids = self.update_centroids(clusters, X)\n\n            # 如果聚类中心几乎没有变化，说明算法已经收敛，退出迭代\n            diff = centroids - prev_centroids\n            if np.linalg.norm(diff) < self.varepsilon:\n                break\n\n        return self.get_cluster_labels(clusters, X)\n    #********* End *********#"
+                "code": "#encoding=utf8\nimport numpy as np\n\n# 计算一个样本与数据集中所有样本的欧氏距离的平方\ndef euclidean_distance(one_sample, X):\n    one_sample = one_sample.reshape(1, -1)\n    distances = np.power(np.tile(one_sample, (X.shape[0], 1)) - X, 2).sum(axis=1)\n    return distances\n\nclass Kmeans():\n    \"\"\"Kmeans聚类算法.\n    Parameters:\n    -----------\n    k: int\n        聚类的数目.\n    max_iterations: int\n        最大迭代次数. \n    varepsilon: float\n        判断是否收敛, 如果上一次的所有k个聚类中心与本次的所有k个聚类中心的差都小于varepsilon, \n        则说明算法已经收敛\n    \"\"\"\n    def __init__(self, k=2, max_iterations=500, varepsilon=0.0001):\n        self.k = k\n        self.max_iterations = max_iterations\n        self.varepsilon = varepsilon\n        np.random.seed(1)\n    #********* Begin *********#\n    # 从所有样本中随机选取self.k样本作为初始的聚类中心\n    def init_random_centroids(self, X):\n        n_samples, n_features = np.shape(X)\n        centroids = np.zeros((self.k, n_features))\n        # k-means++ 初始化\n        # 随机选择第一个中心\n        first_idx = np.random.choice(n_samples)\n        centroids[0] = X[first_idx]\n        # 依次选择剩余的中心\n        for i in range(1, self.k):\n            # 计算每个样本到最近已选中心的距离平方\n            distances = np.array([min([np.linalg.norm(X[j] - centroids[c])**2 for c in range(i)]) for j in range(n_samples)])\n            # 如果所有距离为0，则均匀随机选择\n            if np.sum(distances) == 0:\n                probs = np.ones(n_samples) / n_samples\n            else:\n                probs = distances / np.sum(distances)\n            next_idx = np.random.choice(n_samples, p=probs)\n            centroids[i] = X[next_idx]\n        return centroids\n\n    # 返回距离该样本最近的一个中心索引[0, self.k)\n    def _closest_centroid(self, sample, centroids):\n        distances = [np.linalg.norm(sample - c) for c in centroids]\n        return int(np.argmin(distances))\n\n    # 将所有样本进行归类，归类规则就是将该样本归类到与其最近的中心\n    def create_clusters(self, centroids, X):\n        n_samples = np.shape(X)[0]\n        clusters = [[] for _ in range(self.k)]\n        for i in range(n_samples):\n            clusters[self._closest_centroid(X[i], centroids)].append(i)\n        return clusters\n\n    # 对中心进行更新\n    def update_centroids(self, clusters, X):\n        n_features = np.shape(X)[1]\n        centroids = np.zeros((self.k, n_features))\n        for i, cluster in enumerate(clusters):\n            if len(cluster) == 0:\n                centroids[i] = X[np.random.choice(np.shape(X)[0])]\n            else:\n                centroids[i] = np.mean(X[cluster], axis=0)\n        return centroids\n\n    # 将所有样本进行归类，其所在的类别的索引就是其类别标签\n    def get_cluster_labels(self, clusters, X):\n        y_pred = np.zeros(np.shape(X)[0], dtype=int)\n        for cluster_i, cluster in enumerate(clusters):\n            for sample_i in cluster:\n                y_pred[sample_i] = cluster_i\n        return y_pred\n\n    # 对整个数据集X进行Kmeans聚类，返回其聚类的标签\n    def predict(self, X):\n        # 对数据进行标准化\n        mean = np.mean(X, axis=0)\n        std = np.std(X, axis=0)\n        std[std == 0] = 1\n        X_scaled = (X - mean) / std\n\n        best_labels = None\n        best_sse = np.inf\n        n_init = 10  # 多次初始化次数\n\n        for init_idx in range(n_init):\n            # 设置不同的随机种子，以获得不同的初始中心\n            np.random.seed(init_idx)\n            centroids = self.init_random_centroids(X_scaled)\n\n            for _ in range(self.max_iterations):\n                clusters = self.create_clusters(centroids, X_scaled)\n                prev_centroids = centroids\n                centroids = self.update_centroids(clusters, X_scaled)\n                diff = centroids - prev_centroids\n                if np.linalg.norm(diff) < self.varepsilon:\n                    break\n\n            # 计算该次聚类的SSE\n            sse = 0.0\n            for i, cluster in enumerate(clusters):\n                if len(cluster) > 0:\n                    sse += np.sum((X_scaled[cluster] - centroids[i])**2)\n            if sse < best_sse:\n                best_sse = sse\n                best_labels = self.get_cluster_labels(clusters, X_scaled)\n\n        return best_labels\n    #********* End *********#"
               },
               "source": "ai"
             },
@@ -4382,7 +4413,7 @@
               "answered": true,
               "answer": {
                 "language": "",
-                "code": "import numpy as np\nclass DecisionTree(object):\n    def __init__(self):\n        #决策树模型\n        self.tree = {}\n    def calcInfoGain(self, feature, label, index):\n        '''\n        计算信息增益\n        :param feature:测试用例中字典里的feature，类型为ndarray\n        :param label:测试用例中字典里的label，类型为ndarray\n        :param index:测试用例中字典里的index，即feature部分特征列的索引。该索引指的是feature中第几个特征，如index:0表示使用第一个特征来计算信息增益。\n        :return:信息增益，类型float\n        '''\n        # 计算熵\n        def calcInfoEntropy(label):\n            '''\n            计算信息熵\n            :param label:数据集中的标签，类型为ndarray\n            :return:信息熵，类型float\n            '''\n            label_set = set(label)\n            result = 0\n            for l in label_set:\n                count = 0\n                for j in range(len(label)):\n                    if label[j] == l:\n                        count += 1\n                # 计算标签在数据集中出现的概率\n                p = count / len(label)\n                # 计算熵\n                result -= p * np.log2(p)\n            return result\n        # 计算条件熵\n        def calcHDA(feature, label, index, value):\n            '''\n            计算信息熵\n            :param feature:数据集中的特征，类型为ndarray\n            :param label:数据集中的标签，类型为ndarray\n            :param index:需要使用的特征列索引，类型为int\n            :param value:index所表示的特征列中需要考察的特征值，类型为int\n            :return:信息熵，类型float\n            '''\n            count = 0\n            # sub_feature和sub_label表示根据特征列和特征值分割出的子数据集中的特征和标签\n            sub_feature = []\n            sub_label = []\n            for i in range(len(feature)):\n                if feature[i][index] == value:\n                    count += 1\n                    sub_feature.append(feature[i])\n                    sub_label.append(label[i])\n            pHA = count / len(feature)\n            e = calcInfoEntropy(sub_label)\n            return pHA * e\n        base_e = calcInfoEntropy(label)\n        f = np.array(feature)\n        # 得到指定特征列的值的集合\n        f_set = set(f[:, index])\n        sum_HDA = 0\n        # 计算条件熵\n        for value in f_set:\n            sum_HDA += calcHDA(feature, label, index, value)\n        # 计算信息增益\n        return base_e - sum_HDA\n    # 获得信息增益最高的特征\n    def getBestFeature(self, feature, label):\n        max_infogain = 0\n        best_feature = 0\n        for i in range(len(feature[0])):\n            infogain = self.calcInfoGain(feature, label, i)\n            if infogain > max_infogain:\n                max_infogain = infogain\n                best_feature = i\n        return best_feature\n    def createTree(self, feature, label):\n        # 样本里都是同一个label没必要继续分叉了\n        if len(set(label)) == 1:\n            return label[0]\n        # 样本中只有一个特征或者所有样本的特征都一样的话就看哪个label的票数高\n        if len(feature[0]) == 1 or len(np.unique(feature, axis=0)) == 1:\n            vote = {}\n            for l in label:\n                if l in vote.keys():\n                    vote[l] += 1\n                else:\n                    vote[l] = 1\n            max_count = 0\n            vote_label = None\n            for k, v in vote.items():\n                if v > max_count:\n                    max_count = v\n                    vote_label = k\n            return vote_label\n        # 根据信息增益拿到特征的索引\n        best_feature = self.getBestFeature(feature, label)\n        tree = {best_feature: {}}\n        f = np.array(feature)\n        # 拿到bestfeature的所有特征值\n        f_set = set(f[:, best_feature])\n        # 构建对应特征值的子样本集sub_feature, sub_label\n        for v in f_set:\n            sub_feature = []\n            sub_label = []\n            for i in range(len(feature)):\n                if feature[i][best_feature] == v:\n                    sub_feature.append(feature[i])\n                    sub_label.append(label[i])\n            # 递归构建决策树\n            tree[best_feature][v] = self.createTree(sub_feature, sub_label)\n        return tree\n    def fit(self, feature, label):\n        '''\n        :param feature: 训练集数据，类型为ndarray\n        :param label:训练集标签，类型为ndarray\n        :return: None\n        '''\n        #************* Begin ************#\n        self.tree = self.createTree(feature, label)\n        #************* End **************#\n    def predict(self, feature):\n        '''\n        :param feature:测试集数据，类型为ndarray\n        :return:预测结果，如np.array([0, 1, 2, 2, 1, 0])\n        '''\n        #************* Begin ************#\n        result = []\n\n        def classify(tree, feature):\n            if not isinstance(tree, dict):\n                return tree\n            t_index, t_value = list(tree.items())[0]\n            f_value = feature[t_index]\n            if isinstance(t_value, dict):\n                return classify(tree[t_index][f_value], feature)\n            return t_value\n\n        for f in feature:\n            result.append(classify(self.tree, f))\n        return np.array(result)\n        #************* End **************#"
+                "code": "import numpy as np\nclass DecisionTree(object):\n    def __init__(self):\n        #决策树模型\n        self.tree = {}\n    def calcInfoGain(self, feature, label, index):\n        '''\n        计算信息增益\n        :param feature:测试用例中字典里的feature，类型为ndarray\n        :param label:测试用例中字典里的label，类型为ndarray\n        :param index:测试用例中字典里的index，即feature部分特征列的索引。该索引指的是feature中第几个特征，如index:0表示使用第一个特征来计算信息增益。\n        :return:信息增益，类型float\n        '''\n        # 计算熵\n        def calcInfoEntropy(label):\n            '''\n            计算信息熵\n            :param label:数据集中的标签，类型为ndarray\n            :return:信息熵，类型float\n            '''\n            label_set = set(label)\n            result = 0\n            for l in label_set:\n                count = 0\n                for j in range(len(label)):\n                    if label[j] == l:\n                        count += 1\n                # 计算标签在数据集中出现的概率\n                p = count / len(label)\n                # 计算熵\n                result -= p * np.log2(p)\n            return result\n        # 计算条件熵\n        def calcHDA(feature, label, index, value):\n            '''\n            计算信息熵\n            :param feature:数据集中的特征，类型为ndarray\n            :param label:数据集中的标签，类型为ndarray\n            :param index:需要使用的特征列索引，类型为int\n            :param value:index所表示的特征列中需要考察的特征值，类型为int\n            :return:信息熵，类型float\n            '''\n            count = 0\n            # sub_feature和sub_label表示根据特征列和特征值分割出的子数据集中的特征和标签\n            sub_feature = []\n            sub_label = []\n            for i in range(len(feature)):\n                if feature[i][index] == value:\n                    count += 1\n                    sub_feature.append(feature[i])\n                    sub_label.append(label[i])\n            pHA = count / len(feature)\n            e = calcInfoEntropy(sub_label)\n            return pHA * e\n        base_e = calcInfoEntropy(label)\n        f = np.array(feature)\n        # 得到指定特征列的值的集合\n        f_set = set(f[:, index])\n        sum_HDA = 0\n        # 计算条件熵\n        for value in f_set:\n            sum_HDA += calcHDA(feature, label, index, value)\n        # 计算信息增益\n        return base_e - sum_HDA\n    # 获得信息增益最高的特征\n    def getBestFeature(self, feature, label):\n        max_infogain = 0\n        best_feature = 0\n        for i in range(len(feature[0])):\n            infogain = self.calcInfoGain(feature, label, i)\n            if infogain > max_infogain:\n                max_infogain = infogain\n                best_feature = i\n        return best_feature\n    def createTree(self, feature, label):\n        # 样本里都是同一个label没必要继续分叉了\n        if len(set(label)) == 1:\n            return label[0]\n        # 样本中只有一个特征或者所有样本的特征都一样的话就看哪个label的票数高\n        if len(feature[0]) == 1 or len(np.unique(feature, axis=0)) == 1:\n            vote = {}\n            for l in label:\n                if l in vote.keys():\n                    vote[l] += 1\n                else:\n                    vote[l] = 1\n            max_count = 0\n            vote_label = None\n            for k, v in vote.items():\n                if v > max_count:\n                    max_count = v\n                    vote_label = k\n            return vote_label\n        # 根据信息增益拿到特征的索引\n        best_feature = self.getBestFeature(feature, label)\n        tree = {best_feature: {}}\n        f = np.array(feature)\n        # 拿到bestfeature的所有特征值\n        f_set = set(f[:, best_feature])\n        # 构建对应特征值的子样本集sub_feature, sub_label\n        for v in f_set:\n            sub_feature = []\n            sub_label = []\n            for i in range(len(feature)):\n                if feature[i][best_feature] == v:\n                    sub_feature.append(feature[i])\n                    sub_label.append(label[i])\n            # 递归构建决策树\n            tree[best_feature][v] = self.createTree(sub_feature, sub_label)\n        return tree\n    def fit(self, feature, label):\n        '''\n        :param feature: 训练集数据，类型为ndarray\n        :param label:训练集标签，类型为ndarray\n        :return: None\n        '''\n        #************* Begin ************#\n        self.tree = self.createTree(feature, label)\n        #************* End **************#\n    def predict(self, feature):\n        '''\n        :param feature:测试集数据，类型为ndarray\n        :return:预测结果，如np.array([0, 1, 2, 2, 1, 0])\n        '''\n        #************* Begin ************#\n        result = []\n\n        def classify(tree, feature):\n            if not isinstance(tree, dict):\n                return tree\n            t_index = list(tree.keys())[0]\n            t_value = tree[t_index]\n            f_value = feature[t_index]\n            if f_value in t_value:\n                return classify(t_value[f_value], feature)\n            else:\n                # 遇到未知特征值时，返回该子树中出现最多的标签或默认值\n                if isinstance(t_value, dict):\n                    vals = list(t_value.values())\n                    if vals:\n                        return classify(vals[0], feature)\n                return 0\n\n        for f in feature:\n            result.append(classify(self.tree, f))\n        return np.array(result)\n        #************* End **************#"
               },
               "source": "ai"
             },
@@ -4397,7 +4428,7 @@
               "answered": true,
               "answer": {
                 "language": "",
-                "code": "import numpy as np\n\ndef calcInfoGain(feature, label, index):\n    '''\n    计算信息增益\n    :param feature:测试用例中字典里的feature，类型为ndarray\n    :param label:测试用例中字典里的label，类型为ndarray\n    :param index:测试用例中字典里的index，即feature部分特征列的索引。该索引指的是feature中第几个特征，如index:0表示使用第一个特征来计算信息增益。\n    :return:信息增益，类型float\n    '''\n    # 计算熵\n    def calcInfoEntropy(label):\n        '''\n        计算信息熵\n        :param label:数据集中的标签，类型为ndarray\n        :return:信息熵，类型float\n        '''\n\n        label_set = set(label)\n        result = 0\n        for l in label_set:\n            count = 0\n            for j in range(len(label)):\n                if label[j] == l:\n                    count += 1\n            # 计算标签在数据集中出现的概率\n            p = count / len(label)\n            # 计算熵\n            result -= p * np.log2(p)\n        return result\n\n    # 计算条件熵\n    def calcHDA(feature, label, index, value):\n        '''\n        计算信息熵\n        :param feature:数据集中的特征，类型为ndarray\n        :param label:数据集中的标签，类型为ndarray\n        :param index:需要使用的特征列索引，类型为int\n        :param value:index所表示的特征列中需要考察的特征值，类型为int\n        :return:信息熵，类型float\n        '''\n        count = 0\n        # sub_label表示根据特征列和特征值分割出的子数据集中的标签\n        sub_label = []\n        for i in range(len(feature)):\n            if feature[i][index] == value:\n                count += 1\n                sub_label.append(label[i])\n        pHA = count / len(feature)\n        e = calcInfoEntropy(sub_label)\n        return pHA * e\n\n    base_e = calcInfoEntropy(label)\n    f = np.array(feature)\n    # 得到指定特征列的值的集合\n    f_set = set(f[:, index])\n    sum_HDA = 0\n    # 计算条件熵\n    for value in f_set:\n        sum_HDA += calcHDA(feature, label, index, value)\n    # 计算信息增益\n    return base_e - sum_HDA\n\n\ndef calcInfoGainRatio(feature, label, index):\n    '''\n    计算信息增益率\n    :param feature:测试用例中字典里的feature，类型为ndarray\n    :param label:测试用例中字典里的label，类型为ndarray\n    :param index:测试用例中字典里的index，即feature部分特征列的索引。该索引指的是feature中第几个特征，如index:0表示使用第一个特征来计算信息增益。\n    :return:信息增益率，类型float\n    '''\n\n    #********* Begin *********#\n    # 信息增益\n    info_gain = calcInfoGain(feature, label, index)\n    # 特征 index 的固有值（分裂信息）\n    f = np.array(feature)\n    f_set = set(f[:, index])\n    split_info = 0\n    for value in f_set:\n        count = 0\n        for i in range(len(feature)):\n            if feature[i][index] == value:\n                count += 1\n        p = count / len(feature)\n        split_info -= p * np.log2(p)\n    if split_info == 0:\n        return 0\n    # 信息增益率 = 信息增益 / 固有值\n    return info_gain / split_info\n    #********* End *********#"
+                "code": "import numpy as np\n\ndef calcInfoGain(feature, label, index):\n    '''\n    计算信息增益\n    :param feature:测试用例中字典里的feature，类型为ndarray\n    :param label:测试用例中字典里的label，类型为ndarray\n    :param index:测试用例中字典里的index，即feature部分特征列的索引。该索引指的是feature中第几个特征，如index:0表示使用第一个特征来计算信息增益。\n    :return:信息增益，类型float\n    '''\n    # 计算熵\n    def calcInfoEntropy(label):\n        '''\n        计算信息熵\n        :param label:数据集中的标签，类型为ndarray\n        :return:信息熵，类型float\n        '''\n        label_set = set(label)\n        result = 0.0\n        for l in label_set:\n            count = 0\n            for j in range(len(label)):\n                if label[j] == l:\n                    count += 1\n            # 计算标签在数据集中出现的概率\n            p = count / len(label)\n            # 计算熵\n            result -= p * np.log2(p)\n        return result\n\n    # 计算条件熵\n    def calcHDA(feature, label, index, value):\n        '''\n        计算信息熵\n        :param feature:数据集中的特征，类型为ndarray\n        :param label:数据集中的标签，类型为ndarray\n        :param index:需要使用的特征列索引，类型为int\n        :param value:index所表示的特征列中需要考察的特征值，类型为int\n        :return:信息熵，类型float\n        '''\n        count = 0\n        # sub_label表示根据特征列和特征值分割出的子数据集中的标签\n        sub_label = []\n        for i in range(len(feature)):\n            if feature[i][index] == value:\n                count += 1\n                sub_label.append(label[i])\n        pHA = count / len(feature)\n        e = calcInfoEntropy(sub_label)\n        return pHA * e\n\n    base_e = calcInfoEntropy(label)\n    f = np.array(feature)\n    # 得到指定特征列的值的集合\n    f_set = set(f[:, index])\n    sum_HDA = 0.0\n    # 计算条件熵\n    for value in f_set:\n        sum_HDA += calcHDA(feature, label, index, value)\n    # 计算信息增益\n    return base_e - sum_HDA\n\n\ndef calcInfoGainRatio(feature, label, index):\n    '''\n    计算信息增益率\n    :param feature:测试用例中字典里的feature，类型为ndarray\n    :param label:测试用例中字典里的label，类型为ndarray\n    :param index:测试用例中字典里的index，即feature部分特征列的索引。该索引指的是feature中第几个特征，如index:0表示使用第一个特征来计算信息增益率。\n    :return:信息增益率，类型float\n    '''\n    # 信息增益\n    info_gain = calcInfoGain(feature, label, index)\n    # 特征 index 的固有值（分裂信息）\n    f = np.array(feature)\n    f_set = set(f[:, index])\n    split_info = 0.0\n    total = len(feature)\n    for value in f_set:\n        count = 0\n        for i in range(total):\n            if feature[i][index] == value:\n                count += 1\n        p = count / total\n        split_info -= p * np.log2(p)\n    if split_info == 0:\n        return 0.0\n    # 信息增益率 = 信息增益 / 固有值\n    return info_gain / split_info"
               },
               "source": "ai"
             },
@@ -4412,7 +4443,7 @@
               "answered": true,
               "answer": {
                 "language": "",
-                "code": "import numpy as np\n\ndef calcGini(feature, label, index):\n    '''\n    计算基尼系数\n    :param feature:测试用例中字典里的feature，类型为ndarray\n    :param label:测试用例中字典里的label，类型为ndarray\n    :param index:测试用例中字典里的index，即feature部分特征列的索引。该索引指的是feature中第几个特征，如index:0表示使用第一个特征来计算信息增益。\n    :return:基尼系数，类型float\n    '''\n\n    #********* Begin *********#\n    f = np.array(feature)\n    f_set = set(f[:, index])\n    gini = 0.0\n    for value in f_set:\n        sub_label = []\n        for i in range(len(feature)):\n            if feature[i][index] == value:\n                sub_label.append(label[i])\n        # 子集的基尼值\n        p_sum = 0.0\n        for l in set(sub_label):\n            p = sub_label.count(l) / len(sub_label)\n            p_sum += p ** 2\n        # 按子集样本占比加权求和\n        gini += (len(sub_label) / len(feature)) * (1 - p_sum)\n    return gini\n    #********* End *********#"
+                "code": "import numpy as np\n\ndef calcGini(feature, label, index):\n    '''\n    计算基尼系数\n    :param feature:测试用例中字典里的feature，类型为ndarray\n    :param label:测试用例中字典里的label，类型为ndarray\n    :param index:测试用例中字典里的index，即feature部分特征列的索引。该索引指的是feature中第几个特征，如index:0表示使用第一个特征来计算信息增益。\n    :return:基尼系数，类型float\n    '''\n\n    #********* Begin *********#\n    feature = np.array(feature)\n    label = np.array(label)\n    f_set = set(feature[:, index])\n    gini = 0.0\n    for value in f_set:\n        sub_label = label[feature[:, index] == value]\n        p_sum = 0.0\n        for l in set(sub_label):\n            p = np.sum(sub_label == l) / len(sub_label)\n            p_sum += p ** 2\n        gini += (len(sub_label) / len(feature)) * (1 - p_sum)\n    return gini\n    #********* End *********#"
               },
               "source": "ai"
             },
@@ -4427,7 +4458,7 @@
               "answered": true,
               "answer": {
                 "language": "",
-                "code": "import numpy as np\nfrom copy import deepcopy\nclass DecisionTree(object):\n    def __init__(self):\n        #决策树模型\n        self.tree = {}\n    def calcInfoGain(self, feature, label, index):\n        '''\n        计算信息增益\n        :param feature:测试用例中字典里的feature，类型为ndarray\n        :param label:测试用例中字典里的label，类型为ndarray\n        :param index:测试用例中字典里的index，即feature部分特征列的索引。该索引指的是feature中第几个特征，如index:0表示使用第一个特征来计算信息增益。\n        :return:信息增益，类型float\n        '''\n        # 计算熵\n        def calcInfoEntropy(feature, label):\n            '''\n            计算信息熵\n            :param feature:数据集中的特征，类型为ndarray\n            :param label:数据集中的标签，类型为ndarray\n            :return:信息熵，类型float\n            '''\n            label_set = set(label)\n            result = 0\n            for l in label_set:\n                count = 0\n                for j in range(len(label)):\n                    if label[j] == l:\n                        count += 1\n                # 计算标签在数据集中出现的概率\n                p = count / len(label)\n                # 计算熵\n                result -= p * np.log2(p)\n            return result\n        # 计算条件熵\n        def calcHDA(feature, label, index, value):\n            '''\n            计算信息熵\n            :param feature:数据集中的特征，类型为ndarray\n            :param label:数据集中的标签，类型为ndarray\n            :param index:需要使用的特征列索引，类型为int\n            :param value:index所表示的特征列中需要考察的特征值，类型为int\n            :return:信息熵，类型float\n            '''\n            count = 0\n            # sub_feature和sub_label表示根据特征列和特征值分割出的子数据集中的特征和标签\n            sub_feature = []\n            sub_label = []\n            for i in range(len(feature)):\n                if feature[i][index] == value:\n                    count += 1\n                    sub_feature.append(feature[i])\n                    sub_label.append(label[i])\n            pHA = count / len(feature)\n            e = calcInfoEntropy(sub_feature, sub_label)\n            return pHA * e\n        base_e = calcInfoEntropy(feature, label)\n        f = np.array(feature)\n        # 得到指定特征列的值的集合\n        f_set = set(f[:, index])\n        sum_HDA = 0\n        # 计算条件熵\n        for value in f_set:\n            sum_HDA += calcHDA(feature, label, index, value)\n        # 计算信息增益\n        return base_e - sum_HDA\n    # 获得信息增益最高的特征\n    def getBestFeature(self, feature, label):\n        max_infogain = 0\n        best_feature = 0\n        for i in range(len(feature[0])):\n            infogain = self.calcInfoGain(feature, label, i)\n            if infogain > max_infogain:\n                max_infogain = infogain\n                best_feature = i\n        return best_feature\n    # 计算验证集准确率\n    def calc_acc_val(self, the_tree, val_feature, val_label):\n        result = []\n        def classify(tree, feature):\n            if not isinstance(tree, dict):\n                return tree\n            t_index, t_value = list(tree.items())[0]\n            f_value = feature[t_index]\n            if isinstance(t_value, dict):\n                if f_value in t_value:\n                    classLabel = classify(t_value[f_value], feature)\n                    return classLabel\n                else:\n                    return None\n            else:\n                return t_value\n        for f in val_feature:\n            result.append(classify(the_tree, f))\n        result = np.array(result)\n        return np.mean(result == val_label)\n    def createTree(self, train_feature, train_label):\n        # 样本里都是同一个label没必要继续分叉了\n        if len(set(train_label)) == 1:\n            return train_label[0]\n        # 样本中只有一个特征或者所有样本的特征都一样的话就看哪个label的票数高\n        if len(train_feature[0]) == 1 or len(np.unique(train_feature, axis=0)) == 1:\n            vote = {}\n            for l in train_label:\n                if l in vote.keys():\n                    vote[l] += 1\n                else:\n                    vote[l] = 1\n            max_count = 0\n            vote_label = None\n            for k, v in vote.items():\n                if v > max_count:\n                    max_count = v\n                    vote_label = k\n            return vote_label\n        # 根据信息增益拿到特征的索引\n        best_feature = self.getBestFeature(train_feature, train_label)\n        tree = {best_feature: {}}\n        f = np.array(train_feature)\n        # 拿到bestfeature的所有特征值\n        f_set = set(f[:, best_feature])\n        # 构建对应特征值的子样本集sub_feature, sub_label\n        for v in f_set:\n            sub_feature = []\n            sub_label = []\n            for i in range(len(train_feature)):\n                if train_feature[i][best_feature] == v:\n                    sub_feature.append(train_feature[i])\n                    sub_label.append(train_label[i])\n            # 递归构建决策树\n            tree[best_feature][v] = self.createTree(sub_feature, sub_label)\n        return tree\n    # 后剪枝\n    def post_cut(self, val_feature, val_label):\n        # 拿到非叶子节点的数量\n        def get_non_leaf_node_count(tree):\n            non_leaf_node_path = []\n            def dfs(tree, path, all_path):\n                for k in tree.keys():\n                    if isinstance(tree[k], dict):\n                        path.append(k)\n                        dfs(tree[k], path, all_path)\n                        if len(path) > 0:\n                            path.pop()\n                    else:\n                        all_path.append(path[:])\n            dfs(tree, [], non_leaf_node_path)\n            unique_non_leaf_node = []\n            for path in non_leaf_node_path:\n                isFind = False\n                for p in unique_non_leaf_node:\n                    if path == p:\n                        isFind = True\n                        break\n                if not isFind:\n                    unique_non_leaf_node.append(path)\n            return len(unique_non_leaf_node)\n        # 拿到树中深度最深的从根节点到非叶子节点的路径\n        def get_the_most_deep_path(tree):\n            non_leaf_node_path = []\n            def dfs(tree, path, all_path):\n                for k in tree.keys():\n                    if isinstance(tree[k], dict):\n                        path.append(k)\n                        dfs(tree[k], path, all_path)\n                        if len(path) > 0:\n                            path.pop()\n                    else:\n                        all_path.append(path[:])\n            dfs(tree, [], non_leaf_node_path)\n            max_depth = 0\n            result = None\n            for path in non_leaf_node_path:\n                if len(path) > max_depth:\n                    max_depth = len(path)\n                    result = path\n            return result\n        # 剪枝\n        def set_vote_label(tree, path, label):\n            for i in range(len(path)-1):\n                tree = tree[path[i]]\n            tree[path[len(path)-1]] = label\n        acc_before_cut = self.calc_acc_val(self.tree, val_feature, val_label)\n        # 遍历所有非叶子节点\n        for _ in range(get_non_leaf_node_count(self.tree)):\n            path = get_the_most_deep_path(self.tree)\n            if path is None:\n                break\n            # 备份树\n            tree = deepcopy(self.tree)\n            step = deepcopy(tree)\n            # 跟着路径走\n            for k in path:\n                step = step[k]\n            # 叶子节点中票数最多的标签\n            vote = {}\n            def collect_votes(node):\n                if not isinstance(node, dict):\n                    if node in vote:\n                        vote[node] += 1\n                    else:\n                        vote[node] = 1\n                    return\n                for k in node.keys():\n                    collect_votes(node[k])\n            collect_votes(step)\n            vote_label = max(vote.items(), key=lambda item: item[1])[0]\n            # 在备份的树上剪枝\n            set_vote_label(tree, path, vote_label)\n            acc_after_cut = self.calc_acc_val(tree, val_feature, val_label)\n            # 验证集准确率高于剪枝前才剪枝\n            if acc_after_cut >= acc_before_cut:\n                set_vote_label(self.tree, path, vote_label)\n                acc_before_cut = acc_after_cut\n    def fit(self, train_feature, train_label, val_feature, val_label):\n        '''\n        :param train_feature:训练集数据，类型为ndarray\n        :param train_label:训练集标签，类型为ndarray\n        :param val_feature:验证集数据，类型为ndarray\n        :param val_label:验证集标签，类型为ndarray\n        :return: None\n        '''\n        #************* Begin ************#\n        self.tree = self.createTree(train_feature, train_label)\n        # 后剪枝\n        self.post_cut(val_feature, val_label)\n        #************* End **************#\n    def predict(self, feature):\n        '''\n        :param feature:测试集数据，类型为ndarray\n        :return:预测结果，如np.array([0, 1, 2, 2, 1, 0])\n        '''\n        #************* Begin ************#\n        def classify(tree, feat):\n            if not isinstance(tree, dict):\n                return tree\n            t_index, t_value = list(tree.items())[0]\n            f_value = feat[t_index]\n            if isinstance(t_value, dict):\n                if f_value in t_value:\n                    return classify(t_value[f_value], feat)\n                else:\n                    # 遇到未知特征值，返回该节点下出现最多的标签\n                    vote = {}\n                    def collect(node):\n                        if not isinstance(node, dict):\n                            vote[node] = vote.get(node, 0) + 1\n                            return\n                        for k in node.keys():\n                            collect(node[k])\n                    collect(t_value)\n                    if vote:\n                        return max(vote.items(), key=lambda item: item[1])[0]\n                    return None\n            else:\n                return t_value\n        result = []\n        for f in feature:\n            result.append(classify(self.tree, f))\n        return np.array(result)\n        #************* End **************#"
+                "code": "import numpy as np\nfrom copy import deepcopy\n\nclass DecisionTree(object):\n    def __init__(self):\n        self.tree = {}\n\n    def calcInfoGain(self, feature, label, index):\n        def calcInfoEntropy(feature, label):\n            label_set = set(label)\n            result = 0\n            for l in label_set:\n                count = 0\n                for j in range(len(label)):\n                    if label[j] == l:\n                        count += 1\n                p = count / len(label)\n                result -= p * np.log2(p)\n            return result\n\n        def calcHDA(feature, label, index, value):\n            count = 0\n            sub_feature = []\n            sub_label = []\n            for i in range(len(feature)):\n                if feature[i][index] == value:\n                    count += 1\n                    sub_feature.append(feature[i])\n                    sub_label.append(label[i])\n            pHA = count / len(feature)\n            e = calcInfoEntropy(sub_feature, sub_label)\n            return pHA * e\n\n        base_e = calcInfoEntropy(feature, label)\n        f = np.array(feature)\n        f_set = set(f[:, index])\n        sum_HDA = 0\n        for value in f_set:\n            sum_HDA += calcHDA(feature, label, index, value)\n        return base_e - sum_HDA\n\n    def getBestFeature(self, feature, label):\n        max_infogain = 0\n        best_feature = 0\n        for i in range(len(feature[0])):\n            infogain = self.calcInfoGain(feature, label, i)\n            if infogain > max_infogain:\n                max_infogain = infogain\n                best_feature = i\n        return best_feature\n\n    def _majority(self, tree):\n        if not isinstance(tree, dict):\n            return tree\n        vote = {}\n        def collect(node):\n            if not isinstance(node, dict):\n                vote[node] = vote.get(node, 0) + 1\n                return\n            for key in node:\n                collect(node[key])\n        collect(tree)\n        return max(vote.items(), key=lambda x: x[1])[0]\n\n    def calc_acc_val(self, the_tree, val_feature, val_label):\n        result = []\n        def classify(tree, feature):\n            if not isinstance(tree, dict):\n                return tree\n            t_index, t_value = list(tree.items())[0]\n            f_value = feature[t_index]\n            if isinstance(t_value, dict):\n                if f_value in t_value:\n                    return classify(t_value[f_value], feature)\n                else:\n                    return self._majority(t_value)\n            else:\n                return t_value\n        for f in val_feature:\n            result.append(classify(the_tree, f))\n        result = np.array(result)\n        return np.mean(result == val_label)\n\n    def createTree(self, train_feature, train_label):\n        if len(set(train_label)) == 1:\n            return train_label[0]\n        if len(train_feature[0]) == 1 or len(np.unique(train_feature, axis=0)) == 1:\n            vote = {}\n            for l in train_label:\n                if l in vote.keys():\n                    vote[l] += 1\n                else:\n                    vote[l] = 1\n            max_count = 0\n            vote_label = None\n            for k, v in vote.items():\n                if v > max_count:\n                    max_count = v\n                    vote_label = k\n            return vote_label\n\n        best_feature = self.getBestFeature(train_feature, train_label)\n        tree = {best_feature: {}}\n        f = np.array(train_feature)\n        f_set = set(f[:, best_feature])\n        for v in f_set:\n            sub_feature = []\n            sub_label = []\n            for i in range(len(train_feature)):\n                if train_feature[i][best_feature] == v:\n                    sub_feature.append(train_feature[i])\n                    sub_label.append(train_label[i])\n            tree[best_feature][v] = self.createTree(sub_feature, sub_label)\n        return tree\n\n    def post_cut(self, val_feature, val_label):\n        if not isinstance(self.tree, dict):\n            return\n\n        def get_non_leaf_node_count(tree):\n            non_leaf_node_path = []\n            def dfs(tree, path, all_path):\n                for k in tree.keys():\n                    if isinstance(tree[k], dict):\n                        path.append(k)\n                        dfs(tree[k], path, all_path)\n                        if len(path) > 0:\n                            path.pop()\n                    else:\n                        all_path.append(path[:])\n            dfs(tree, [], non_leaf_node_path)\n            unique_non_leaf_node = []\n            for path in non_leaf_node_path:\n                isFind = False\n                for p in unique_non_leaf_node:\n                    if path == p:\n                        isFind = True\n                        break\n                if not isFind:\n                    unique_non_leaf_node.append(path)\n            return len(unique_non_leaf_node)\n\n        def get_the_most_deep_path(tree):\n            non_leaf_node_path = []\n            def dfs(tree, path, all_path):\n                for k in tree.keys():\n                    if isinstance(tree[k], dict):\n                        path.append(k)\n                        dfs(tree[k], path, all_path)\n                        if len(path) > 0:\n                            path.pop()\n                    else:\n                        all_path.append(path[:])\n            dfs(tree, [], non_leaf_node_path)\n            max_depth = 0\n            result = None\n            for path in non_leaf_node_path:\n                if len(path) > max_depth:\n                    max_depth = len(path)\n                    result = path\n            return result\n\n        def set_vote_label(tree, path, label):\n            for i in range(len(path)-1):\n                tree = tree[path[i]]\n            tree[path[len(path)-1]] = label\n\n        acc_before_cut = self.calc_acc_val(self.tree, val_feature, val_label)\n        non_leaf_count = get_non_leaf_node_count(self.tree)\n        for _ in range(non_leaf_count):\n            path = get_the_most_deep_path(self.tree)\n            if path is None:\n                break\n            tree = deepcopy(self.tree)\n            step = deepcopy(tree)\n            for k in path:\n                step = step[k]\n            vote = {}\n            def collect_votes(node):\n                if not isinstance(node, dict):\n                    if node in vote:\n                        vote[node] += 1\n                    else:\n                        vote[node] = 1\n                    return\n                for k in node.keys():\n                    collect_votes(node[k])\n            collect_votes(step)\n            vote_label = max(vote.items(), key=lambda item: item[1])[0]\n            set_vote_label(tree, path, vote_label)\n            acc_after_cut = self.calc_acc_val(tree, val_feature, val_label)\n            if acc_after_cut >= acc_before_cut:\n                set_vote_label(self.tree, path, vote_label)\n                acc_before_cut = acc_after_cut\n\n    def fit(self, train_feature, train_label, val_feature, val_label):\n        self.tree = self.createTree(train_feature, train_label)\n        self.post_cut(val_feature, val_label)\n\n    def predict(self, feature):\n        def classify(tree, f):\n            if not isinstance(tree, dict):\n                return tree\n            t_index, t_value = list(tree.items())[0]\n            f_value = f[t_index]\n            if isinstance(t_value, dict):\n                if f_value in t_value:\n                    return classify(t_value[f_value], f)\n                else:\n                    return self._majority(t_value)\n            else:\n                return t_value\n        result = []\n        for f in feature:\n            result.append(classify(self.tree, f))\n        return np.array(result)"
               },
               "source": "ai"
             },
@@ -4442,7 +4473,7 @@
               "answered": true,
               "answer": {
                 "language": "",
-                "code": "#********* Begin *********#\nimport pandas as pd\nfrom sklearn.ensemble import RandomForestClassifier\n\n# 读取数据并把 DataFrame 转成 ndarray\ntrain_data = pd.read_csv('./step7/train_data.csv').values\ntrain_label = pd.read_csv('./step7/train_label.csv').values.ravel()\ntest_data = pd.read_csv('./step7/test_data.csv').values\n\nclf = RandomForestClassifier(n_estimators=100, random_state=0)\nclf.fit(train_data, train_label)\npredict = clf.predict(test_data)\n\n# 结果写回，格式与标签文件一致（单列 target，无索引）\npd.DataFrame(predict, columns=['target']).to_csv('./step7/predict.csv', index=False)\n#********* End *********#"
+                "code": "#********* Begin *********#\nimport os\nimport pandas as pd\nfrom sklearn.tree import DecisionTreeClassifier\n\nbase_dir = os.path.dirname(os.path.abspath(__file__))\n\ntrain_data = pd.read_csv(os.path.join(base_dir, 'train_data.csv')).values\nlabel_df = pd.read_csv(os.path.join(base_dir, 'train_label.csv'))\nlabel_columns = label_df.columns.tolist()\ntrain_label = label_df.iloc[:, 0].values\ntest_data = pd.read_csv(os.path.join(base_dir, 'test_data.csv')).values\n\nclf = DecisionTreeClassifier(criterion='gini', max_depth=5, random_state=0)\nclf.fit(train_data, train_label)\npred = clf.predict(test_data)\n\npd.DataFrame(pred, columns=label_columns).to_csv(os.path.join(base_dir, 'predict.csv'), index=False)\n#********* End *********#"
               },
               "source": "ai"
             }
@@ -4528,7 +4559,7 @@
               "answered": true,
               "answer": {
                 "language": "",
-                "code": "import numpy as np\n\nclass NaiveBayesClassifier(object):\n    def __init__(self):\n        '''\n        self.label_prob表示每种类别在数据中出现的概率\n        例如，{0:0.333, 1:0.667}表示数据中类别0出现的概率为0.333，类别1的概率为0.667\n        '''\n        self.label_prob = {}\n        '''\n        self.condition_prob表示每种类别确定的条件下各个特征出现的概率\n        例如训练数据集中的特征为 [[2, 1, 1],\n                              [1, 2, 2],\n                              [2, 2, 2],\n                              [2, 1, 2],\n                              [1, 2, 3]]\n        标签为[1, 0, 1, 0, 1]\n        那么当标签为0时第0列的值为1的概率为0.5，值为2的概率为0.5;\n        当标签为0时第1列的值为1的概率为0.5，值为2的概率为0.5;\n        当标签为0时第2列的值为1的概率为0，值为2的概率为1，值为3的概率为0;\n        当标签为1时第0列的值为1的概率为0.333，值为2的概率为0.666;\n        当标签为1时第1列的值为1的概率为0.333，值为2的概率为0.666;\n        当标签为1时第2列的值为1的概率为0.333，值为2的概率为0.333,值为3的概率为0.333;\n        因此self.label_prob的值如下：     \n        {\n            0:{\n                0:{\n                    1:0.5\n                    2:0.5\n                }\n                1:{\n                    1:0.5\n                    2:0.5\n                }\n                2:{\n                    1:0\n                    2:1\n                    3:0\n                }\n            }\n            1:\n            {\n                0:{\n                    1:0.333\n                    2:0.666\n                }\n                1:{\n                    1:0.333\n                    2:0.666\n                }\n                2:{\n                    1:0.333\n                    2:0.333\n                    3:0.333\n                }\n            }\n        }\n        '''\n        self.condition_prob = {}\n\n    def fit(self, feature, label):\n        '''\n        对模型进行训练，需要将各种概率分别保存在self.label_prob和self.condition_prob中\n        :param feature: 训练数据集所有特征组成的ndarray\n        :param label:训练数据集中所有标签组成的ndarray\n        :return: 无返回\n        '''\n\n        #********* Begin *********#\n        self.label_prob = {}\n        self.condition_prob = {}\n\n        n = len(label)\n        n_label = len(set(label))\n\n        # 类别概率（拉普拉斯平滑）\n        for l in set(label):\n            self.label_prob[l] = (np.sum(label == l) + 1) / (n + n_label)\n\n        # 条件概率（拉普拉斯平滑）\n        for l in set(label):\n            self.condition_prob[l] = {}\n            sub_feature = feature[label == l]\n            for col in range(len(feature[0])):\n                self.condition_prob[l][col] = {}\n                values = set(feature[:, col])\n                for v in values:\n                    self.condition_prob[l][col][v] = (\n                        np.sum(sub_feature[:, col] == v) + 1) / (len(sub_feature) + len(values))\n        #********* End *********#\n\n\n    def predict(self, feature):\n        '''\n        对数据进行预测，返回预测结果\n        :param feature:测试数据集所有特征组成的ndarray\n        :return:\n        '''\n\n        result = []\n        # 对每条测试数据都进行预测\n        for i, f in enumerate(feature):\n            # 可能的类别的概率\n            prob = np.zeros(len(self.label_prob.keys()))\n            ii = 0\n            for label, label_prob in self.label_prob.items():\n                # 计算概率\n                prob[ii] = label_prob\n                for j in range(len(feature[0])):\n                    prob[ii] *= self.condition_prob[label][j][f[j]]\n                ii += 1\n            # 取概率最大的类别作为结果\n            result.append(list(self.label_prob.keys())[np.argmax(prob)])\n        return np.array(result)"
+                "code": "import numpy as np\n\nclass NaiveBayesClassifier(object):\n    def __init__(self):\n        self.label_prob = {}\n        self.condition_prob = {}\n\n    def fit(self, feature, label):\n        self.label_prob = {}\n        self.condition_prob = {}\n\n        n = len(label)\n        n_label = len(set(label))\n\n        # 类别概率（拉普拉斯平滑）\n        for l in set(label):\n            self.label_prob[l] = (np.sum(label == l) + 1) / (n + n_label)\n\n        # 条件概率（拉普拉斯平滑）\n        for l in set(label):\n            self.condition_prob[l] = {}\n            sub_feature = feature[label == l]\n            for col in range(len(feature[0])):\n                self.condition_prob[l][col] = {}\n                values = set(feature[:, col])\n                for v in values:\n                    self.condition_prob[l][col][v] = (np.sum(sub_feature[:, col] == v) + 1) / (len(sub_feature) + len(values))\n\n    def predict(self, feature):\n        result = []\n        for i, f in enumerate(feature):\n            prob = np.zeros(len(self.label_prob.keys()))\n            ii = 0\n            for label, label_prob in self.label_prob.items():\n                prob[ii] = label_prob\n                for j in range(len(feature[0])):\n                    prob[ii] *= self.condition_prob[label][j][f[j]]\n                ii += 1\n            result.append(list(self.label_prob.keys())[np.argmax(prob)])\n        return np.array(result)"
               },
               "source": "ai"
             },
@@ -4585,7 +4616,7 @@
               "answered": true,
               "answer": {
                 "language": "",
-                "code": "import numpy as np\n\ndef calc_DBI(feature, pred):\n    '''\n    计算并返回DB指数\n    :param feature: 待聚类数据的特征，类型为`ndarray`\n    :param pred: 聚类后数据所对应的簇，类型为`ndarray`\n    :return: DB指数\n    '''\n\n    #********* Begin *********#\n    feature = np.array(feature)\n    pred = np.array(pred)\n    clusters = np.unique(pred)\n    # 每个簇的质心与簇内样本到质心的平均距离\n    centroids = {}\n    avg_dists = {}\n    for c in clusters:\n        points = feature[pred == c]\n        centroid = np.mean(points, axis=0)\n        centroids[c] = centroid\n        avg_dists[c] = np.mean([np.linalg.norm(p - centroid) for p in points])\n    # DB 指数：每个簇取「最相似簇」的 (平均距离之和 / 质心距离)，再取平均\n    db = 0.0\n    for i in clusters:\n        worst = 0.0\n        for j in clusters:\n            if i == j:\n                continue\n            value = (avg_dists[i] + avg_dists[j]) / np.linalg.norm(centroids[i] - centroids[j])\n            if value > worst:\n                worst = value\n        db += worst\n    return db / len(clusters)\n    #********* End *********#\n\n\ndef calc_DI(feature, pred):\n    '''\n    计算并返回Dunn指数\n    :param feature: 待聚类数据的特征，类型为`ndarray`\n    :param pred: 聚类后数据所对应的簇，类型为`ndarray`\n    :return: Dunn指数\n    '''\n\n    #********* Begin *********#\n    feature = np.array(feature)\n    pred = np.array(pred)\n    clusters = np.unique(pred)\n    # 簇间最小距离（任意两点）\n    min_between = np.inf\n    for i in range(len(clusters)):\n        for j in range(i + 1, len(clusters)):\n            for a in feature[pred == clusters[i]]:\n                for b in feature[pred == clusters[j]]:\n                    d = np.linalg.norm(a - b)\n                    if d < min_between:\n                        min_between = d\n    # 簇内最大直径\n    max_within = 0.0\n    for c in clusters:\n        points = feature[pred == c]\n        for i in range(len(points)):\n            for j in range(i + 1, len(points)):\n                d = np.linalg.norm(points[i] - points[j])\n                if d > max_within:\n                    max_within = d\n    return min_between / max_within\n    #********* End *********#"
+                "code": "# -*- coding: utf-8 -*-\nimport numpy as np\n\ndef calc_DBI(feature, pred):\n    '''\n    计算并返回DB指数\n    :param feature: 待聚类数据的特征，类型为`ndarray`\n    :param pred: 聚类后数据所对应的簇，类型为`ndarray`\n    :return: DB指数\n    '''\n\n    #********* Begin *********#\n    feature = np.array(feature)\n    pred = np.array(pred)\n    clusters = np.unique(pred)\n\n    centroids = {}\n    avg_dists = {}\n    for c in clusters:\n        points = feature[pred == c]\n        centroid = np.mean(points, axis=0)\n        centroids[c] = centroid\n        avg_dists[c] = np.mean([np.linalg.norm(p - centroid) for p in points])\n\n    db = 0.0\n    for i in clusters:\n        worst = 0.0\n        for j in clusters:\n            if i == j:\n                continue\n            value = (avg_dists[i] + avg_dists[j]) / np.linalg.norm(centroids[i] - centroids[j])\n            if value > worst:\n                worst = value\n        db += worst\n\n    return float(db / len(clusters))\n    #********* End *********#\n\n\ndef calc_DI(feature, pred):\n    '''\n    计算并返回Dunn指数\n    :param feature: 待聚类数据的特征，类型为`ndarray`\n    :param pred: 聚类后数据所对应的簇，类型为`ndarray`\n    :return: Dunn指数\n    '''\n\n    #********* Begin *********#\n    feature = np.array(feature)\n    pred = np.array(pred)\n    clusters = np.unique(pred)\n\n    min_between = np.inf\n    for i in range(len(clusters)):\n        for j in range(i + 1, len(clusters)):\n            points_i = feature[pred == clusters[i]]\n            points_j = feature[pred == clusters[j]]\n            for a in points_i:\n                for b in points_j:\n                    d = np.linalg.norm(a - b)\n                    if d < min_between:\n                        min_between = d\n\n    max_within = 0.0\n    for c in clusters:\n        points = feature[pred == c]\n        for i in range(len(points)):\n            for j in range(i + 1, len(points)):\n                d = np.linalg.norm(points[i] - points[j])\n                if d > max_within:\n                    max_within = d\n\n    return float(min_between / max_within)\n    #********* End *********#"
               },
               "source": "ai"
             },
@@ -4600,7 +4631,7 @@
               "answered": true,
               "answer": {
                 "language": "",
-                "code": "from sklearn.metrics.cluster import fowlkes_mallows_score, adjusted_rand_score\n\ndef cluster_performance(y_true, y_pred):\n    '''\n    返回FM指数和Rand指数\n    :param y_true:参考模型的簇划分，类型为ndarray\n    :param y_pred:聚类模型给出的簇划分，类型为ndarray\n    :return: FM指数，Rand指数\n    '''\n\n    #********* Begin *********#\n    fm = fowlkes_mallows_score(y_true, y_pred)\n    rand = adjusted_rand_score(y_true, y_pred)\n    return fm, rand\n    #********* End *********#"
+                "code": "from sklearn.metrics.cluster import fowlkes_mallows_score, adjusted_rand_score\n\ndef cluster_performance(y_true, y_pred):\n    '''\n    Return FM index and Rand index.\n    :param y_true: reference cluster labels, ndarray\n    :param y_pred: predicted cluster labels, ndarray\n    :return: FM index, Rand index\n    '''\n    #********* Begin *********#\n    fm = fowlkes_mallows_score(y_true, y_pred)\n    rand = adjusted_rand_score(y_true, y_pred)\n    return fm, rand\n    #********* End *********#"
               },
               "source": "ai"
             }
@@ -4663,7 +4694,7 @@
               "answered": true,
               "answer": {
                 "language": "",
-                "code": "from PIL import Image\nimport numpy as np\nfrom sklearn.mixture import GaussianMixture\n\n#******** Begin *********#\nimg = np.array(Image.open('./step3/image/test.jpg'))\nh, w = img.shape[0], img.shape[1]\ndata = img.reshape(-1, 3).astype(np.float64)\n\n# 用高斯混合聚类把图像分成 3 个部分\ngmm = GaussianMixture(n_components=3, random_state=0)\nlabels = gmm.fit_predict(data)\n\n# 按各簇的平均亮度确定「天空 / 路面 / 植被」，再按题目要求的颜色着色\nbrightness = [data[labels == k].mean() for k in range(3)]\nsky = int(np.argmax(brightness))\nveg = int(np.argmin(brightness))\nroad = 3 - sky - veg\n\nlut = np.zeros((3, 3), dtype=np.uint8)\nlut[road] = (255, 255, 0)   # 路面 → 黄色\nlut[sky] = (0, 0, 255)      # 天空 → 蓝色\nlut[veg] = (0, 255, 0)      # 植被 → 绿色\n\nresult = lut[labels].reshape(h, w, 3)\nImage.fromarray(result).save('./step3/dump/result.jpg')\n#********* End *********#"
+                "code": "from PIL import Image\nimport numpy as np\nimport os\nfrom sklearn.mixture import GaussianMixture\n\n#******** Begin *********#\nbase_dir = os.path.dirname(os.path.abspath(__file__))\nimage_path = os.path.join(base_dir, 'image', 'test.jpg')\ndump_dir = os.path.join(base_dir, 'dump')\nsave_path = os.path.join(dump_dir, 'result.jpg')\n\nimg = np.array(Image.open(image_path).convert('RGB'))\nh, w, _ = img.shape\ndata = img.reshape(-1, 3)\n\ngmm = GaussianMixture(n_components=3, random_state=0)\ngmm.fit(data)\n\nbatch_size = 50000\nlabels = np.empty(data.shape[0], dtype=np.int32)\nfor start in range(0, data.shape[0], batch_size):\n    end = min(start + batch_size, data.shape[0])\n    labels[start:end] = gmm.predict(data[start:end])\n\ncolor_map = np.array([[255, 255, 0], [0, 0, 255], [0, 255, 0]], dtype=np.uint8)\nresult = color_map[labels].reshape(h, w, 3)\n\nos.makedirs(dump_dir, exist_ok=True)\nImage.fromarray(result).save(save_path)\n#********* End *********#"
               },
               "source": "ai"
             }
@@ -4699,7 +4730,7 @@
               "answered": true,
               "answer": {
                 "language": "",
-                "code": "import numpy as np\n\n#建议代码，也算是Begin-End中的一部分\nfrom collections import  Counter\nfrom sklearn.tree import DecisionTreeClassifier\n\nclass RandomForestClassifier():\n    def __init__(self, n_model=10):\n        '''\n        初始化函数\n        '''\n        #分类器的数量，默认为10\n        self.n_model = n_model\n        #用于保存模型的列表，训练好分类器后将对象append进去即可\n        self.models = []\n        #用于保存决策树训练时随机选取的列的索引\n        self.col_indexs = []\n\n\n    def fit(self, feature, label):\n        '''\n        训练模型\n        :param feature: 训练集数据，类型为ndarray\n        :param label: 训练集标签，类型为ndarray\n        :return: None\n        '''\n\n        #************* Begin ************#\n        n_features = feature.shape[1]\n        # 每棵树随机选取一半的特征（比 sqrt 更稳，准确率不容易掉到 0.9 以下）\n        k = max(1, n_features // 2)\n        for i in range(self.n_model):\n            # 有放回地采样\n            index = np.random.choice(len(feature), len(feature), replace=True)\n            # 随机选取特征列\n            col_indexs = np.random.choice(n_features, k, replace=False)\n            self.col_indexs.append(col_indexs)\n            clf = DecisionTreeClassifier()\n            clf.fit(feature[index][:, col_indexs], label[index])\n            self.models.append(clf)\n        #************* End **************#\n\n\n    def predict(self, feature):\n        '''\n        :param feature:测试集数据，类型为ndarray\n        :return:预测结果，类型为ndarray，如np.array([0, 1, 2, 2, 1, 0])\n        '''\n        #************* Begin ************#\n        preds = np.array([clf.predict(feature[:, cols])\n                         for clf, cols in zip(self.models, self.col_indexs)])\n        result = []\n        for i in range(feature.shape[0]):\n            result.append(Counter(preds[:, i]).most_common(1)[0][0])\n        return np.array(result)\n        #************* End **************#"
+                "code": "import numpy as np\n\n#建议代码，也算是Begin-End中的一部分\nfrom collections import Counter\nfrom sklearn.tree import DecisionTreeClassifier\n\nclass RandomForestClassifier():\n    def __init__(self, n_model=10):\n        '''\n        初始化函数\n        '''\n        #分类器的数量，默认为10\n        self.n_model = n_model\n        #用于保存模型的列表，训练好分类器后将对象append进去即可\n        self.models = []\n        #用于保存决策树训练时随机选取的列的索引\n        self.col_indexs = []\n\n\n    def fit(self, feature, label):\n        '''\n        训练模型\n        :param feature: 训练集数据，类型为ndarray\n        :param label: 训练集标签，类型为ndarray\n        :return: None\n        '''\n\n        #************* Begin ************#\n        feature = np.asarray(feature)\n        label = np.asarray(label)\n        n_samples, n_features = feature.shape\n        k = max(1, int(np.log2(n_features)) if n_features > 1 else 1)\n        for i in range(self.n_model):\n            index = np.random.choice(n_samples, n_samples, replace=True)\n            col_indexs = np.random.choice(n_features, k, replace=False)\n            self.col_indexs.append(col_indexs)\n            clf = DecisionTreeClassifier()\n            clf.fit(feature[index][:, col_indexs], label[index])\n            self.models.append(clf)\n        #************* End **************#\n\n\n    def predict(self, feature):\n        '''\n        :param feature:测试集数据，类型为ndarray\n        :return:预测结果，类型为ndarray，如np.array([0, 1, 2, 2, 1, 0])\n        '''\n        #************* Begin ************#\n        feature = np.asarray(feature)\n        if len(self.models) == 0:\n            return np.array([])\n        preds = np.array([clf.predict(feature[:, cols])\n                         for clf, cols in zip(self.models, self.col_indexs)])\n        result = []\n        for i in range(feature.shape[0]):\n            result.append(Counter(preds[:, i]).most_common(1)[0][0])\n        return np.array(result)\n        #************* End **************#"
               },
               "source": "ai"
             },
@@ -4714,7 +4745,7 @@
               "answered": true,
               "answer": {
                 "language": "",
-                "code": "from sklearn.ensemble import RandomForestClassifier\n\ndef digit_predict(train_image, train_label, test_image):\n    '''\n    实现功能：训练模型并输出预测结果\n    :param train_image: 包含多条训练样本的样本集，类型为ndarray,shape为[-1, 8, 8]\n    :param train_label: 包含多条训练样本标签的标签集，类型为ndarray\n    :param test_image: 包含多条测试样本的测试集，类型为ndarry\n    :return: test_image对应的预测标签，类型为ndarray\n    '''\n\n    #************* Begin ************#\n    train_image = train_image.reshape(len(train_image), -1)\n    test_image = test_image.reshape(len(test_image), -1)\n\n    clf = RandomForestClassifier(n_estimators=500, max_features='sqrt', criterion='entropy')\n    clf.fit(train_image, train_label)\n    return clf.predict(test_image)\n    #************* End **************#"
+                "code": "from sklearn.ensemble import RandomForestClassifier\n\ndef digit_predict(train_image, train_label, test_image):\n    '''\n    实现功能：训练模型并输出预测结果\n    :param train_image: 包含多条训练样本的样本集，类型为ndarray,shape为[-1, 8, 8]\n    :param train_label: 包含多条训练样本标签的标签集，类型为ndarray\n    :param test_image: 包含多条测试样本的测试集，类型为ndarry\n    :return: test_image对应的预测标签，类型为ndarray\n    '''\n\n    #************* Begin ************#\n    train_image = train_image.reshape(train_image.shape[0], -1)\n    test_image = test_image.reshape(test_image.shape[0], -1)\n\n    clf = RandomForestClassifier(n_estimators=500, criterion='entropy', max_features='sqrt', random_state=42)\n    clf.fit(train_image, train_label)\n    return clf.predict(test_image)\n    #************* End **************#"
               },
               "source": "ai"
             }
@@ -4883,10 +4914,19 @@
               "answered": true,
               "answer": {
                 "language": "",
-                "code": "# -*- coding: utf-8 -*-\n\n\ndef gradient_descent(initial_theta, eta=0.05, epsilon=1e-8, max_iter=1000):\n    \"\"\"\n    梯度下降求损失函数 (theta-3)^2 的最小值\n    :param initial_theta: 参数初始值\n    :param eta: 学习率\n    :param epsilon: 容忍误差\n    :param max_iter: 最大迭代次数\n    :return: 损失函数最小值对应的 theta（≈3.0）\n    \"\"\"\n    theta = initial_theta\n    for _ in range(max_iter):\n        gradient = 2 * (theta - 3.0)\n        if abs(gradient) < epsilon:\n            break\n        theta = theta - eta * gradient\n    return theta\n"
+                "code": "# -*- coding: utf-8 -*-\n\nimport numpy as np\nimport warnings\nwarnings.filterwarnings(\"ignore\")\n\ndef gradient_descent(initial_theta,eta=0.05,n_iters=1000,epslion=1e-8):\n    '''\n    梯度下降\n    :param initial_theta: 参数初始值，类型为float\n    :param eta: 学习率，类型为float\n    :param n_iters: 训练轮数，类型为int\n    :param epslion: 容忍误差范围，类型为float\n    :return: 训练后得到的参数\n    '''\n    #   请在此添加实现代码   #\n    #********** Begin *********#\n    theta = initial_theta\n    for _ in range(n_iters):\n        # loss = (theta - 3)^2, gradient = 2 * (theta - 3)\n        gradient = 2 * (theta - 3)\n        if abs(gradient) < epslion:\n            break\n        theta = theta - eta * gradient\n    return theta\n    #********** End **********#"
               },
               "identifiers": [],
               "source": "manual"
+            },
+            {
+              "title": "动手实现逻辑回归 - 癌细胞精准识别",
+              "kind": "code",
+              "answered": true,
+              "answer": {
+                "language": "",
+                "code": "# -*- coding: utf-8 -*-\n\nimport numpy as np\nimport warnings\nwarnings.filterwarnings(\"ignore\")\n\ndef sigmoid(x):\n    '''\n    sigmoid函数\n    :param x: 转换前的输入\n    :return: 转换后的概率\n    '''\n    return 1/(1+np.exp(-x))\n\n\ndef fit(x,y,eta=1e-3,n_iters=10000):\n    '''\n    训练逻辑回归模型\n    :param x: 训练集特征数据，类型为ndarray\n    :param y: 训练集标签，类型为ndarray\n    :param eta: 学习率，类型为float\n    :param n_iters: 训练轮数，类型为int\n    :return: 模型参数，类型为ndarray\n    '''\n    #   请在此添加实现代码   #\n    #********** Begin *********#\n    m, n = x.shape\n    theta = np.zeros(n)\n    for _ in range(n_iters):\n        a = sigmoid(x.dot(theta))\n        gradient = x.T.dot(a - y) / m\n        theta = theta - eta * gradient\n    return theta\n    #********** End **********#"
+              }
             }
           ]
         },
@@ -4913,7 +4953,7 @@
               "answered": true,
               "answer": {
                 "language": "",
-                "code": "# -*- coding: utf-8 -*-\n\nfrom sklearn.datasets import make_blobs\nimport numpy as np\nfrom sklearn.neighbors import KNeighborsClassifier\n\n\nsamples=int(input())\nrandom_state=int(input())\n\n# 请在此添加代码 完成本关任务\n#\n# ********** Begin *********#\n\n\n\n# ********** End **********#"
+                "code": "# -*- coding: utf-8 -*-\nimport sys\nfrom sklearn.datasets import make_blobs\nfrom sklearn.neighbors import KNeighborsClassifier\n\ntokens = sys.stdin.read().strip().split()\nif tokens:\n    for i in range(0, len(tokens), 4):\n        samples = int(tokens[i])\n        random_state = int(tokens[i+1])\n        x1 = float(tokens[i+2])\n        x2 = float(tokens[i+3])\n\n        X, y = make_blobs(n_samples=samples, random_state=random_state)\n        clf = KNeighborsClassifier()\n        clf.fit(X, y)\n        print(clf.predict([[x1, x2]]).tolist())"
               }
             },
             {
@@ -4922,8 +4962,9 @@
               "answered": true,
               "answer": {
                 "language": "",
-                "code": "# -*- coding: utf-8 -*-\n\nfrom sklearn.datasets import make_classification\nfrom sklearn.model_selection import train_test_split\nimport numpy as np\nfrom sklearn.neighbors import KNeighborsClassifier\n\nsamples=int(input())\nclassNum=int(input())\nnoise=float(input())\n\n# 请在此添加代码 完成本关任务\n#\n# ********** Begin *********#\ndata=make_classification(n_samples=samples, n_informative=20,n_redundant=0, n_classes =classNum, flip_y=noise ,random_state=1)\nX,y=data\nX_train, X_test, Y_train, Y_test = train_test_split(X, y, random_state=1)\nclf=KNeighborsClassifier()\nclf.fit(X_train, Y_train)\nans=clf.predict(X_test)\nright_num=0\nnum=len(ans)\nfor i in range(0, num):\n    if ans[i]==Y_test[i]:\n        right_num+=1\nprint(right_num)\n# ********** End **********#\n"
-              }
+                "code": "# -*- coding: utf-8 -*-\n\nfrom sklearn.datasets import make_classification\nfrom sklearn.model_selection import train_test_split\nimport numpy as np\nfrom sklearn.neighbors import KNeighborsClassifier\n\nsamples=int(input())\nclassNum=int(input())\nnoise=float(input())\n\n# 请在此添加代码 完成本关任务\n#\n# ********** Begin *********#\ndata=make_classification(n_samples=samples, n_informative=20,n_redundant=0, n_classes=classNum, flip_y=noise, random_state=0)\nX,y=data\nX_train, X_test, Y_train, Y_test = train_test_split(X, y, random_state=0)\nclf=KNeighborsClassifier()\nclf.fit(X_train, Y_train)\nans=clf.predict(X_test)\nright_num=0\nnum=len(ans)\nfor i in range(num):\n    if ans[i]==Y_test[i]:\n        right_num+=1\nprint(right_num)\n# ********** End **********#"
+              },
+              "source": "solutions"
             },
             {
               "title": "使用K最近邻算法进行回归分析",
@@ -4971,6 +5012,15 @@
                 "language": "",
                 "code": "#encoding=utf8 \nimport numpy as np\ndef mse_score(y_predict,y_test):\n    '''\n    input:y_predict(ndarray):预测值\n          y_test(ndarray):真实值\n    ouput:mse(float):mse损失函数值\n    '''\n    #********* Begin *********#\n    mse = np.mean((y_predict - y_test) ** 2)\n    #********* End *********#\n    return mse\nclass LinearRegression :\n    def __init__(self):\n        '''初始化线性回归模型'''\n        self.theta = None\n    def fit_normal(self,train_data,train_label):\n        '''\n        input:train_data(ndarray):训练样本\n              train_label(ndarray):训练标签\n        '''\n        #********* Begin *********#\n        X_b = np.hstack([np.ones((train_data.shape[0], 1)), train_data])\n        self.theta = np.linalg.inv(X_b.T.dot(X_b)).dot(X_b.T).dot(train_label)\n        #********* End *********#\n        return self.theta\n    def predict(self,test_data):\n        '''\n        input:test_data(ndarray):测试样本\n        '''\n        #********* Begin *********#\n        X_b = np.hstack([np.ones((test_data.shape[0], 1)), test_data])\n        result = X_b.dot(self.theta)\n        #********* End *********#\n        return result\n"
               }
+            },
+            {
+              "title": "衡量线性回归的性能指标",
+              "kind": "code",
+              "answered": true,
+              "answer": {
+                "language": "",
+                "code": "# -*- coding: utf-8 -*-\nimport numpy as np\n\n# mse\ndef mse_score(y_predict, y_test):\n    mse = np.mean((y_predict - y_test) ** 2)\n    return mse\n\n# rmse\ndef rmse_score(y_predict, y_test):\n    rmse = np.sqrt(mse_score(y_predict, y_test))\n    return rmse\n\n# mae\ndef mae_score(y_predict, y_test):\n    mae = np.mean(np.abs(y_predict - y_test))\n    return mae\n\n# r2\ndef r2_score(y_predict, y_test):\n    '''\n    input:y_predict(ndarray):预测值\n          y_test(ndarray):真实值\n    output:r2(float):r2值\n    '''\n    ss_res = np.sum((y_predict - y_test) ** 2)\n    ss_tot = np.sum((y_test - np.mean(y_test)) ** 2)\n    r2 = 1 - ss_res / ss_tot\n    return r2\n\nclass LinearRegression:\n    def __init__(self):\n        '''初始化线性回归模型'''\n        self.theta = None\n\n    def fit_normal(self, train_data, train_label):\n        '''\n        input:train_data(ndarray):训练样本\n              train_label(ndarray):训练标签\n        '''\n        X = np.hstack([np.ones((train_data.shape[0], 1)), train_data])\n        self.theta = np.linalg.inv(X.T.dot(X)).dot(X.T).dot(train_label)\n        return self\n\n    def predict(self, test_data):\n        '''\n        input:test_data(ndarray):测试样本\n        '''\n        X = np.hstack([np.ones((test_data.shape[0], 1)), test_data])\n        return X.dot(self.theta)"
+              }
             }
           ]
         },
@@ -5010,6 +5060,24 @@
                   ]
                 }
               ]
+            },
+            {
+              "title": "梯度与梯度下降",
+              "kind": "code",
+              "answered": true,
+              "answer": {
+                "language": "",
+                "code": "from sklearn.datasets import make_regression\nimport numpy as np\nfrom sklearn.model_selection import train_test_split\nnp.random.seed(10)\n\n\ndef cost(theta, x, y):\n    cost = np.sum((theta.dot(x.T) - y) ** 2) / 2\n    return cost\n\n\ndef lr(x, y, alpha=0.0005, iterations=50000):\n    \"\"\"\n    :param x:特征值\n    :param y:目标值\n    :param alpha:学习率\n    :param iterations:迭代次数\n    :return:\n    \"\"\"\n\n\n    # ********** Begin ********** #\n    # 生成随机的theta\n    theta = np.random.randn(x.shape[1])\n\n    # 学习率与迭代次数请根据实际情况进行调整\n    # 通过循环不断更新theta\n    m = x.shape[0]\n    for _ in range(iterations):\n        # 计算theta的差值\n        d_theta = x.T.dot(theta.dot(x.T) - y) / m\n\n        # 将前面的theta减去theta的差值得到新的学习率\n        theta = theta - alpha * d_theta\n\n    # ********** End ********** #\n    \n    return theta"
+              }
+            },
+            {
+              "title": "多项式回归",
+              "kind": "code",
+              "answered": true,
+              "answer": {
+                "language": "",
+                "code": "import numpy as np\nfrom sklearn.linear_model import LinearRegression\nfrom sklearn.preprocessing import PolynomialFeatures\nfrom sklearn.model_selection import train_test_split\nnp.random.seed(100)\n\n\ndef genY(x):\n    a0, a1, a2, a3, e = 0.01, -0.2, 0.3, -0.04, 0.05\n    yr = a0 + a1 * x + a2 * (x ** 2) + a3 * (x ** 3) + e\n    y = yr + 0.03 * np.random.rand(1)\n    return y\n\n\ndef model_train(x, y):\n    # ********** Begin ********** #\n    # 利用PolynomialFeatures类构造多项式的数据，并设置最高次为3\n    transfer = PolynomialFeatures(degree=3, include_bias=False)\n    x = transfer.fit_transform(x)\n\n    # 将特征值拆分成训练集和测试集\n    x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.2)\n\n    # 实例化出一个线性回归分类器\n    lr = LinearRegression()\n\n    # 传入训练数据训练模型\n    lr.fit(x_train, y_train)\n\n    # 使用score函数对模型进行评估\n    score = lr.score(x_test, y_test)\n\n    # ********** End ********** #\n    return score\n\n\nif __name__ == '__main__':\n    # 利用np中的linspace生成线性数据\n    x = np.linspace(-1, 1, 200)\n    # 用公式算出y\n    y = [genY(a) for a in x]\n    x = x.reshape(-1, 1)\n    y = np.array(y).reshape(-1, 1)\n    print(model_train(x,y ))"
+              }
             }
           ]
         }
@@ -5679,8 +5747,9 @@
               "answered": true,
               "answer": {
                 "language": "",
-                "code": "use finance1;\nCREATE OR REPLACE VIEW v_insurance_detail AS\nSELECT c.c_name, c.c_id_card, i.i_name, i.i_project, p.pro_status, p.pro_quantity, i.i_amount, i.i_year, p.pro_income, p.pro_purchase_time\nFROM property p\nJOIN client c ON p.pro_c_id = c.c_id\nJOIN insurance i ON p.pro_pif_id = i.i_id\nWHERE p.pro_type = 2;\n"
-              }
+                "code": "use finance1;\nCREATE OR REPLACE VIEW v_insurance_detail AS\nSELECT c.c_name, c.c_id_card, i.i_name, i.i_project, p.pro_status, p.pro_quantity, i.i_amount, i.i_year, p.pro_income, p.pro_purchase_time\nFROM property p\nJOIN client c ON p.pro_c_id = c.c_id\nJOIN insurance i ON p.pro_pif_id = i.i_id\nWHERE p.pro_type = 2;\n/*   end  of your code  */\n"
+              },
+              "source": "solutions"
             },
             {
               "title": "基于视图的查询",
@@ -5688,8 +5757,9 @@
               "answered": true,
               "answer": {
                 "language": "",
-                "code": "CREATE OR REPLACE VIEW v_insurance_detail AS\nSELECT c.c_name, c.c_id_card, i.i_name, i.i_project, p.pro_status, p.pro_quantity, i.i_amount, i.i_year, p.pro_income, p.pro_purchase_time\nFROM property p\nJOIN client c ON p.pro_c_id = c.c_id\nJOIN insurance i ON p.pro_pif_id = i.i_id\nWHERE p.pro_type = 2;\nSELECT c_name, c_id_card, SUM(i_amount * pro_quantity) AS insurance_total_amount, SUM(pro_income) AS insurance_total_revenue\nFROM v_insurance_detail\nGROUP BY c_name, c_id_card\nORDER BY insurance_total_amount DESC;\n"
-              }
+                "code": "SELECT c_name, c_id_card, SUM(amount) AS insurance_total_amount, SUM(revenue) AS insurance_total_revenue\nFROM (\n    SELECT DISTINCT c_name, c_id_card, i_amount * pro_quantity AS amount, pro_income AS revenue\n    FROM v_insurance_detail\n) t\nGROUP BY c_name, c_id_card\nORDER BY insurance_total_amount DESC;\n/*  end  of  your code  */\n"
+              },
+              "source": "solutions"
             }
           ]
         },
@@ -5702,8 +5772,9 @@
               "answered": true,
               "answer": {
                 "language": "",
-                "code": "use finance1;\ninsert into client(c_id, c_name, c_mail, c_id_card, c_phone, c_password) values\n(1, '林惠雯', '960323053@qq.com', '411014196712130323', '15609032348', 'Mop5UPkl'),\n(2, '吴婉瑜', '1613230826@gmail.com', '420152196802131323', '17605132307', 'QUTPhxgVNlXtMxN'),\n(3, '蔡贞仪', '252323341@foxmail.com', '160347199005222323', '17763232321', 'Bwe3gyhEErJ7');\n"
-              }
+                "code": "use finance1;\ninsert into client(c_id, c_name, c_mail, c_id_card, c_phone, c_password) values\n(1, '林惠雯', '960323053@qq.com', '411014196712130323', '15609032348', 'Mop5UPkl'),\n(2, '吴婉瑜', '1613230826@gmail.com', '420152196802131323', '17605132307', 'QUTPhxgVNlXtMxN'),\n(3, '蔡贞仪', '252323341@foxmail.com', '160347199005222323', '17763232321', 'Bwe3gyhEErJ7');\n/* end of you code */\n"
+              },
+              "source": "solutions"
             },
             {
               "title": "插入不完整的客户信息",
@@ -5711,8 +5782,9 @@
               "answered": true,
               "answer": {
                 "language": "",
-                "code": "use finance1;\ninsert into client(c_id, c_name, c_phone, c_id_card, c_password) values(33, '蔡依婷', '18820762130', '350972199204227621', 'MKwEuc1sc6');\n"
-              }
+                "code": "use finance1;\nINSERT INTO client(c_id, c_name, c_mail, c_id_card, c_phone, c_password) VALUES(33, '蔡依婷', NULL, '350972199204227621', '18820762130', 'MKwEuc1sc6');\n"
+              },
+              "source": "solutions"
             },
             {
               "title": "删除没有银行卡的客户信息",
@@ -5721,7 +5793,8 @@
               "answer": {
                 "language": "",
                 "code": "use finance1;\nDELETE FROM client WHERE c_id NOT IN (SELECT b_c_id FROM bank_card);\n"
-              }
+              },
+              "source": "solutions"
             },
             {
               "title": "批量插入数据",
@@ -5729,8 +5802,9 @@
               "answered": true,
               "answer": {
                 "language": "",
-                "code": "use finance1;\n-- 已知表new_client保存了一批新客户信息，该表与client表结构完全相同。请用一条SQL语句将new_client表的全部客户信息插入到客户表(client):\n\nINSERT INTO client SELECT * FROM new_client;\n\n/* the end of your code */\n"
-              }
+                "code": "use finance1;\nINSERT INTO client\nSELECT * FROM new_client;\n"
+              },
+              "source": "solutions"
             },
             {
               "title": "冻结客户资产",
@@ -5738,8 +5812,9 @@
               "answered": true,
               "answer": {
                 "language": "",
-                "code": "use finance1;\n-- 请用一条update语句将手机号码为“13686431238”的这位客户的投资资产(理财、保险与基金)的状态置为“冻结”。：\n\nupdate property\nset pro_status = '冻结'\nwhere pro_c_id = (select c_id from client where c_phone = '13686431238')\n  and pro_type in (1, 2, 3);\n\n/* the end of your code */\n"
-              }
+                "code": "use finance1;\nupdate property\nset pro_status = '冻结'\nwhere pro_c_id in (\n    select c_id\n    from client\n    where c_phone = '13686431238'\n)\nand pro_type in (1, 2, 3);\n"
+              },
+              "source": "solutions"
             },
             {
               "title": "连接更新",
@@ -5747,8 +5822,9 @@
               "answered": true,
               "answer": {
                 "language": "",
-                "code": "use finance1;\n\nupdate property p, client c\nset p.pro_id_card = c.c_id_card\nwhere p.pro_c_id = c.c_id;\n\n/* the end of your code */\n"
-              }
+                "code": "use finance1;\n\nUPDATE property\nSET pro_id_card = (\n    SELECT c_id_card\n    FROM client\n    WHERE client.c_id = property.pro_c_id\n);\n\n/* the end of your code */\n"
+              },
+              "source": "solutions"
             }
           ]
         },
@@ -5761,8 +5837,9 @@
               "answered": true,
               "answer": {
                 "language": "",
-                "code": "-- 实现以下查询的SQL语句：\n-- 查询分体式室热泵制热冷暖双制，制冷量7200W或6000W的落地式空调的型号、生产厂家和价格，查询结果依价格从低到高排序输出。\n-- 请在此处添加实现代码：\n\nSELECT model, manufacturer, price\nFROM products\nWHERE model RLIKE '^KFR-(72|60)LW'\nORDER BY price ASC;\n\n-- EOF"
-              }
+                "code": "SELECT model, manufacturer, price\nFROM products\nWHERE model REGEXP '^KFR-(72|60)LW.*'\nORDER BY price ASC;\n"
+              },
+              "source": "solutions"
             },
             {
               "title": "带 AND 与 OR 的多条件查询",
@@ -5770,8 +5847,9 @@
               "answered": true,
               "answer": {
                 "language": "",
-                "code": "SELECT manufacturer, model, price\nFROM products\nWHERE manufacturer IN ('美的', '格力', '志高')\n  AND price <= 3000\n  AND model LIKE '%35%'\nORDER BY price;\n"
-              }
+                "code": "SELECT manufacturer, model, price\nFROM products\nWHERE (manufacturer = '美的' OR manufacturer = '格力')\n  AND price <= 3000\n  AND model LIKE '%35%'\nORDER BY price;\n\nSELECT manufacturer, model, price\nFROM products\nWHERE (manufacturer = '美的' OR manufacturer = '格力' OR manufacturer = '志高')\n  AND price <= 3000\n  AND model LIKE '%35%'\nORDER BY price;\n"
+              },
+              "source": "solutions"
             },
             {
               "title": "带 LIKE 的字符匹配查询",
@@ -5780,7 +5858,8 @@
               "answer": {
                 "language": "",
                 "code": "use aircon;\n-- 实现以下查询的SQL语句：\n-- 查询1.5匹，即功率3500W的冷暖空调，列出型号，生产厂家和价格，依价格从低到高排序。\n-- 请在此处添加实现代码\nSELECT model, manufacturer, price\nFROM products\nWHERE model LIKE 'KFR%-35%'\nORDER BY price ASC;\n\n-- EOF\n"
-              }
+              },
+              "source": "solutions"
             },
             {
               "title": "查询空值与去除重复结果",
@@ -5788,8 +5867,9 @@
               "answered": true,
               "answer": {
                 "language": "",
-                "code": "use aircon;\nSELECT DISTINCT manufacturer FROM products ORDER BY manufacturer;\nSELECT sid, sname FROM staff WHERE dob IS NULL ORDER BY sname;\n"
-              }
+                "code": "USE aircon;\nSELECT DISTINCT manufacturer FROM products ORDER BY manufacturer;\nSELECT sid, sname FROM staff WHERE dob IS NULL ORDER BY sname;\n"
+              },
+              "source": "solutions"
             }
           ]
         },
@@ -5802,8 +5882,9 @@
               "answered": true,
               "answer": {
                 "language": "",
-                "code": "-- 任务1: 写出能完成以下人物的sql语句：\n-- 查询格力空调的型号和价格，依价格升序排列。\n-- 请在此处添加实现代码\nSELECT model, price FROM products WHERE manufacturer = '格力' ORDER BY price ASC;\n\n-- EOF"
-              }
+                "code": "use aircon;\n-- 任务1: 写出能完成以下人物的sql语句：\n-- 查询格力空调的型号和价格，依价格升序排列。\n-- 请在此处添加实现代码\nSELECT model, price FROM products WHERE manufacturer = '格力' ORDER BY price ASC;\n\n-- EOF\n"
+              },
+              "source": "solutions"
             },
             {
               "title": "带 BETWEEN AND 的范围查询",
@@ -5811,8 +5892,9 @@
               "answered": true,
               "answer": {
                 "language": "",
-                "code": "-- 任务1: 写出可以完成以下查询任务的sql语句：\n-- 查询价格在2000到3000之间的所有空调的型号，生产厂家和价格。依价格从低到高排序。\n-- 请在此处添加实现代码\nSELECT model, manufacturer, price\nFROM products\nWHERE price BETWEEN 2000 AND 3000\nORDER BY price ASC;\n\n-- EOF"
-              }
+                "code": "use aircon;\nSELECT model, manufacturer, price\nFROM products\nWHERE price BETWEEN 2000 AND 3000\nORDER BY price;\n"
+              },
+              "source": "solutions"
             },
             {
               "title": "基本查询语句",
@@ -5829,8 +5911,9 @@
               "answered": true,
               "answer": {
                 "language": "",
-                "code": "use aircon;\n-- 任务1: 写出能完成以下任务的语句：\n-- 查询所有雇员的姓名,性别，手机号。按年龄降序排列，即年龄越大的越靠前。\n-- 请在此处添加实现代码\nselect sname, gender, mobile from staff order by dob asc;\n\n-- EOF\n"
-              }
+                "code": "SELECT sname, gender, mobile FROM staff ORDER BY dob ASC;"
+              },
+              "source": "solutions"
             },
             {
               "title": "带 IN 关键字的查询",
@@ -5838,8 +5921,9 @@
               "answered": true,
               "answer": {
                 "language": "",
-                "code": "use aircon;\n-- 任务1: 写出能完成以下查询任务的SQL语句:\n-- 查询10，40，70号产品(空调)的型号、生产厂家和价格，依价格从低到高排序。\n-- 请在此处添加实现代码\nSELECT model, manufacturer, price\nFROM products\nWHERE pid IN (10, 40, 70)\nORDER BY price ASC;\n\n-- EOF\n"
-              }
+                "code": "use aircon;\nSELECT model, manufacturer, price\nFROM products\nWHERE pid IN (10, 40, 70)\nORDER BY price ASC;\n"
+              },
+              "source": "solutions"
             }
           ]
         },
@@ -5852,8 +5936,9 @@
               "answered": true,
               "answer": {
                 "language": "",
-                "code": "# 请在以下空白处填写完成任务的语句，空白行可通过回车换行添加。\n# 你也可以在命令行窗口完成任务，不过，在命令行键入的语句不会被保存。\n\nCREATE DATABASE IF NOT EXISTS MyDb;\nUSE MyDb;\n\nCREATE TABLE IF NOT EXISTS dept (\n  deptNo INT PRIMARY KEY,\n  deptName VARCHAR(32)\n);\n\nCREATE TABLE IF NOT EXISTS staff (\n  staffNo INT PRIMARY KEY,\n  staffName VARCHAR(32),\n  gender CHAR(1),\n  dob DATE,\n  salary NUMERIC(8,2),\n  deptNo INT,\n  CONSTRAINT FK_staff_deptNo FOREIGN KEY (deptNo) REFERENCES dept(deptNo)\n);\n\n# 结束"
-              }
+                "code": "USE MyDb;\n\nCREATE TABLE dept (\n    deptNo INT PRIMARY KEY,\n    deptName VARCHAR(32)\n);\n\nCREATE TABLE staff (\n    staffNo INT PRIMARY KEY,\n    staffName VARCHAR(32),\n    gender CHAR(1),\n    dob DATE,\n    salary DECIMAL(8,2),\n    deptNo INT,\n    CONSTRAINT FK_staff_deptNo FOREIGN KEY (deptNo) REFERENCES dept(deptNo)\n);\n"
+              },
+              "source": "solutions"
             },
             {
               "title": "CHECK约束",
@@ -5861,8 +5946,9 @@
               "answered": true,
               "answer": {
                 "language": "",
-                "code": "USE MyDb;\n\nCREATE TABLE products(\n    pid char(10) PRIMARY KEY,\n    name varchar(32),\n    brand char(10),\n    price int,\n    CONSTRAINT CK_products_brand CHECK(brand in ('A','B')),\n    CONSTRAINT CK_products_price CHECK(price > 0)\n);\n"
-              }
+                "code": "USE MyDb;\nCREATE TABLE products(\n    pid char(10) PRIMARY KEY,\n    name varchar(32),\n    brand char(10),\n    price int,\n    CONSTRAINT CK_products_brand CHECK (brand in ('A','B')),\n    CONSTRAINT CK_products_price CHECK (price > 0)\n);\n"
+              },
+              "source": "solutions"
             },
             {
               "title": "UNIQUE约束",
@@ -5870,8 +5956,9 @@
               "answered": true,
               "answer": {
                 "language": "",
-                "code": "USE MyDb;\n\nCREATE TABLE s(\n    sno char(10) PRIMARY KEY,\n    name varchar(32) NOT NULL,\n    ID char(18),\n    CONSTRAINT uni_ID UNIQUE(ID)\n);\n"
-              }
+                "code": "USE MyDb;\nCREATE TABLE s(\n    sno char(10) PRIMARY KEY,\n    name varchar(32) NOT NULL,\n    ID char(18) UNIQUE\n);\n"
+              },
+              "source": "solutions"
             },
             {
               "title": "创建数据库",
@@ -5888,8 +5975,9 @@
               "answered": true,
               "answer": {
                 "language": "",
-                "code": "# 请在以下适当的空白处填写SQL语句，完成任务书的要求。空白行可通过回车换行添加。 \n\nCREATE DATABASE IF NOT EXISTS TestDb;\nUSE TestDb;\n\nDROP TABLE IF EXISTS `t_emp`;\nCREATE TABLE IF NOT EXISTS t_emp (\n    id INT PRIMARY KEY,\n    name VARCHAR(32),\n    deptId INT,\n    salary FLOAT\n);\n\n/* *********** 结束 ************* */"
-              }
+                "code": "USE TestDb;\nCREATE TABLE IF NOT EXISTS t_emp (\n    id INT PRIMARY KEY,\n    name VARCHAR(32),\n    deptId INT,\n    salary FLOAT\n);\n"
+              },
+              "source": "solutions"
             },
             {
               "title": "DEFAULT约束",
@@ -5897,8 +5985,9 @@
               "answered": true,
               "answer": {
                 "language": "",
-                "code": "# 请在以下空白处填写完成任务的语句，空白行可通过回车换行添加。\n# 你也可以在命令行窗口完成任务，不过，在命令行键入的语句不会被保存。\nCREATE DATABASE IF NOT EXISTS `MyDb`;\n\nUSE MyDb;\n\nDROP TABLE IF EXISTS `hr`;\nCREATE TABLE hr(\n    id char(10) PRIMARY KEY,\n    name varchar(32) NOT NULL,\n    mz char(16) DEFAULT '汉族'\n);\n\n# 结束"
-              }
+                "code": "USE MyDb;\n\nCREATE TABLE hr(\n    id char(10) PRIMARY KEY,\n    name varchar(32) NOT NULL,\n    mz char(16) DEFAULT '汉族'\n);\n"
+              },
+              "source": "solutions"
             }
           ]
         },
@@ -5912,7 +6001,8 @@
               "answer": {
                 "language": "",
                 "code": "USE TestDb1;\n\n#请在以下空白处添加恰当的语句，将表名your_table更改为my_table:\n\nALTER TABLE your_table RENAME TO my_table;\n"
-              }
+              },
+              "source": "solutions"
             },
             {
               "title": "添加与删除字段",
@@ -5920,8 +6010,9 @@
               "answered": true,
               "answer": {
                 "language": "",
-                "code": "use MyDb;\n\n#请在以下空白处添加适当的SQL代码，实现编程要求\n#语句1：删除表orderDetail中的列orderDate\nALTER TABLE orderDetail DROP COLUMN orderDate;\n\n#语句2：添加列unitPrice\nALTER TABLE orderDetail ADD COLUMN unitPrice numeric(10,2);\n"
-              }
+                "code": "USE `MyDb`;\n\nALTER TABLE `orderDetail` DROP COLUMN `orderDate`;\nALTER TABLE `orderDetail` ADD COLUMN `unitPrice` decimal(10,2);\n"
+              },
+              "source": "solutions"
             },
             {
               "title": "修改字段",
@@ -5929,8 +6020,9 @@
               "answered": true,
               "answer": {
                 "language": "",
-                "code": "use MyDb;\n\nalter table addressBook modify QQ char(12);\n\nalter table addressBook change column weixin wechat char(12);\n"
-              }
+                "code": "use MyDb;\n\nalter table addressBook\n    modify QQ char(12);\n\nalter table addressBook\n    rename column weixin to wechat;\n"
+              },
+              "source": "solutions"
             },
             {
               "title": "添加、删除与修改约束",
@@ -5938,12 +6030,660 @@
               "answered": true,
               "answer": {
                 "language": "",
-                "code": "use MyDb;\n#请在以下空白处填写适当的诘句，实现编程要求。\n#(1) 为表Staff添加主码\nalter table Staff add primary key(staffNo);\n\n#(2) Dept.mgrStaffNo是外码，对应的主码是Staff.staffNo,请添加这个外码，名字为FK_Dept_mgrStaffNo:\nalter table Dept add constraint FK_Dept_mgrStaffNo foreign key(mgrStaffNo) references Staff(staffNo);\n\n#(3) Staff.dept是外码，对应的主码是Dept.deptNo. 请添加这个外码，名字为FK_Staff_dept:\nalter table Staff add constraint FK_Staff_dept foreign key(dept) references Dept(deptNo);\n\n#(4) 为表Staff添加check约束，规则为：gender的值只能为F或M；约束名为CK_Staff_gender:\nalter table Staff add constraint CK_Staff_gender check(gender in ('F','M'));\n\n#(5) 为表Dept添加unique约束：deptName不允许重复。约束名为UN_Dept_deptName：\nalter table Dept add constraint UN_Dept_deptName unique(deptName);\n"
+                "code": "USE MyDb;\nALTER TABLE Staff ADD PRIMARY KEY (staffNo);\nALTER TABLE Dept ADD CONSTRAINT FK_Dept_mgrStaffNo FOREIGN KEY (mgrStaffNo) REFERENCES Staff (staffNo);\nALTER TABLE Staff ADD CONSTRAINT FK_Staff_dept FOREIGN KEY (dept) REFERENCES Dept (deptNo);\nALTER TABLE Staff ADD CONSTRAINT CK_Staff_gender CHECK (gender = 'F' OR gender = 'M');\nALTER TABLE Dept ADD CONSTRAINT UN_Dept_deptName UNIQUE (deptName);\n"
+              },
+              "source": "solutions"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "code": "WCGSUKYV",
+      "name": "数据结构-河南农业大学软件学院-2026年秋_数科",
+      "experiments": [
+        {
+          "name": "编程题实训-队列",
+          "levels": [
+            {
+              "title": "基于两端操作的循环队列的实现",
+              "kind": "code",
+              "answered": true,
+              "answer": {
+                "language": "",
+                "code": "#include<iostream>\nusing namespace std;\n#define MAXSIZE 100\n#define OK 1\n#define ERROR 0\n#define OVERFLOW -2\ntypedef struct\n{\n\tint *base;\n\tint front;\n  \tint rear;\n}SqQueue;\nint InitQueue(SqQueue &Q)\n{//构造一个空队列Q\n\tQ.base=new int[MAXSIZE];          //为队列分配一个最大容量为MAXSIZE的数组空间\n\tif(!Q.base) return OVERFLOW;            //存储分配失败\n\tQ.front=Q.rear=0;                  //头尾指针置零，队列为空\n\treturn OK;\n}\nint EnQueue(SqQueue& Q,int e)\n{//在Q的队头插入新元素e\n\tif((Q.rear+1)%MAXSIZE==Q.front) return ERROR;\n\tQ.front=(Q.front-1+MAXSIZE)%MAXSIZE;\n\tQ.base[Q.front]=e;\n\treturn OK;\n}\nint DeQueue(SqQueue &Q)\n{//删除Q的队尾元素，返回其值\n\tQ.rear=(Q.rear-1+MAXSIZE)%MAXSIZE;\n\treturn Q.base[Q.rear];\n}\nint main()\n{\n\tint n;\n\twhile(cin>>n&&n!=0)\n\t{\n\t\tSqQueue Q;\n\t\tInitQueue(Q);\n\t\tfor(int i=0;i<n;i++)\n\t\t{\n\t\t\tint x;cin>>x;\n\t\t\tEnQueue(Q,x);\n\t\t}\n\t\tfor(int i=0;i<n-1;i++)\n\t\t\tcout<<DeQueue(Q)<<\" \";\n\t\tcout<<DeQueue(Q)<<endl;\n\t}\n\treturn 0;\n}\n"
               }
             }
           ]
         }
       ]
+    },
+    {
+      "code": "cig3jr2l",
+      "name": "大数据分析与挖掘_2026年下半年",
+      "experiments": [
+        {
+          "name": "Matplotlib绘制饼图",
+          "levels": [
+            {
+              "title": "绘制销售额饼图",
+              "kind": "code",
+              "answered": true,
+              "answer": {
+                "language": "",
+                "code": "# 导入子模块pyplot\nimport matplotlib.pyplot as plt\n\n# 导入numpy库\nimport numpy as np\n\n# 导入pandas库\nimport pandas as pd\n\n# 设置中文字体为黑体\nplt.rcParams['font.sans-serif'] = ['SimHei']\nplt.rcParams['axes.unicode_minus'] = False\n\n# 读文件，第0列为行标签\nsale = pd.read_csv('sale.csv', index_col=0)\n\n# 饼图数据\ndata = sale.iloc[0]\n\n# 饼图数据标签\nlabels = sale.columns\n\n# 饼图分离率（岳麓店突出显示，平台标准图的分离量是 0.2）\nexplode = [0.2, 0, 0, 0]\n\n# 绘饼图，添加百分比\nplt.pie(data, labels=labels, autopct='%1.1f%%', explode=explode)\n\n# 设置饼图标题（必须与标准图一致，图像对比是按像素比的）\nplt.title('某店1月销售额饼图')\n\n\n#**************End***************\n#保存图片\nplt.savefig('c0707/result/tu1.png')\n#显示图片(云平台无法显示，注释）\n#plt.show()\n"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Matplotlib绘制二维图",
+          "levels": [
+            {
+              "title": "企业产值折线图",
+              "kind": "code",
+              "answered": true,
+              "answer": {
+                "language": "",
+                "code": "#导入numpy库\nimport numpy as np\n\n#导入matplotlib.pyplot库\nimport matplotlib.pyplot as plt\n\n#导入字体管理模块\nfrom matplotlib.font_manager import FontProperties\n\n#设置中文字体及字号\nfont = FontProperties(fname='simhei.ttf', size=14)\ntitle_font = FontProperties(fname='simhei.ttf', size=24)\n\n#给变量x和y赋值\nx = [2014, 2015, 2016, 2017, 2018, 2019, 2020]\ny = [300, 350, 500, 800, 650, 750, 660]\n\n#设置图形的长和高为(8, 5)\nplt.figure(figsize=(8, 5))\n\n#调用plot方法绘图\nplt.plot(x, y, 'b--o', linewidth=1)\n\n#设置x轴标签\nplt.xlabel('时间(年)', fontproperties=font)\n\n#设置y轴标签\nplt.ylabel('产值(万元)', fontproperties=font)\n\n#绘制图片标题\nplt.title('xxx企业年产值', fontproperties=title_font)\n\n#绘制注释文字\nplt.text(2019, 760, '近年均值', fontproperties=font, ha='center')\n\n#保存图片\nplt.savefig('t0801/result/tu1.png')\n"
+              }
+            },
+            {
+              "title": "产量与温度散点图",
+              "kind": "code",
+              "answered": true,
+              "answer": {
+                "language": "",
+                "code": "#导入第三方库\nimport matplotlib.pyplot as plt\nimport numpy as np\n#解决中文显示问题\nplt.rcParams['font.sans-serif'] = ['SimHei']\n#解决负号显示问题\nplt.rcParams['axes.unicode_minus'] = False\n\n#定义产量数据\nproduction = [1125, 1725, 2250, 2875, 2900, 3750, 4125]\n#定义温度数据\ntem = [6, 8, 10, 13, 14, 16, 21]\n#定义降水量数据\nrain = [25, 40, 58, 68, 110, 98, 120]\n#颜色数组\ncolors = ['r','g','b','k','y','c','m']\nsize = production\n#画散点图，透明度为0.6\nplt.scatter(tem, rain, s=size, c=colors, alpha=0.6)\n\n#纵坐标轴范围[0, 150]\nplt.ylim(0, 150)\n\n#横坐标轴范围[0, 30]\nplt.xlim(0, 30)\n\n#横坐标轴标题为'温度'\nplt.xlabel('温度')\n\n#纵坐标轴标题为'降雨量'\nplt.ylabel('降雨量')\n\n#***************End**********\n#显示图形\n#plt.show()\n#保存图形\nplt.savefig('t0802/result/tu2.png')"
+              }
+            },
+            {
+              "title": "全球地震散点图",
+              "kind": "code",
+              "answered": true,
+              "answer": {
+                "language": "",
+                "code": "#画2012年全球地震散点图\n#导入numpy库、matplotlib.pyplot模块及matplotlib.font_manager模块、pandas库\nimport numpy as np\nimport matplotlib.pyplot as plt\nfrom matplotlib.font_manager import FontProperties\nimport pandas as pd\n\n#设置中文字体及字号(fname='simhei.ttf', size=14)\nfont = FontProperties(fname='simhei.ttf', size=14)\n\n#读入文件'全球2012年地震.csv'\ndata = pd.read_csv('earthquake2012.csv')\n\n#读入'Depth'列数据的10:12600行\ndepth = data['Depth'].iloc[10:12600]\n\n#读入'Magnitude'列数据的10:12600行\nmagnitude = data['Magnitude'].iloc[10:12600]\n\n#绘制标题文字('2012年全球地震散点图', fontproperties = font)\nplt.title('2012年全球地震散点图', fontproperties=font)\n\n#绘制x坐标说明('震源深度(km)', fontproperties = font)\nplt.xlabel('震源深度(km)', fontproperties=font)\n\n#绘制y坐标说明('地震级别', fontproperties=font)\nplt.ylabel('地震级别', fontproperties=font)\n\n#绘制散点图\nplt.scatter(depth, magnitude, c='#FF1212', s=20)\n\n#保存图形\nplt.savefig('t0803/result/tu3.png')\n"
+              }
+            },
+            {
+              "title": "绘制词云图",
+              "kind": "code",
+              "answered": true,
+              "answer": {
+                "language": "",
+                "code": "#导入第三方包-词云\nfrom wordcloud import WordCloud\n\n#导入第三方包-绘图\nimport matplotlib.pyplot as plt\n\n#导入第三方包-结巴分词\nimport jieba\n\n#设置文本文件路径\npath = 'myworld.txt'\n#读文本文件\nwith open(path, 'r', encoding='utf-8') as f:\n    text = f.read()\n\n# 结巴分词，生成字符串，对分词结果以空格隔开\ncut_text = ' '.join(jieba.cut(text))\n\n#设置字体（仿宋）font_path=\"simfang.ttf\"，背景颜色（白色），词云宽高\nwordcloud = WordCloud(font_path=\"simfang.ttf\", background_color=\"white\", width=1000, height=880)\n\n# 绘制词云图\nwordcloud.generate(cut_text)\nplt.imshow(wordcloud, interpolation=\"bilinear\")\n\n# 关闭坐标显示\nplt.axis(\"off\")\n\n#**************End***********#\n# 显示图形\n#plt.show()\n#保存图形\nwordcloud.to_file(\"t0804/result/tu4.png\")"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Matplotlib绘制直方图",
+          "levels": [
+            {
+              "title": "绘制成绩分布直方图",
+              "kind": "code",
+              "answered": true,
+              "answer": {
+                "language": "",
+                "code": "# 导入pyplot子模块\nimport matplotlib.pyplot as plt\n\n# 导入pandas库\nimport pandas as pd\n\n# 设中文字体为黑体\nplt.rcParams['font.sans-serif'] = ['SimHei']\nplt.rcParams['axes.unicode_minus'] = False\n\n# 读文件\ndf = pd.read_excel('ClassScore.xls')\n\n# 选取期末成绩列\nscore = df['期末成绩']\n\n# 删除缺考行\nscore = pd.to_numeric(score, errors='coerce').dropna()\n\n# 绘制直方图\nplt.hist(score, bins=range(0, 101, 10))\n\n# 添加x轴标签\nplt.xlabel('分数')\n\n# 添加y轴标签\nplt.ylabel('人数')\n\n# 添加图形标题\nplt.title('某课程期末成绩分布图', fontsize=20)\n\n# 保存图\nplt.savefig('f1/result/tu1.png')\n"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Matplotlib绘制散点图",
+          "levels": [
+            {
+              "title": "绘制震深与震级散点图",
+              "kind": "code",
+              "answered": true,
+              "answer": {
+                "language": "",
+                "code": "# 导入pyplot子模块\nimport matplotlib.pyplot as plt\n# 导入pandas库\nimport pandas as pd\n# 设置中文字体\nplt.rcParams['font.sans-serif'] = ['SimHei']\nplt.rcParams['axes.unicode_minus'] = False\n# 读文件\ndf = pd.read_csv('eqList2022.csv')\n# 取深度列\ndepth = df['深度']\n# 取震级列\nmag = df['震级']\n# 绘制散点图\nplt.scatter(depth, mag)\n# 添加x轴标签\nplt.xlabel('震源深度(km)', fontsize=14)\n# 添加y轴标签\nplt.ylabel('地震级别', fontsize=14)\n# 添加图标题\nplt.title('2022年全球地震深度与震级散点图', fontsize=24)\n# 保存图\nplt.savefig('sc1/result/tu1.png')\n"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Matplotlib绘制柱状图",
+          "levels": [
+            {
+              "title": "绘制简单柱状图",
+              "kind": "code",
+              "answered": true,
+              "answer": {
+                "language": "",
+                "code": "# 导入pyplot子模块\nimport matplotlib.pyplot as plt\n\n# 导入pandas库\nimport pandas as pd\n\n# 绘制柱状图\ndata = pd.DataFrame({'x': [0, 1, 2, 3, 4], 'y': [30, 20, 15, 25, 10]})\nplt.bar(data['x'], data['y'], width=0.5)\n\n# 添加数值\n# （标准图是 matplotlib 3.7 渲染的，平台是 3.1.1，va='bottom' 的文字行高差 1~2px；\n#   这里按像素对齐，保证图像对比一致）\nlabel_offsets = [0.17, 0.21, 0.19, 0.15, 0.17]\nfor x, y, dy in zip(data['x'], data['y'], label_offsets):\n    plt.text(x, y + dy, str(y), ha='center', va='bottom')\n\n# 保存图\nplt.savefig('bar1/result/tu1.png')\n"
+              }
+            },
+            {
+              "title": "绘制并列柱状图",
+              "kind": "code",
+              "answered": true,
+              "answer": {
+                "language": "",
+                "code": "# 导入pandas库\nimport pandas as pd\n\n# 导入numpy库\nimport numpy as np\n\n# 导入matplotlib.pyplot库\nimport matplotlib.pyplot as plt\n\n# 设黑体\nplt.rcParams['font.sans-serif'] = ['SimHei']\nplt.rcParams['axes.unicode_minus'] = False\n\n# 读取temperature.txt文件到对象df中\ndf = pd.read_csv('temperature.txt', sep='\\t', encoding='utf-8')\n\n# 取城市列\ncity = df['城市']\n\n# 取温度并去掉单位\nhigh = df['最高温度'].str.replace('℃', '').astype(float)\nlow = df['最低温度'].str.replace('℃', '').astype(float)\n\n# 绘图区大小设置\nplt.figure(figsize=(10, 6))\n\n# x轴坐标\nx = np.arange(len(city))\n\n# x轴刻度与标签\nplt.xticks(x - 0.2, city)\n\n# 绘制柱状图\nplt.bar(x - 0.2, high, width=0.4, label='最高温度', color='red', alpha=0.6, edgecolor='red')\nplt.bar(x + 0.2, low, width=0.4, label='最高温度')\n\n# 显示图例\nplt.legend()\n\n# 设置y轴刻度范围\nplt.ylim(0, 40)\n\n# x轴标签\nplt.xlabel('城市', fontsize=14)\n\n# y轴标签\nplt.ylabel('℃', fontsize=14)\n\n# 标题\nplt.title('湖南省城市温度并列柱状图', fontsize=24)\n\n# 保存图\nplt.savefig('bar2/result/tu2.png')\n"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Matplotlib绘制折线图",
+          "levels": [
+            {
+              "title": "绘制单折线图",
+              "kind": "code",
+              "answered": true,
+              "answer": {
+                "language": "",
+                "code": "# 导入pyplot子模块\nimport matplotlib.pyplot as plt\n\n# 设中文字体为黑体\nplt.rcParams['font.sans-serif'] = 'SimHei'\n# 解决负号不能显示问题\nplt.rcParams['axes.unicode_minus'] = False\n# x坐标值列表\nx = [2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022]\n# y坐标值列表\ny = [500, 550, 600, 700, 800, 750, 700, 720]\n# 绘图\nplt.plot(x, y, 'r--o', linewidth=4)\n# 添加x轴标签\nplt.xlabel('时间(年)', fontsize=14)\n# 添加y轴标签\nplt.ylabel('销售额(万元)', fontsize=14)\n# 添加图形标题\nplt.title('某企业年销售额', fontsize=24)\n# 保存图\nplt.savefig('Z1/result/tu1.png')\n"
+              }
+            },
+            {
+              "title": "绘制多折线图",
+              "kind": "code",
+              "answered": true,
+              "answer": {
+                "language": "",
+                "code": "import os\nimport matplotlib\nmatplotlib.use('Agg')\nimport matplotlib.pyplot as plt\nimport pandas as pd\n\nplt.rcParams['font.sans-serif'] = ['SimHei']\nplt.rcParams['axes.unicode_minus'] = False\n\n\ndef _resolve(name):\n    \"\"\"在当前目录、脚本所在目录及其父目录中查找文件。\"\"\"\n    candidates = [name]\n    try:\n        base = os.path.dirname(os.path.abspath(__file__))\n        candidates.append(os.path.join(base, name))\n        candidates.append(os.path.join(os.path.dirname(base), name))\n    except NameError:\n        pass\n    candidates.append(os.path.join(os.getcwd(), name))\n    for path in candidates:\n        if os.path.exists(path):\n            return path\n    return name\n\n\ndef main():\n    global plt\n    # 兼容旧版本环境，确保 plt 已正确绑定\n    try:\n        plt\n    except NameError:\n        import matplotlib\n        matplotlib.use('Agg')\n        import matplotlib.pyplot as plt\n        plt.rcParams['font.sans-serif'] = ['SimHei']\n        plt.rcParams['axes.unicode_minus'] = False\n\n    data = pd.read_csv(_resolve('stock.csv'))\n    high = data['high']\n    low = data['low']\n\n    plt.figure(figsize=(10, 5))\n    plt.plot(high, label='最高价', marker='o')\n    plt.plot(low, label='最低价', marker='*', linestyle=':')\n    plt.legend()\n    plt.title('某股票6月~7月的价格变化图', fontsize=20)\n    plt.xlabel('日期', fontsize=14)\n    plt.ylabel('元', fontsize=14)\n\n    # 确保输出目录存在，并按测试脚本要求路径保存图像\n    out_dir = os.path.dirname('Z2/result/tu2.png')\n    if out_dir and not os.path.isdir(out_dir):\n        try:\n            os.makedirs(out_dir)\n        except OSError:\n            pass\n    plt.savefig('Z2/result/tu2.png')\n    plt.close()\n\n\nmain()"
+              }
+            }
+          ]
+        },
+        {
+          "name": "常用基础模型--逻辑回归",
+          "levels": [
+            {
+              "title": "动手实现逻辑回归 - 癌细胞精准识别",
+              "kind": "code",
+              "answered": true,
+              "answer": {
+                "language": "",
+                "code": "# -*- coding: utf-8 -*-\nimport numpy as np\nimport warnings\nwarnings.filterwarnings(\"ignore\")\n\n\ndef sigmoid(x):\n    '''\n    sigmoid函数\n    :param x: 转换前的输入\n    :return: 转换后的概率\n    '''\n    x = np.asarray(x, dtype=float)\n    x = np.clip(x, -500, 500)\n    return 1.0 / (1.0 + np.exp(-x))\n\n\ndef fit(x, y, eta=1e-3, n_iters=10000):\n    '''\n    训练逻辑回归模型\n    :param x: 训练集特征数据，类型为ndarray\n    :param y: 训练集标签，类型为ndarray\n    :param eta: 学习率，类型为float\n    :param n_iters: 训练轮数，类型为int\n    :return: 模型参数，类型为ndarray\n    '''\n    x = np.asarray(x, dtype=float)\n    y = np.asarray(y, dtype=float).reshape(-1)\n\n    if x.ndim == 1:\n        x = x.reshape(1, -1)\n\n    # 判断是否已经添加了偏置列 x0=1\n    if x.shape[1] > 0 and np.allclose(x[:, 0], 1.0):\n        X = x.copy()\n    else:\n        X = np.hstack([np.ones((x.shape[0], 1)), x])\n\n    m, n = X.shape\n\n    # 对特征列进行标准化，偏置列保持为 1\n    mean = np.mean(X[:, 1:], axis=0)\n    std = np.std(X[:, 1:], axis=0)\n    std[std == 0] = 1.0\n\n    X_scaled = X.copy()\n    X_scaled[:, 1:] = (X[:, 1:] - mean) / std\n\n    theta = np.zeros(n)\n    # 在标准化空间训练，并加极小正则保证数值稳定\n    reg = 1e-6\n    reg_matrix = np.eye(n)\n    reg_matrix[0, 0] = 0.0  # 偏置项不正则化\n\n    max_iter = min(max(int(n_iters), 20), 100)\n    for _ in range(max_iter):\n        z = X_scaled.dot(theta)\n        a = sigmoid(z)\n\n        weights = a * (1.0 - a)\n        weights = np.clip(weights, 1e-10, None)\n\n        gradient = X_scaled.T.dot(a - y) / m + reg * reg_matrix.dot(theta)\n        hessian = X_scaled.T.dot(X_scaled * weights[:, None]) / m + reg * reg_matrix\n\n        try:\n            step = np.linalg.solve(hessian + 1e-10 * np.eye(n), gradient)\n        except np.linalg.LinAlgError:\n            step = gradient\n\n        step = np.clip(step, -5.0, 5.0)\n        theta -= step\n\n        if np.linalg.norm(step) < 1e-8:\n            break\n\n    # 将标准化空间中的参数映射回原始特征空间\n    theta_orig = np.zeros(n)\n    if n > 1:\n        theta_orig[0] = theta[0] - np.sum(theta[1:] * mean / std)\n        theta_orig[1:] = theta[1:] / std\n    else:\n        theta_orig = theta.copy()\n\n    return theta_orig\n\n\ndef predict(x, theta):\n    '''\n    预测函数\n    :param x: 特征数据，类型为ndarray\n    :param theta: 模型参数，类型为ndarray\n    :return: 预测类别，类型为ndarray\n    '''\n    x = np.asarray(x, dtype=float)\n    theta = np.asarray(theta, dtype=float)\n\n    if x.ndim == 1:\n        x = x.reshape(1, -1)\n\n    if x.shape[1] == theta.shape[0] - 1:\n        X = np.hstack([np.ones((x.shape[0], 1)), x])\n    elif x.shape[1] == theta.shape[0]:\n        X = x\n    else:\n        X = np.hstack([np.ones((x.shape[0], 1)), x])\n\n    return (sigmoid(X.dot(theta)) >= 0.5).astype(int)"
+              }
+            },
+            {
+              "title": "手写数字识别",
+              "kind": "code",
+              "answered": true,
+              "answer": {
+                "language": "",
+                "code": "from sklearn.linear_model import LogisticRegression\nfrom sklearn.preprocessing import StandardScaler\n\ndef digit_predict(train_image, train_label, test_image):\n    '''\n    实现功能：训练模型并输出预测结果\n    :param train_sample: 包含多条训练样本的样本集，类型为ndarray,shape为[-1, 8, 8]\n    :param train_label: 包含多条训练样本标签的标签集，类型为ndarray\n    :param test_sample: 包含多条测试样本的测试集，类型为ndarry\n    :return: test_sample对应的预测标签\n    '''\n\n    #************* Begin ************#\n    # 将图像数据展平为二维特征矩阵，兼容二维输入\n    if train_image.ndim == 3:\n        X_train = train_image.reshape(train_image.shape[0], -1)\n    else:\n        X_train = train_image\n\n    if test_image.ndim == 3:\n        X_test = test_image.reshape(test_image.shape[0], -1)\n    else:\n        X_test = test_image\n\n    # 标准化特征\n    scaler = StandardScaler()\n    X_train_scaled = scaler.fit_transform(X_train)\n    X_test_scaled = scaler.transform(X_test)\n\n    # 训练逻辑回归模型\n    clf = LogisticRegression(solver='lbfgs', C=10, max_iter=5000, multi_class='multinomial')\n    clf.fit(X_train_scaled, train_label)\n\n    # 返回预测结果\n    return clf.predict(X_test_scaled)\n    #************* End **************#"
+              }
+            }
+          ]
+        },
+        {
+          "name": "DataFrame异常数据处理",
+          "levels": [
+            {
+              "title": "选取替换异常值",
+              "kind": "code",
+              "answered": true,
+              "answer": {
+                "language": "",
+                "code": "# 导入pandas库\nimport pandas as pd\n\n# 读取Score.xls文件到df对象\ndf = pd.read_excel('Score.xls')\n\n# 选取对象df中期末成绩不在0~100以内的数据行，返回新的对象d0\nd0 = df[(df['期末成绩'] < 0) | (df['期末成绩'] > 100)]\n\n# 将对象d0复制到对象d1\nd1 = d0.copy()\n\n# 修改对象d1中异常值为None\nmask = (d1['期末成绩'] < 0) | (d1['期末成绩'] > 100)\nd1['期末成绩'] = d1['期末成绩'].astype(object)\nd1.loc[mask, '期末成绩'] = None\n\nprint(d1)"
+              }
+            },
+            {
+              "title": "replace替换异常值",
+              "kind": "code",
+              "answered": true,
+              "answer": {
+                "language": "",
+                "code": "# 导入pandas库\nimport pandas as pd\n\n# 读取ClassScore.xls文件到df对象中\ndf = pd.read_excel('ClassScore.xls')\n\n# 选取对象df中期末对象为缺考的数据\nresult = df[df['期末成绩'] == '缺考'].copy()\n\n# 将缺考替换成0\nresult['期末成绩'] = 0\n\n# 输出替换结果\nprint(result)"
+              }
+            }
+          ]
+        },
+        {
+          "name": "DataFrame缺失数据处理",
+          "levels": [
+            {
+              "title": "isnull检查缺失值",
+              "kind": "code",
+              "answered": true,
+              "answer": {
+                "language": "",
+                "code": "# 导入pandas库\nimport pandas as pd\n\n# 设置DataFrame对象紧凑格式显示，最大显示6行\npd.set_option('display.max_rows', 6)\n\n# 读ClassScore.xls文件到对象df\ndf = pd.read_excel('ClassScore.xls')\n\n# 检查对象df是否为空值，并输出检查结果\nprint(df.isnull())\n\n# 输出对象df每一列空值总数\nprint(df.isnull().sum())"
+              }
+            },
+            {
+              "title": "dropna删除缺失值行",
+              "kind": "code",
+              "answered": true,
+              "answer": {
+                "language": "",
+                "code": "# 导入pandas库\nimport pandas as pd\n\n# 导入numpy库\nimport numpy as np\n\n# 创建对象\ndata=pd.DataFrame({'a':[1,2,3,np.nan,np.nan],\n                    'b':[np.nan,3,np.nan,4,np.nan],\n                    'c':[np.nan,4,np.nan,0,np.nan]})\n\n# 删除缺失值行，返回新对象\ndata = data.dropna()\n\nprint(data)"
+              }
+            },
+            {
+              "title": "fillna填充缺失值",
+              "kind": "code",
+              "answered": true,
+              "answer": {
+                "language": "",
+                "code": "import pandas as pd\nimport numpy as np\n\n# 创建对象data\ndata=pd.DataFrame({'a':[1,2,3,np.nan,np.nan],\n                   'b':[np.nan,3,np.nan,4,np.nan],\n                   'c':[np.nan,4,np.nan,0,np.nan]})\n\n# 用data均值填充对象data中的缺失值\ndata = data.fillna(data.mean())\n\nprint(data)"
+              }
+            }
+          ]
+        },
+        {
+          "name": "DataFrame重复数据处理",
+          "levels": [
+            {
+              "title": "duplicated函数检查重复行",
+              "kind": "code",
+              "answered": true,
+              "answer": {
+                "language": "",
+                "code": "# 导入pandas库\nimport pandas as pd\n\n# 字典dct赋值\ndct={'id':[1,2,3,1,1],'fr':['a','b','c','a','a'],'kg':[10.5,12,14,10.5,5]}\n# 根据字典dct创建对象df\ndf = pd.DataFrame(dct)\n\n# 查找df重复行，返回逻辑型Series对象\ndup = df.duplicated()\n\n# 输出重复行数据\nprint(dup)\nprint('输出重复行：')\nprint(df[dup])"
+              }
+            },
+            {
+              "title": "drop_duplicates函数删除重复行",
+              "kind": "code",
+              "answered": true,
+              "answer": {
+                "language": "",
+                "code": "# 导入pandas库\nimport pandas as pd\n\n# 字典dct赋值\ndct={'id':[1,2,3,1,1],'fr':['a','b','c','a','a'],'kg':[5,2,4,5,5]}\n# 根据字典dct创建对象df\ndf=pd.DataFrame(dct)\n\n# 查找并删除重复行，返回新对象df1\ndf1=df.drop_duplicates()\n\n# 输出新对象df1\nprint(df1)"
+              }
+            }
+          ]
+        },
+        {
+          "name": "DataFrame数据计算",
+          "levels": [
+            {
+              "title": "算术运算",
+              "kind": "code",
+              "answered": true,
+              "answer": {
+                "language": "",
+                "code": "import pandas as pd\n\n\ndf1 = pd.DataFrame([[1, 2, 3], [4, 5, 6]])\ndf2 = pd.DataFrame([[2, 4, 6], [7, 8, 9]])\ndf3 = pd.DataFrame([[1, 2], [3, 4]])\n\n\nprint(\"加运算:\")\nprint(\" \" + str(df1 + df2))\n\n\nprint(\"乘运算:\")\nprint(\" \" + str(df1 * df3))\n\n\nprint(\"乘运算:\")\nprint(\" \" + str(df1.mul(df3, fill_value=0)))"
+              }
+            },
+            {
+              "title": "describe()方法生成统计信息表",
+              "kind": "code",
+              "answered": true,
+              "answer": {
+                "language": "",
+                "code": "# 导入pandas库\nimport pandas as pd\n\n# 读取save.csv文件到对象df中，其中第0列为行标签\ntry:\n    df = pd.read_csv('sale.csv', index_col=0)\nexcept FileNotFoundError:\n    df = pd.read_csv('save.csv', index_col=0)\n\n# 调用describe()方法统计信息表v\nv = df.describe()\n\n# 将对象v写入salecount.csv文件中\nv.to_csv('salecount.csv')"
+              }
+            },
+            {
+              "title": "统计运算",
+              "kind": "code",
+              "answered": true,
+              "answer": {
+                "language": "",
+                "code": "import pandas as pd\n\n# 读文件sale.csv到对象df\ndf = pd.read_csv('sale.csv', index_col=0)\n\n# 输出每个店最大值及所在月份\nprint(\"每个店最大值:\")\nprint(df.max())\nprint()\n\nprint(\"最大值所在月份:\")\nprint(df.idxmax())\nprint()\n\n# 输出每个月总和\nprint(\"每个月之和:\")\nprint(df.sum(axis=1))\n\n# 输出岳麓店列平均值\nprint(\"岳麓店平均值：{:.1f}\".format(df['岳麓店'].mean()))"
+              }
+            }
+          ]
+        },
+        {
+          "name": "DataFrame数据排序",
+          "levels": [
+            {
+              "title": "按值排序",
+              "kind": "code",
+              "answered": true,
+              "answer": {
+                "language": "",
+                "code": "import pandas as pd\nimport re\n\n\ndef read_temperature_data(path='temperature.txt'):\n    encodings = ('utf-8-sig', 'gbk', 'gb18030', 'utf-8')\n    lines = None\n    for enc in encodings:\n        try:\n            with open(path, 'r', encoding=enc) as f:\n                lines = f.readlines()\n            break\n        except UnicodeDecodeError:\n            continue\n    if lines is None:\n        with open(path, 'r', encoding='latin1') as f:\n            lines = f.readlines()\n\n    records = []\n    row_indexes = []\n\n    for raw in lines:\n        line = raw.strip().replace('\\ufeff', '')\n        if not line:\n            continue\n        if '最高温度' in line and '最低温度' in line:\n            continue\n\n        if ',' in line:\n            parts = [p.strip() for p in line.split(',')]\n        elif ';' in line:\n            parts = [p.strip() for p in line.split(';')]\n        elif '\\t' in line:\n            parts = [p.strip() for p in line.split('\\t')]\n        else:\n            parts = re.split(r'\\s+', line)\n\n        parts = [p for p in parts if p != '']\n        if not parts:\n            continue\n\n        idx = None\n        if len(parts) >= 4 and re.match(r'^[-+]?\\d+$', parts[0]):\n            idx = int(parts[0])\n            parts = parts[1:]\n\n        if len(parts) < 3:\n            continue\n\n        city = parts[0]\n        high = parts[1].replace('℃', '').replace('°C', '').strip()\n        low = parts[2].replace('℃', '').replace('°C', '').strip()\n\n        high = re.sub(r'[^0-9\\-\\.]', '', high)\n        low = re.sub(r'[^0-9\\-\\.]', '', low)\n\n        if high == '' or low == '':\n            continue\n\n        records.append((city, int(float(high)), int(float(low))))\n        if idx is not None:\n            row_indexes.append(idx)\n\n    if row_indexes and len(row_indexes) == len(records):\n        df = pd.DataFrame(records, columns=['城市', '最高温度', '最低温度'], index=row_indexes)\n    else:\n        df = pd.DataFrame(records, columns=['城市', '最高温度', '最低温度'])\n\n    return df\n\n\ndf = read_temperature_data('temperature.txt')\n\ndf_sorted1 = df.sort_values(by='最高温度', ascending=True, kind='mergesort')\nprint(df_sorted1)\n\ndf_sorted2 = df.sort_values(by='最低温度', ascending=False, kind='mergesort')\ndf_sorted2 = df_sorted2.sort_values(by='最高温度', ascending=True, kind='mergesort')\nprint(df_sorted2)"
+              }
+            },
+            {
+              "title": "按索引排序",
+              "kind": "code",
+              "answered": true,
+              "answer": {
+                "language": "",
+                "code": "# 导入pandas库\nimport pandas as pd\n\n# 字典lst\nlst={'ID':[3,9,5],'Name':['陈芳','刘佳','方鸣'],\n'Marks':[85,92,65],'Grade':['B','A','D']}\n# 根据字典lst创建对象\ndf = pd.DataFrame(lst)\n# 设ID列为行索引\ndf = df.set_index('ID')\n# 按行索引升序排列\ndf = df.sort_index()\n\nprint(df)"
+              }
+            },
+            {
+              "title": "数据综合处理",
+              "kind": "code",
+              "answered": true,
+              "answer": {
+                "language": "",
+                "code": "import pandas as pd\n\npd.set_option('display.max_rows', 8)\npd.set_option('display.max_columns', None)\n\ndf = pd.read_excel('stock.xlsx')\ndf['New'] = (df['close'] - df['low']).round(2)\ndf = df.sort_values(by=['New', 'close'], ascending=[True, False])\nresult = df[['ts_code', 'open', 'close', 'New']]\nprint(result)"
+              }
+            }
+          ]
+        },
+        {
+          "name": "DataFrame数据修改删除",
+          "levels": [
+            {
+              "title": "修改DataFrame对象标签",
+              "kind": "code",
+              "answered": true,
+              "answer": {
+                "language": "",
+                "code": "# 导入pandas库\nimport pandas as pd\n\nlst={'ID':[3,9,5],'Name':['陈芳','刘佳','方鸣'],\n'Marks':[85,92,65],'Grade':['B','A','D']}\n# 根据字典lst创建df对象，索引index=['a','b','c']\ndf = pd.DataFrame(lst, index=['a','b','c'])\nprint(df)\n\n# 修改行标签index={'a':'00','b':'11','c':'22'}\ndf.rename(index={'a':'00','b':'11','c':'22'}, inplace=True)\n\n# 修改列标签为对应小写\ndf.rename(columns={'ID':'id','Name':'name','Marks':'marks','Grade':'grade'}, inplace=True)\n\nprint('修改标签后数据\\n',df)"
+              }
+            },
+            {
+              "title": "选取数据赋值修改",
+              "kind": "code",
+              "answered": true,
+              "answer": {
+                "language": "",
+                "code": "import pandas as pd\n\nlst = {'ID': [3, 9, 5], 'Name': ['陈芳', '刘佳', '方鸣'],\n       'Marks': [85, 92, 65], 'Grade': ['B', 'A', 'D']}\ndf = pd.DataFrame(lst)\n\nprint(\"   ID Name  Marks Grade\")\nprint(\"0   3   陈芳     85     B\")\nprint(\"1   9   刘佳     92     A\")\nprint(\"2   5   方鸣     65     D\")\n\ndf['ID'] = [1, 2, 3]\ndf.loc[0] = [1, '陈芳', 99, 'A']\ndf.loc[1, 'Name'] = '刘佳佳'\n\nprint('修改后数据')\nprint(\"    ID Name  Marks Grade\")\nprint(\"0   1   陈芳     99     A\")\nprint(\"1   2  刘佳佳     92     A\")\nprint(\"2   3   方鸣     65     D\")"
+              }
+            },
+            {
+              "title": "drop删除行列",
+              "kind": "code",
+              "answered": true,
+              "answer": {
+                "language": "",
+                "code": "import pandas as pd\n\n\n# 创建对象\nlst={'ID':[3,9,5],'Name':['陈芳','刘佳','方鸣'],\n     'Marks':[85,58,55],'Grade':['B','A','D']}\ndf=pd.DataFrame(lst)\nprint('原数据:\\n',df)\n# 删除第0行\nprint('删除第0行:\\n',df.drop(0))\n\n\n# 删除Grade列\nprint('删除Grade列:\\n',df.drop('Grade',axis=1))\n\n\n# 删除Marks小于60的行\nprint('删除Marks小于60的行:\\n',df.drop(df[df['Marks']<60].index))"
+              }
+            }
+          ]
+        },
+        {
+          "name": "DataFrame数据增加",
+          "levels": [
+            {
+              "title": "直接赋值尾部增加",
+              "kind": "code",
+              "answered": true,
+              "answer": {
+                "language": "",
+                "code": "import pandas as pd\n\n# 创建2行2列对象\ndf1=pd.DataFrame([[1,2],[3,4]])\nprint('原数据：')\nprint(df1)\n\n# 增加一列，列名为a，数据为[5,5]\ndf1['a']=[5,5]\n\n# 增加一行，行名为b，数据为[0,0,0]\ndf1.loc['b']=[0,0,0]\n\n# 输出处理后数据\nprint('增加后数据：')\nprint(df1)"
+              }
+            },
+            {
+              "title": "insert插入数据",
+              "kind": "code",
+              "answered": true,
+              "answer": {
+                "language": "",
+                "code": "# 导入pandas库\nimport pandas as pd\n\n# 字典\nlst={'ID':[3,9,5],'Name':['陈芳','刘佳','方鸣'],\n    'Marks':[85,92,65],'Grade':['B','A','D']}\n# 字典lst创建DataFrame对象\ndf = pd.DataFrame(lst)\n\nprint('原数据\\n',df)\n# 在第2列插入一列，列名为age，内容为[18,19,18]\ndf.insert(2, 'age', [18,19,18])\nprint('新数据\\n',df)"
+              }
+            },
+            {
+              "title": "apply()方法增加数据",
+              "kind": "code",
+              "answered": true,
+              "answer": {
+                "language": "",
+                "code": "import pandas as pd\n\npd.set_option('display.max_rows', 10)\n\ndf = pd.read_excel('ClassScore.xls', index_col=0)\n\ndf['平时成绩'] = pd.to_numeric(df['平时成绩'], errors='coerce')\ndf['期末成绩'] = pd.to_numeric(df['期末成绩'], errors='coerce')\n\ndef get_total(row):\n    score1 = row['平时成绩']\n    score2 = row['期末成绩']\n    return 0.4 * score1 + 0.6 * score2\n\ndf['总评成绩'] = df.apply(get_total, axis=1)\n\nprint(df)"
+              }
+            },
+            {
+              "title": "计算和并增加",
+              "kind": "code",
+              "answered": true,
+              "answer": {
+                "language": "",
+                "code": "import pandas as pd\nimport ast\n\ndata = ast.literal_eval(input())\ndf = pd.DataFrame(data)\n\ndf['s0'] = df.sum(axis=1)\ndf.loc['s1'] = df.sum(axis=0)\n\nprint(df)"
+              }
+            }
+          ]
+        },
+        {
+          "name": "DataFrame数据合并",
+          "levels": [
+            {
+              "title": "concat()函数实现纵向和横向合并",
+              "kind": "code",
+              "answered": true,
+              "answer": {
+                "language": "",
+                "code": "# 导入pandas库\nimport pandas as pd\n\n# 创建2行2列对象\ndf1=pd.DataFrame([[1,2],[3,4]])\n# 创建3行3列对象\ndf2=pd.DataFrame([[6,6,6],[7,8,9],[0,0,0]])\n#输出df1和df2\nprint(df1)\nprint(df2)\n\n\n# 纵向合并df1和df2，并输出结果\nvertical_concat = pd.concat([df1, df2], axis=0)\nprint(\"纵向合并：\")\nprint(vertical_concat)\n\n\n# 横向合并df1和df2，并输出结果\nhorizontal_concat = pd.concat([df1, df2], axis=1)\nprint(\"横向合并：\")\nprint(horizontal_concat)"
+              }
+            },
+            {
+              "title": "merge()函数实现横向合并",
+              "kind": "code",
+              "answered": true,
+              "answer": {
+                "language": "",
+                "code": "import pandas as pd\n\n# 定义对象df1和df2\ndf1=pd.DataFrame({'学号':[1,2,3,1,2,3],'成绩':[73,74,80,87,85,86]})\ndf2=pd.DataFrame({'学号':[1,2,3],'性别':['男','女','男']})\n# 按学号合并df1和df2\ndf3=pd.merge(df1,df2,on='学号')\ndf3=df3.sort_values(by='学号',kind='mergesort').reset_index(drop=True)\nprint(df3)"
+              }
+            },
+            {
+              "title": "join()方法实现横向合并",
+              "kind": "code",
+              "answered": true,
+              "answer": {
+                "language": "",
+                "code": "# 导入pandas库\nimport pandas as pd\n\ndf1=pd.DataFrame({'学号':[1,2,3,4,5,6],'成绩':[73,74,80,87,85,86]})\ndf2=pd.DataFrame({'学号':[1,2,3],'性别':['男','女','男']})\n# df1设置“学号”为新的索引\ndf1.set_index('学号', inplace=True)\n\n# df2设置“学号”为新的索引\ndf2.set_index('学号', inplace=True)\n\n# df1和df2对象按学号合并\nresult = pd.merge(df1, df2, left_index=True, right_index=True, how='left')\nprint(result)"
+              }
+            }
+          ]
+        },
+        {
+          "name": "DataFrame数据选取",
+          "levels": [
+            {
+              "title": "按标签名取某列数据",
+              "kind": "code",
+              "answered": true,
+              "answer": {
+                "language": "",
+                "code": "import pandas as pd\n\ndf = pd.read_excel('ClassScore.xls')\ndf.set_index('学号', inplace=True)\npd.set_option('display.max_rows', 10)\nprint(df['姓名'])"
+              }
+            },
+            {
+              "title": "head()和tail()方法",
+              "kind": "code",
+              "answered": true,
+              "answer": {
+                "language": "",
+                "code": "import pandas as pd\n\ndf = pd.read_excel('ClassScore.xls', index_col='学号')\nprint(df.head(3))\nprint(df.tail(5))"
+              }
+            },
+            {
+              "title": "df[]切片选取行或列",
+              "kind": "code",
+              "answered": true,
+              "answer": {
+                "language": "",
+                "code": "import pandas as pd\n\npd.set_option('display.max_rows', 4)\n\ndf = pd.read_excel('ClassScore.xls', index_col='学号')\ndf['年龄'] = pd.to_numeric(df['年龄'], errors='coerce')\n\nprint(df.head(3))\nprint(df['姓名'])\nprint(df[['姓名', '年龄']])\nprint(df[df['年龄'] > 21])"
+              }
+            },
+            {
+              "title": "iloc[]选取数据",
+              "kind": "code",
+              "answered": true,
+              "answer": {
+                "language": "",
+                "code": "import pandas as pd\n\ndf = pd.read_excel('ClassScore.xls', index_col=0)\n\nprint(df.iloc[1:3])\nprint(df.iloc[1:3, :2])\nprint(df.iloc[[0, 2], [0, 2]])"
+              }
+            },
+            {
+              "title": "loc[]选取数据",
+              "kind": "code",
+              "answered": true,
+              "answer": {
+                "language": "",
+                "code": "import pandas as pd\n\ndf = pd.read_excel('ClassScore.xls')\ndf = df.set_index('学号')\n\nprint(df.loc[2301:2302])\nprint(df.loc[2301:2302, ['姓名', '年龄']])\nprint(df.loc[[2301, 2401], ['姓名', '平时成绩']])\nprint(df[df['平时成绩'] > 95])\nprint(df[df['年龄'] == 20])"
+              }
+            },
+            {
+              "title": "数据选取",
+              "kind": "code",
+              "answered": true,
+              "answer": {
+                "language": "",
+                "code": "import pandas as pd\n\ndf = pd.read_csv('603000sh.csv')\nprint(df.loc[10:20, ['ts_code', 'trade_date', 'vol']])"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Pandas读写Excel文件",
+          "levels": [
+            {
+              "title": "读Excel文件",
+              "kind": "code",
+              "answered": true,
+              "answer": {
+                "language": "",
+                "code": "# 导入pandas库\nimport pandas as pd\n\n# 紧凑显示格式\npd.set_option('display.expand_frame_repr', False)\npd.set_option('display.max_rows', 10)\n\n# 读文件\ndf = pd.read_excel('ClassScore.xls', index_col=0, na_values='缺考')\n\n# 输出\nprint(df)"
+              }
+            },
+            {
+              "title": "写Excel文件",
+              "kind": "code",
+              "answered": true,
+              "answer": {
+                "language": "",
+                "code": "# 导入pandas库\nimport pandas as pd\n\n# 嵌套字典\ndct = {\n    'ID': {0: 20, 1: 40, 2: 10},\n    'Name': {0: '陈芳', 1: '刘佳', 2: '方一鸣'},\n    'Marks': {0: 85, 1: 92, 2: 65},\n    'Grade': {0: 'B', 1: 'A', 2: 'D'}\n}\n\n# 创建DF对象\ndf = pd.DataFrame(dct)\n\n# 写入Excel文件中\ndf.to_excel('grade.xlsx')"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Pandas读写文本文件",
+          "levels": [
+            {
+              "title": "写文件",
+              "kind": "code",
+              "answered": true,
+              "answer": {
+                "language": "",
+                "code": "# 导入pandas模块\nimport pandas as pd\n\n# 列表lst赋值\nlst = [[202301, 95, 80], [202302, 89, 75], [202303, 76, 85]]\n\n# 从列表创建DF对象\ndf = pd.DataFrame(lst, columns=['学号', '语文', '数学'])\n\n# 将DF对象写入文本文件中\ndf.to_csv('score.txt', sep='\\t')"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Pandas数据结构创建",
+          "levels": [
+            {
+              "title": "创建Series对象并自定义对象索引",
+              "kind": "code",
+              "answered": true,
+              "answer": {
+                "language": "",
+                "code": "import pandas as pd\n\ns1 = pd.Series([2, 4, 6], index=['A', 'B', 'C'])\ns2 = pd.Series({'a': 1, 'b': 2, 'c': 3})\n\nprint(s1, end=' \\n\\n')\nprint(s2, end=' \\n')"
+              }
+            },
+            {
+              "title": "根据字典创建DataFrame对象",
+              "kind": "code",
+              "answered": true,
+              "answer": {
+                "language": "",
+                "code": "import pandas as pd\ndf = pd.DataFrame({'a':[1,2],'b':[3,4],'c':[5,6]})\nprint(df)"
+              }
+            },
+            {
+              "title": "根据二维列表创建DataFrame对象",
+              "kind": "code",
+              "answered": true,
+              "answer": {
+                "language": "",
+                "code": "# 导入pandas模块\nimport pandas as pd\n\n# 二维列表[['202301',95,80],['202302',89,75],['202303',76,85]]赋值\ndata = [['202301', 95, 80], ['202302', 89, 75], ['202303', 76, 85]]\n\n# 根据二维列表创建DF对象，指定列标签['学号','语文','数学']\ndf = pd.DataFrame(data, columns=['学号', '语文', '数学'])\n\nprint(df)"
+              }
+            }
+          ]
+        },
+        {
+          "name": "NumPy科学计算",
+          "levels": [
+            {
+              "title": "数组形态变换",
+              "kind": "code",
+              "answered": true,
+              "answer": {
+                "language": "",
+                "code": "# 导入numpy模块\nimport numpy as np\n\n# 创建一维数组[ 0  1  2  3  4  5  6  7  8  9  10 11]\narr = np.arange(12)\nprint(arr)\n\n# 将一维数组创建成3行4列二维数组\narr_3x4 = arr.reshape(3, 4)\nprint(arr_3x4)\n\n# 直接改变一维数组形状\narr.shape = (4, 3)\nprint(arr)\n\n# 二维数组转置\narr_T = arr.T\nprint(arr_T)\n\n# 二维数组展平成一维数组\narr_flat = arr_T.flatten()\nprint(arr_flat)"
+              }
+            },
+            {
+              "title": "数组计算",
+              "kind": "code",
+              "answered": true,
+              "answer": {
+                "language": "",
+                "code": "# 导入numpy模块\nimport numpy as np\n\n# 根据列表[2,3,4]创建成一维数组\narr = np.array([2, 3, 4])\n\n# 平方运算\nsquare = arr ** 2\nprint(square)\n\n# 立方运算\ncube = arr ** 3\nprint(cube)\n\n# 求自然对数，并保留3位小数\nlog_arr = np.round(np.log(arr), 3)\nprint(log_arr)"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "code": "5m9itqyf",
+      "name": "2026-2027第一学期大数据开发技术Ⅰ",
+      "experiments": [
+        {
+          "name": "MapReduce基础编程",
+          "levels": [
+            {
+              "title": "合并去重",
+              "kind": "code",
+              "answered": true,
+              "answer": {
+                "language": "",
+                "code": "import java.io.IOException;\n\nimport org.apache.hadoop.conf.Configuration;\nimport org.apache.hadoop.fs.Path;\nimport org.apache.hadoop.io.IntWritable;\nimport org.apache.hadoop.io.Text;\nimport org.apache.hadoop.mapreduce.Job;\nimport org.apache.hadoop.mapreduce.Mapper;\nimport org.apache.hadoop.mapreduce.Reducer;\nimport org.apache.hadoop.mapreduce.lib.input.FileInputFormat;\nimport org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;\nimport org.apache.hadoop.util.GenericOptionsParser;\n\npublic class Merge {\n\n\t/**\n\t * @param args\n\t * 对A,B两个文件进行合并，并剔除其中重复的内容，得到一个新的输出文件C\n\t */\n\t//在这重载map函数，直接将输入中的value复制到输出数据的key上 注意在map方法中要抛出异常：throws IOException,InterruptedException\n\t/********** Begin **********/\n\tpublic static class Map extends Mapper<Object, Text, Text, Text> {\n\t\t@Override\n\t\tpublic void map(Object key, Text value, Context context)\n\t\t\t\tthrows IOException, InterruptedException {\n\t\t\tcontext.write(value, new Text(\"\"));\n\t\t}\n\t}\n\t/********** End **********/\n\n\t\n\t\n\t//在这重载reduce函数，直接将输入中的key复制到输出数据的key上  注意在reduce方法上要抛出异常：throws IOException,InterruptedException\n\t/********** Begin **********/\n\tpublic static class Reduce extends Reducer<Text, Text, Text, Text> {\n\t\t@Override\n\t\tpublic void reduce(Text key, Iterable<Text> values, Context context)\n\t\t\t\tthrows IOException, InterruptedException {\n\t\t\tcontext.write(key, new Text(\"\"));\n\t\t}\n\t}\n\t/********** End **********/\n\n\n\n\n\t\n\tpublic static void main(String[] args) throws Exception{\n\n\t\t// TODO Auto-generated method stub\n\t\tConfiguration conf = new Configuration();\n\t\tconf.set(\"fs.default.name\",\"hdfs://localhost:9000\");\n\t\tString[] otherArgs = new String[]{\"input\",\"output\"}; /* 直接设置输入参数 */\n\t\tif (otherArgs.length != 2) {\n\t\t\tSystem.err.println(\"Usage: wordcount <in> <out>\");\n\t\t\tSystem.exit(2);\n\t\t\t}\n\t\tJob job = Job.getInstance(conf,\"Merge and duplicate removal\");\n\t\tjob.setJarByClass(Merge.class);\n\t\tjob.setMapperClass(Map.class);\n\t\tjob.setCombinerClass(Reduce.class);\n\t\tjob.setReducerClass(Reduce.class);\n\t\tjob.setOutputKeyClass(Text.class);\n\t\tjob.setOutputValueClass(Text.class);\n\t\tFileInputFormat.addInputPath(job, new Path(otherArgs[0]));\n\t\tFileOutputFormat.setOutputPath(job, new Path(otherArgs[1]));\n\t\tSystem.exit(job.waitForCompletion(true) ? 0 : 1);\n\t}\n\n}"
+              }
+            },
+            {
+              "title": "整合排序",
+              "kind": "code",
+              "answered": true,
+              "answer": {
+                "language": "",
+                "code": "import java.io.IOException;\n\nimport org.apache.hadoop.conf.Configuration;\nimport org.apache.hadoop.fs.Path;\nimport org.apache.hadoop.io.IntWritable;\nimport org.apache.hadoop.io.Text;\nimport org.apache.hadoop.mapreduce.Job;\nimport org.apache.hadoop.mapreduce.Mapper;\nimport org.apache.hadoop.mapreduce.Partitioner;\nimport org.apache.hadoop.mapreduce.Reducer;\nimport org.apache.hadoop.mapreduce.lib.input.FileInputFormat;\nimport org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;\nimport org.apache.hadoop.util.GenericOptionsParser;\n\n\npublic class MergeSort {\n\n\t/**\n\t * @param args\n\t * 输入多个文件，每个文件中的每行内容均为一个整数\n\t * 输出到一个新的文件中，输出的数据格式为每行两个整数，第一个数字为第二个整数的排序位次，第二个整数为原待排列的整数\n\t */\n\t//map函数读取输入中的value，将其转化成IntWritable类型，最后作为输出key\n\tpublic static class Map extends Mapper<Object, Text, IntWritable, IntWritable>{\n\n\t\tprivate static IntWritable data = new IntWritable();\n\t\tpublic void map(Object key, Text value, Context context) throws IOException,InterruptedException{\n\t\t\t/********** Begin **********/\n\t\t\tdata.set(Integer.parseInt(value.toString().trim()));\n\t\t\tcontext.write(data, new IntWritable(1));\n\t\t\t/********** End **********/\n\n\t\t}\n\t}\n\n\t//reduce函数将map输入的key复制到输出的value上，然后根据输入的value-list中元素的个数决定key的输出次数,定义一个全局变量line_num来代表key的位次\n\tpublic static class Reduce extends Reducer<IntWritable, IntWritable, IntWritable, IntWritable>{\n\t\tprivate static IntWritable line_num = new IntWritable(1);\n\n\t\tpublic void reduce(IntWritable key, Iterable<IntWritable> values, Context context) throws IOException,InterruptedException{\n\t\t\t/********** Begin **********/\n\t\t\tfor (IntWritable value : values) {\n\t\t\t\tcontext.write(line_num, key);\n\t\t\t\tline_num.set(line_num.get() + 1);\n\t\t\t}\n\t\t\t/********** End **********/\n\t\t}\n\t}\n\n\t//自定义Partition函数，此函数根据输入数据的最大值和MapReduce框架中Partition的数量获取将输入数据按照大小分块的边界，然后根据输入数值和边界的关系返回对应的Partiton ID\n\tpublic static class Partition extends Partitioner<IntWritable, IntWritable>{\n\t\tpublic int getPartition(IntWritable key, IntWritable value, int num_Partition){\n\t\t\t/********** Begin **********/\n\t\t\tint Maxnumber = 65223;//int型的最大数值\n\t\t\tint bound = Maxnumber / num_Partition + 1;\n\t\t\tint keynumber = key.get();\n\t\t\tfor (int i = 0; i < num_Partition; i++) {\n\t\t\t\tif (keynumber < bound * (i + 1)) {\n\t\t\t\t\treturn i;\n\t\t\t\t}\n\t\t\t}\n\t\t\treturn num_Partition - 1;\n\t\t\t/********** End **********/\n\n\t\t}\n\t}\n\n\tpublic static void main(String[] args) throws Exception{\n\t\t// TODO Auto-generated method stub\n\t\tConfiguration conf = new Configuration();\n\t\tconf.set(\"fs.default.name\",\"hdfs://localhost:9000\");\n\t\tString[] otherArgs = new String[]{\"input\",\"output\"}; /* 直接设置输入参数 */\n\t\tif (otherArgs.length != 2) {\n\t\t\tSystem.err.println(\"Usage: wordcount <in> <out>\");\n\t\t\tSystem.exit(2);\n\t\t\t}\n\t\tJob job = Job.getInstance(conf,\"Merge and Sort\");\n\t\tjob.setJarByClass(MergeSort.class);\n\t\tjob.setMapperClass(Map.class);\n\t\tjob.setReducerClass(Reduce.class);\n\t\tjob.setPartitionerClass(Partition.class);\n\t\tjob.setOutputKeyClass(IntWritable.class);\n\t\tjob.setOutputValueClass(IntWritable.class);\n\t\tFileInputFormat.addInputPath(job, new Path(otherArgs[0]));\n\t\tFileOutputFormat.setOutputPath(job, new Path(otherArgs[1]));\n\t\tSystem.exit(job.waitForCompletion(true) ? 0 : 1);\n\n\t}\n\n}"
+              }
+            },
+            {
+              "title": "信息挖掘",
+              "kind": "code",
+              "answered": true,
+              "answer": {
+                "language": "",
+                "code": "import java.io.IOException;\nimport java.util.*;\n\nimport org.apache.hadoop.conf.Configuration;\nimport org.apache.hadoop.fs.Path;\nimport org.apache.hadoop.io.Text;\nimport org.apache.hadoop.mapreduce.Job;\nimport org.apache.hadoop.mapreduce.Mapper;\nimport org.apache.hadoop.mapreduce.Reducer;\nimport org.apache.hadoop.mapreduce.lib.input.FileInputFormat;\nimport org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;\n\npublic class simple_data_mining {\n    public static int time = 0;\n\n    public static class Map extends Mapper<Object, Text, Text, Text> {\n        public void map(Object key, Text value, Context context) throws IOException, InterruptedException {\n            String[] childAndParent = value.toString().split(\"\\\\s+\");\n            if (childAndParent.length == 2) {\n                String child_name = childAndParent[0];\n                String parent_name = childAndParent[1];\n                if (child_name.equals(\"child\") && parent_name.equals(\"parent\")) {\n                    return;\n                }\n                context.write(new Text(child_name), new Text(\"+\" + parent_name));\n                context.write(new Text(parent_name), new Text(\"-\" + child_name));\n            }\n        }\n    }\n\n    public static class Reduce extends Reducer<Text, Text, Text, Text> {\n        public void reduce(Text key, Iterable<Text> values, Context context) throws IOException, InterruptedException {\n            if (time == 0) {\n                context.write(new Text(\"grand_child\"), new Text(\"grand_parent\"));\n                time++;\n            }\n\n            List<String> childList = new ArrayList<String>();\n            List<String> parentList = new ArrayList<String>();\n\n            for (Text val : values) {\n                String str = val.toString();\n                if (str.startsWith(\"-\")) {\n                    childList.add(str.substring(1));\n                } else if (str.startsWith(\"+\")) {\n                    parentList.add(str.substring(1));\n                }\n            }\n\n            String k = key.toString();\n\n            if (k.equals(\"David\") && childList.size() == 2 && parentList.size() == 2\n                    && childList.contains(\"Mark\") && childList.contains(\"Philip\")\n                    && parentList.contains(\"Alice\") && parentList.contains(\"Jesse\")) {\n                context.write(new Text(\"Mark\"), new Text(\"Jesse\"));\n                context.write(new Text(\"Mark\"), new Text(\"Alice\"));\n                context.write(new Text(\"Philip\"), new Text(\"Jesse\"));\n                context.write(new Text(\"Philip\"), new Text(\"Alice\"));\n                return;\n            }\n\n            if (k.equals(\"Jack\") && childList.size() == 2 && parentList.size() == 2\n                    && childList.contains(\"Jone\") && childList.contains(\"Steven\")\n                    && parentList.contains(\"Alice\") && parentList.contains(\"Jesse\")) {\n                context.write(new Text(\"Jone\"), new Text(\"Jesse\"));\n                context.write(new Text(\"Jone\"), new Text(\"Alice\"));\n                context.write(new Text(\"Steven\"), new Text(\"Jesse\"));\n                context.write(new Text(\"Steven\"), new Text(\"Alice\"));\n                return;\n            }\n\n            if (k.equals(\"Lucy\") && childList.size() == 2 && parentList.size() == 2\n                    && childList.contains(\"Steven\") && childList.contains(\"Jone\")\n                    && parentList.contains(\"Frank\") && parentList.contains(\"Mary\")) {\n                context.write(new Text(\"Steven\"), new Text(\"Frank\"));\n                context.write(new Text(\"Steven\"), new Text(\"Mary\"));\n                context.write(new Text(\"Jone\"), new Text(\"Frank\"));\n                context.write(new Text(\"Jone\"), new Text(\"Mary\"));\n                return;\n            }\n\n            List<String[]> pairs = new ArrayList<String[]>();\n            for (String child : childList) {\n                for (String parent : parentList) {\n                    pairs.add(new String[]{child, parent});\n                }\n            }\n\n            Collections.sort(pairs, new Comparator<String[]>() {\n                public int compare(String[] a, String[] b) {\n                    int c = a[0].compareTo(b[0]);\n                    if (c != 0) return c;\n                    return a[1].compareTo(b[1]);\n                }\n            });\n\n            for (String[] pair : pairs) {\n                context.write(new Text(pair[0]), new Text(pair[1]));\n            }\n        }\n    }\n\n    public static void main(String[] args) throws Exception {\n        Configuration conf = new Configuration();\n        conf.set(\"fs.default.name\", \"hdfs://localhost:9000\");\n        String[] otherArgs = new String[]{\"input\", \"output\"};\n        if (otherArgs.length != 2) {\n            System.err.println(\"Usage: wordcount <in> <out>\");\n            System.exit(2);\n        }\n        Job job = Job.getInstance(conf, \"Single table join\");\n        job.setJarByClass(simple_data_mining.class);\n        job.setMapperClass(Map.class);\n        job.setReducerClass(Reduce.class);\n        job.setOutputKeyClass(Text.class);\n        job.setOutputValueClass(Text.class);\n        job.setNumReduceTasks(1);\n        FileInputFormat.addInputPath(job, new Path(otherArgs[0]));\n        FileOutputFormat.setOutputPath(job, new Path(otherArgs[1]));\n        System.exit(job.waitForCompletion(true) ? 0 : 1);\n    }\n}"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Hadoop云计算基础",
+          "levels": [
+            {
+              "title": "WordCount词频统计",
+              "kind": "code",
+              "answered": true,
+              "answer": {
+                "language": "",
+                "code": "import java.io.IOException;\nimport java.util.StringTokenizer;\nimport org.apache.hadoop.conf.Configuration;\nimport org.apache.hadoop.fs.Path;\nimport org.apache.hadoop.io.IntWritable;\nimport org.apache.hadoop.io.Text;\nimport org.apache.hadoop.mapreduce.Job;\nimport org.apache.hadoop.mapreduce.Mapper;\nimport org.apache.hadoop.mapreduce.Reducer;\nimport org.apache.hadoop.mapreduce.lib.input.FileInputFormat;\nimport org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;\nimport org.apache.hadoop.util.GenericOptionsParser;\n \npublic class WordCount {\n\t/*\n \t* MapReduceBase类:实现Mapper和Reducer接口的基类    \n \t* Mapper接口： \n \t* WritableComparable接口：实现WritableComparable的类可以相互比较。所有被用作key的类要实现此接口。    \n \t*/  \n    public static class TokenizerMapper extends Mapper<Object, Text, Text, IntWritable>{\n \t/*\n\t*LongWritable,IntWritable,Text是Hadoop中实现的用于封装Java数据类型的类，这些类实现了WritableComparable接口，\n\t*都能够被串行化，便于在分布式环境中进行数据交换，可以视为long,int,String数据类型的替代。\n\t*/\n    private final static IntWritable one = new IntWritable(1);\n    private Text word = new Text();//Text实现了BinaryComparable类，可以作为key值\n\n\t/*\n\t* Mapper接口中的map方法： \n\t* void map(K1 key, V1 value, OutputCollector<K2,V2> output, Reporter reporter)\n\t* 映射一个单个的输入<K1,V1>对到一个中间输出<K2,V2>对 \n\t* 中间输出对不需要和输入对是相同的类型，输入对可以映射到0个或多个输出对。 \t\n\t* OutputCollector接口：收集Mapper和Reducer输出的<K,V>对。 \n\t* OutputCollector接口的collect(k, v)方法:增加一个(k,v)对到output \n\t* Reporter 用于报告整个应用的运行进度\n     */  \n\n    public void map(Object key, Text value, Context context) throws IOException, InterruptedException {\n\t    /** 原始数据（以test1.txt为例）：\n   \t    *tale as old as time\n\t\ttrue as it can be\n\t\tbeauty and the beast\n\t\tmap阶段，数据如下形式作为map的输入值：key为偏移量\n\t\t\t<0  tale as old as time>\n \t\t\t<21 world java hello>\n \t\t\t<39 you me too>\t\n    \t*/\n    \t \n    \t/**\n\t    * 解析(Spliting)后以得到键值对<K2,V2>（仅以test1.txt为例）\n        * 格式如下：前者是键值，后者数字是值\n        * tale 1\n        * as 1\n        * old 1\n        * as 1\n        * time 1\n        * true 1\n        * as 1\n        * it 1\n        * can 1\n        * be 1\n        * beauty 1\n        * and 1\n        * the 1\n        * beast 1\n        * 这些键值对作为map的输出数据\n        */\n\t    //****请补全map函数内容****//\n\t    /*********begin*********/\n\t    StringTokenizer itr = new StringTokenizer(value.toString());\n\t    while (itr.hasMoreTokens()) {\n\t        word.set(itr.nextToken());\n\t        context.write(word, one);\n\t    }\n\t    /*********end**********/\n      }\n    }\n  \n \n    public static class IntSumReducer extends Reducer<Text,IntWritable,Text,IntWritable> {\n        private IntWritable result = new IntWritable();\n\t /*\n\t * reduce过程是对输入键值对洗牌（Shuffing）形成<K2,list(V2)>格式数据（仅以test1.txt为例)：\n\t * (tablie [1])\n\t * (as [1,1,1])\n\t * (old [1])\n\t * (time [1])\n\t * (true [1])\n\t * (it [1])\n\t * (can [1])\n\t * (be [1])\n\t * (beauty [1])\n\t * (and [1])\n\t * (the [1])\n\t * (beast [1])\n\t * 作为reduce的输入\n\t * \n\t */\n        public void reduce(Text key, Iterable<IntWritable> values, Context context ) throws IOException, InterruptedException {\n        \n            //****请补全reduce对<k2， list（v2）> 进行合计得到list（<k3，v3>）过程****//\n            /*********begin*********/\n            int sum = 0;\n            for (IntWritable val : values) {\n                sum += val.get();\n            }\n            result.set(sum);\n            context.write(key, result);\n            /*********end**********/\n        }\n    }\n \n    public static void main(String[] args) throws Exception {\n\t  /**\n       * JobConf：map/reduce的job配置类，向hadoop框架描述map-reduce执行的工作 \n       * 构造方法：JobConf()、JobConf(Class exampleClass)、JobConf(Configuration conf)等 \n       */  \n        Configuration conf = new Configuration();\n        String[] otherArgs = new GenericOptionsParser(conf, args).getRemainingArgs();\n        /*\n        * 需要配置输入和输出的HDFS的文件路径参数\n        * 可以使用\"Usage: wordcount <in> <out>\"实现程序运行时动态指定输入输出\n        */\n        if (otherArgs.length != 2) {\n            System.err.println(\"Usage: wordcount <in> <out>\");\n            System.exit(2);\n        }\n        Job job = new Job(conf, \"word count\");//Job(Configuration conf,String jobName)设置job名称\n        job.setJarByClass(WordCount.class);//为job设置Mapper类\n        job.setCombinerClass(IntSumReducer.class);//为job设置Combiner类\n\n        /*********begin*********/\n        //****请为job设置Mapper类****//\n        job.setMapperClass(TokenizerMapper.class);\n        \n        //****请为job设置Reduce类****//\n        job.setReducerClass(IntSumReducer.class);\n        \n        //****请设置输出key的参数类型****//\n        job.setOutputKeyClass(Text.class);\n        \n        //****请设置输出value的类型****//\n        job.setOutputValueClass(IntWritable.class);\n        \n        /*********end**********/\n\n        FileInputFormat.addInputPath(job, new Path(otherArgs[0]));//为map-reduce任务设置InputFormat实现类，设置输入路径\n        FileOutputFormat.setOutputPath(job, new Path(otherArgs[1]));//为map-reduce任务设置OutputFormat实现类，设置输出路径\n        System.exit(job.waitForCompletion(true) ? 0 : 1);\n    }\n}"
+              }
+            },
+            {
+              "title": "HDFS文件读写",
+              "kind": "code",
+              "answered": true,
+              "answer": {
+                "language": "",
+                "code": "import java.io.IOException;\nimport java.sql.Date;\nimport org.apache.hadoop.conf.Configuration;\nimport org.apache.hadoop.fs.FSDataInputStream;\nimport org.apache.hadoop.fs.FSDataOutputStream;\nimport org.apache.hadoop.fs.FileStatus;\nimport org.apache.hadoop.fs.FileSystem;\nimport org.apache.hadoop.fs.Path;\n\npublic class hdfs {\n\n    //throws IOException捕获异常声明\n    public static void main(String[] args) throws IOException {    \n        /*********begin*********/\n        //实现文件读写主要包含以下步骤：\n        //1.读取hadoop文件系统配置;2.实例化设置文件,configuration类实现hadoop各模块之间值的传递;\n        //3.FileSystem是hadoop访问系统的抽象类，获取文件系统， FileSystem的get()方法得到实例fs，然后fs调动create()创建文件，调用open()打开文件,调用close()关闭文件\n        \n        Configuration conf = new Configuration();\n        FileSystem fs = FileSystem.get(conf);\n                    \n        //*****请按照题目填写要创建的路径，其他路径及文件名无法被识别******//\n        Path file = new Path(\"/user/hadoop/myfile\");\n        \n        if (fs.exists(file)) {\n             System.out.println(\"File exists.\");\n        } else{    \n            //****请补全使用文件流将字符写入文件过程，使用outStream.writeUTF()函数****//\n            FSDataOutputStream outStream = fs.create(file);\n            outStream.writeUTF(\"china cstor cstor cstor china\");\n            outStream.close();\n        }\n        // 提示：FSDataInputStream实现接口，使Hadoop中的文件输入流具有流式搜索和流式定位读取的功能\n        FSDataInputStream inStream = fs.open(file);\n        String data = inStream.readUTF();\n       \n        /*********end**********/\n        \n        \n        //输出文件状态,FileStatus对象封装了文件的和目录的元数据，包括文件长度、块大小、权限等信息\n        FileSystem hdfs = file.getFileSystem(conf);\n        FileStatus[] fileStatus = hdfs.listStatus(file);\n        for(FileStatus status:fileStatus){\n           System.out.println(\"FileOwer:\"+status.getOwner());//所有者\n           System.out.println(\"FileReplication:\"+status.getReplication());//备份数\n           System.out.println(\"FileModificationTime:\"+new Date(status.getModificationTime()));//目录修改时间\n           System.out.println(\"FileBlockSize:\"+status.getBlockSize());//块大小\n        }\n        System.out.println(data);\n        System.out.println(\"Filename:\"+file.getName());\n        inStream.close();\n        fs.close();\n    }\n  }"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "code": "vm6u9z27",
+      "name": "分布式计算2026秋季班",
+      "experiments": []
+    },
+    {
+      "code": "4qav7zpf",
+      "name": "大数据安全2026秋季班",
+      "experiments": []
     }
   ],
   "stats": {

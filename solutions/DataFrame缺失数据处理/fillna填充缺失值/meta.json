@@ -1,0 +1,11 @@
+{
+  "experiment": "DataFrame缺失数据处理",
+  "subject": "fillna填充缺失值",
+  "gid": "tm79v3fjhoxy",
+  "path": "o3/o3.py",
+  "kind": "code",
+  "classroom": "",
+  "source": "submit",
+  "completed_at": "2026-10-26T21:22:28+08:00",
+  "file": "answer.py"
+}

@@ -1,0 +1,12 @@
+{
+  "experiment": "Matplotlib绘制柱状图",
+  "subject": "绘制并列柱状图",
+  "gid": "zjgmte7bnuko",
+  "path": "bar2/bar2.py",
+  "kind": "code",
+  "classroom": "",
+  "source": "submit",
+  "completed_at": "2026-10-26T20:16:49+08:00",
+  "file": "answer.py",
+  "note": "图像对比关卡（已平台确认 status=2）：红色柱 color=red+alpha=0.6+edgecolor=red，两个图例都写「最高温度」，xticks 取 x-0.2。"
+}

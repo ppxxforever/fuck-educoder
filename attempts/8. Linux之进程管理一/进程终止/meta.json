@@ -1,0 +1,11 @@
+{
+  "experiment": "8.   Linux之进程管理一",
+  "subject": "进程终止",
+  "gid": "539vtfc7ieqh",
+  "path": "case4/test.c",
+  "kind": "code",
+  "classroom": "",
+  "passed": false,
+  "updated_at": "2026-10-25T01:53:32+08:00",
+  "file": "answer.c"
+}

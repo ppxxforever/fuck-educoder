@@ -1,0 +1,11 @@
+{
+  "experiment": "MySQL-单表查询(模式匹配,null,去重,and,or)",
+  "subject": "带 LIKE 的字符匹配查询",
+  "gid": "vtb8pj43rsnx",
+  "path": "src/step1/test.sql",
+  "kind": "code",
+  "classroom": "",
+  "source": "submit",
+  "completed_at": "2026-10-26T01:20:07+08:00",
+  "file": "answer.sql"
+}

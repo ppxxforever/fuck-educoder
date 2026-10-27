@@ -1,0 +1,18 @@
+{
+  "title": "逻辑覆盖-判定/条件覆盖",
+  "kind": "choice",
+  "answer": [
+    {
+      "number": 1,
+      "selected": [
+        "ACD"
+      ]
+    },
+    {
+      "number": 2,
+      "selected": [
+        "A"
+      ]
+    }
+  ]
+}

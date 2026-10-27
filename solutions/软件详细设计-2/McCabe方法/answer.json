@@ -1,0 +1,18 @@
+{
+  "title": "McCabe方法",
+  "kind": "choice",
+  "answer": [
+    {
+      "number": 1,
+      "selected": [
+        "B"
+      ]
+    },
+    {
+      "number": 2,
+      "selected": [
+        "ABCD"
+      ]
+    }
+  ]
+}

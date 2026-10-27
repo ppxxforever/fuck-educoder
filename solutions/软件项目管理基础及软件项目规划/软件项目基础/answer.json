@@ -1,0 +1,36 @@
+{
+  "title": "软件项目基础",
+  "kind": "choice",
+  "answer": [
+    {
+      "number": 1,
+      "selected": [
+        "B"
+      ]
+    },
+    {
+      "number": 2,
+      "selected": [
+        "C"
+      ]
+    },
+    {
+      "number": 3,
+      "selected": [
+        "C"
+      ]
+    },
+    {
+      "number": 4,
+      "selected": [
+        "C"
+      ]
+    },
+    {
+      "number": 5,
+      "selected": [
+        "A"
+      ]
+    }
+  ]
+}

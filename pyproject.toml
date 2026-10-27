@@ -7,4 +7,5 @@ dependencies = [
     "paramiko>=5.1.0",
     "playwright>=1.63.0",
     "python-dotenv>=1.2.3",
+    "textual>=8.2.8",
 ]

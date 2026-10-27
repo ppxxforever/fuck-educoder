@@ -1,0 +1,11 @@
+{
+  "experiment": "机器学习 --- 神经网络",
+  "subject": "使用pytorch搭建卷积神经网络识别手写数字",
+  "gid": "t39q5hwxym4k",
+  "path": "step3/student.py",
+  "kind": "code",
+  "classroom": "HCEAP94S",
+  "source": "answers.json",
+  "completed_at": "2026-10-24T19:02:58+08:00",
+  "file": "answer.py"
+}

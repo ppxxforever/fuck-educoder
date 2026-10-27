@@ -1,0 +1,42 @@
+{
+  "title": "事务型结构图",
+  "kind": "choice",
+  "answer": [
+    {
+      "number": 1,
+      "selected": [
+        "A"
+      ]
+    },
+    {
+      "number": 2,
+      "selected": [
+        "B"
+      ]
+    },
+    {
+      "number": 3,
+      "selected": [
+        "C"
+      ]
+    },
+    {
+      "number": 4,
+      "selected": [
+        "D"
+      ]
+    },
+    {
+      "number": 5,
+      "selected": [
+        "ABCD"
+      ]
+    },
+    {
+      "number": 6,
+      "selected": [
+        "ABC"
+      ]
+    }
+  ]
+}

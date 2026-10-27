@@ -1,0 +1,13 @@
+{
+  "experiment": "Pandas数据结构创建",
+  "subject": "根据字典创建DataFrame对象",
+  "gid": "gwz3qplkifue",
+  "path": "p3/p3.py",
+  "kind": "code",
+  "classroom": "",
+  "passed": true,
+  "answer_sha256": "1b78adb48849dc65fd04d2589d1e7cf43369184db68ea51ba253cf38b1691aa0",
+  "updated_at": "2026-10-26T21:47:40+08:00",
+  "file": "answer.py",
+  "passed_at": "2026-10-26T21:47:48+08:00"
+}

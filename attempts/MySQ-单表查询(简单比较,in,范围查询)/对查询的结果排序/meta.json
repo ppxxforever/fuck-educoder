@@ -1,0 +1,12 @@
+{
+  "experiment": "MySQ-单表查询(简单比较,in,范围查询)",
+  "subject": "对查询的结果排序",
+  "gid": "ajpho3sekinq",
+  "path": "src/step2/step2.sql",
+  "kind": "code",
+  "classroom": "",
+  "passed": true,
+  "updated_at": "2026-10-25T04:01:24+08:00",
+  "file": "answer.sql",
+  "passed_at": "2026-10-26T01:41:30+08:00"
+}

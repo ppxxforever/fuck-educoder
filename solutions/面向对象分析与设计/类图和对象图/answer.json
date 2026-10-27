@@ -1,0 +1,72 @@
+{
+  "title": "类图和对象图",
+  "kind": "choice",
+  "answer": [
+    {
+      "number": 1,
+      "selected": [
+        "BC"
+      ]
+    },
+    {
+      "number": 2,
+      "selected": [
+        "A"
+      ]
+    },
+    {
+      "number": 3,
+      "selected": [
+        "D"
+      ]
+    },
+    {
+      "number": 4,
+      "selected": [
+        "A"
+      ]
+    },
+    {
+      "number": 5,
+      "selected": [
+        "A"
+      ]
+    },
+    {
+      "number": 6,
+      "selected": [
+        "B"
+      ]
+    },
+    {
+      "number": 7,
+      "selected": [
+        "A"
+      ]
+    },
+    {
+      "number": 8,
+      "selected": [
+        "C"
+      ]
+    },
+    {
+      "number": 9,
+      "selected": [
+        "B"
+      ]
+    },
+    {
+      "number": 10,
+      "selected": [
+        "C"
+      ]
+    },
+    {
+      "number": 11,
+      "selected": [
+        "D"
+      ]
+    }
+  ]
+}

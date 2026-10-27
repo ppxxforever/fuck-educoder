@@ -1,0 +1,30 @@
+{
+  "title": "逻辑回归的损失函数",
+  "kind": "choice",
+  "answer": [
+    {
+      "number": 1,
+      "selected": [
+        "A"
+      ]
+    },
+    {
+      "number": 2,
+      "selected": [
+        "ACD"
+      ]
+    },
+    {
+      "number": 3,
+      "selected": [
+        "AB"
+      ]
+    },
+    {
+      "number": 4,
+      "selected": [
+        "D"
+      ]
+    }
+  ]
+}

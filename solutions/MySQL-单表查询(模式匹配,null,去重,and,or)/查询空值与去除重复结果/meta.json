@@ -1,0 +1,11 @@
+{
+  "experiment": "MySQL-单表查询(模式匹配,null,去重,and,or)",
+  "subject": "查询空值与去除重复结果",
+  "gid": "k3atnpie827q",
+  "path": "src/step3/test.sql",
+  "kind": "code",
+  "classroom": "",
+  "source": "submit",
+  "completed_at": "2026-10-26T01:22:00+08:00",
+  "file": "answer.sql"
+}

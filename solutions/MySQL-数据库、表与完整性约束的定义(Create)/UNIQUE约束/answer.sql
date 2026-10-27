@@ -1,0 +1,8 @@
+CREATE DATABASE IF NOT EXISTS MyDb;
+USE MyDb;
+DROP TABLE IF EXISTS s;
+CREATE TABLE s(
+    sno char(10) PRIMARY KEY,
+    name varchar(32) NOT NULL,
+    ID char(18) UNIQUE
+);

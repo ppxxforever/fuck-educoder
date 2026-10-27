@@ -1,0 +1,48 @@
+{
+  "title": "判定树-网上商城系统库存模块",
+  "kind": "choice",
+  "answer": [
+    {
+      "number": 1,
+      "selected": [
+        "E"
+      ]
+    },
+    {
+      "number": 2,
+      "selected": [
+        "F"
+      ]
+    },
+    {
+      "number": 3,
+      "selected": [
+        "A"
+      ]
+    },
+    {
+      "number": 4,
+      "selected": [
+        "B"
+      ]
+    },
+    {
+      "number": 5,
+      "selected": [
+        "E"
+      ]
+    },
+    {
+      "number": 6,
+      "selected": [
+        "F"
+      ]
+    },
+    {
+      "number": 7,
+      "selected": [
+        "ABCD"
+      ]
+    }
+  ]
+}

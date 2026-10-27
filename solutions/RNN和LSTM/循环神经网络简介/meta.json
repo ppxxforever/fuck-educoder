@@ -1,0 +1,11 @@
+{
+  "experiment": "RNN和LSTM",
+  "subject": "循环神经网络简介",
+  "gid": "spt9e6wcn2fl",
+  "path": "src/step1/rnn.py",
+  "kind": "code",
+  "classroom": "",
+  "source": "submit",
+  "completed_at": "2026-10-25T03:18:46+08:00",
+  "file": "answer.py"
+}

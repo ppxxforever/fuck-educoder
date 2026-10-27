@@ -1,5 +1,6 @@
 """Recover sessions through the normal password form; never log credentials."""
 import fcntl
+import json
 import os
 import re
 import hashlib
@@ -143,7 +144,9 @@ async def recover_session(playwright, username, headers, *, force_login=False):
         if not account or not password:
             raise CollectionError('登录已失效，请在本地 .env 填写 EDUCODER_LOGIN_ACCOUNT 和 EDUCODER_LOGIN_PASSWORD，或更新 Cookie/Token。')
         try:
-            browser = await playwright.chromium.launch(headless=True)
+            # 禁止使用代理（含系统代理）：Chromium 默认会读取桌面环境的系统代理设置，
+            # 代理不稳定/出口 IP 变化会触发平台风控，导致登录间歇性失败。强制直连。
+            browser = await playwright.chromium.launch(headless=True, args=['--no-proxy-server'])
         except PlaywrightError:
             raise CollectionError('自动登录无法启动 Chromium；请以服务运行用户执行 uv run playwright install chromium，并安装系统依赖。') from None
         try:
@@ -161,9 +164,26 @@ async def recover_session(playwright, username, headers, *, force_login=False):
             async with page.expect_response(is_login_response, timeout=30000) as pending:
                 await page.get_by_role('button', name='登录', exact=True).click()
             response = await pending.value
-            await response.body()
-            cookies = await browser_context.cookies('https://data.educoder.net/api/users/get_user_info.json')
-            token = next((c['value'] for c in cookies if c['name'] == '_educoder_session'), '')
+            raw = await response.text()
+            try:
+                payload = json.loads(raw)
+            except (ValueError, UnicodeError):
+                payload = {}
+            # 登录接口本身返回失败（如“用户名或密码错误”/触发验证码）时，直接报出平台原因，
+            # 而不是把真实原因吞成笼统的“未生成会话”。
+            if (isinstance(payload, dict) and not payload.get('login') and not payload.get('user_id')
+                    and any(key in payload for key in ('status', 'message', 'msg'))):
+                detail = payload.get('message') or payload.get('msg') or f"status={payload.get('status')}"
+                raise CollectionError(f'账号密码登录被拒绝：{detail}（网页端能登录时多为验证码/风控限制）')
+            # _educoder_session 由页面 JS 在登录接口返回后异步写入，不能立刻读到；
+            # 稍作轮询，避免把“登录其实成功了”误判成“未生成会话”。
+            token = ''
+            for _ in range(20):
+                cookies = await browser_context.cookies('https://data.educoder.net/api/users/get_user_info.json')
+                token = next((c['value'] for c in cookies if c['name'] == '_educoder_session'), '')
+                if token:
+                    break
+                await page.wait_for_timeout(250)
             if not token:
                 raise CollectionError('登录未生成会话，请检查账号密码或是否出现验证码；已限制重试频率。')
             cookie = '; '.join(f"{c['name']}={c['value']}" for c in cookies)

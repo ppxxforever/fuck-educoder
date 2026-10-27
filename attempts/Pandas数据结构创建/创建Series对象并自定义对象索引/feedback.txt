@@ -1,0 +1,11 @@
+共有1组测试集，其中有1组测试结果不匹配。详情如下：
+
+test 1 result=False:
+A    2
+B    4
+C    6
+dtype: int64
+a    1
+b    2
+c    3
+dtype: int64

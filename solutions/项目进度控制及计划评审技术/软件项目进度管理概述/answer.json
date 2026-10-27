@@ -1,0 +1,18 @@
+{
+  "title": "软件项目进度管理概述",
+  "kind": "choice",
+  "answer": [
+    {
+      "number": 1,
+      "selected": [
+        "D"
+      ]
+    },
+    {
+      "number": 2,
+      "selected": [
+        "C"
+      ]
+    }
+  ]
+}

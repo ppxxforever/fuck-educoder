@@ -1,0 +1,24 @@
+{
+  "title": "进度管理图示方法-甘特图与项目进度计划表",
+  "kind": "choice",
+  "answer": [
+    {
+      "number": 1,
+      "selected": [
+        "D"
+      ]
+    },
+    {
+      "number": 2,
+      "selected": [
+        "D"
+      ]
+    },
+    {
+      "number": 3,
+      "selected": [
+        "C"
+      ]
+    }
+  ]
+}

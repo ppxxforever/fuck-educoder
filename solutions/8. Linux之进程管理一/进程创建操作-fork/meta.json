@@ -1,0 +1,11 @@
+{
+  "experiment": "8.   Linux之进程管理一",
+  "subject": "进程创建操作-fork",
+  "gid": "64tmzc3x7ql8",
+  "path": "case2/test.c",
+  "kind": "code",
+  "classroom": "",
+  "source": "submit",
+  "completed_at": "2026-10-24T19:29:22+08:00",
+  "file": "answer.c"
+}

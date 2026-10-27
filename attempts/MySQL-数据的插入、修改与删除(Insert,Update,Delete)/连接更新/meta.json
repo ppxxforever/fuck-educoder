@@ -1,0 +1,12 @@
+{
+  "experiment": "MySQL-数据的插入、修改与删除(Insert,Update,Delete)",
+  "subject": "连接更新",
+  "gid": "lvfc3oiyxbgq",
+  "path": "src/test6/test6.sql",
+  "kind": "code",
+  "classroom": "",
+  "passed": true,
+  "updated_at": "2026-10-25T03:55:12+08:00",
+  "file": "answer.sql",
+  "passed_at": "2026-10-26T01:19:42+08:00"
+}

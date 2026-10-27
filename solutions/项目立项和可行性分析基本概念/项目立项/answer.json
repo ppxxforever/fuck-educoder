@@ -1,0 +1,18 @@
+{
+  "title": "项目立项",
+  "kind": "choice",
+  "answer": [
+    {
+      "number": 1,
+      "selected": [
+        "B"
+      ]
+    },
+    {
+      "number": 2,
+      "selected": [
+        "D"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,11 @@
+{
+  "experiment": "MySQL-视图",
+  "subject": "创建所有保险资产的详细记录视图",
+  "gid": "4jeqn63rvofh",
+  "path": "src/step1/test1.sql",
+  "kind": "code",
+  "classroom": "",
+  "source": "submit",
+  "completed_at": "2026-10-26T01:04:24+08:00",
+  "file": "answer.sql"
+}

@@ -1,0 +1,30 @@
+{
+  "title": "选择题",
+  "kind": "choice",
+  "answer": [
+    {
+      "number": 1,
+      "selected": [
+        "BCD"
+      ]
+    },
+    {
+      "number": 2,
+      "selected": [
+        "A"
+      ]
+    },
+    {
+      "number": 3,
+      "selected": [
+        "B"
+      ]
+    },
+    {
+      "number": 4,
+      "selected": [
+        "ABCD"
+      ]
+    }
+  ]
+}

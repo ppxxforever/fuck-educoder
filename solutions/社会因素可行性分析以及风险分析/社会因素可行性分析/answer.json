@@ -1,0 +1,18 @@
+{
+  "title": "社会因素可行性分析",
+  "kind": "choice",
+  "answer": [
+    {
+      "number": 1,
+      "selected": [
+        "BD"
+      ]
+    },
+    {
+      "number": 2,
+      "selected": [
+        "C"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,54 @@
+{
+  "title": "内聚和耦合",
+  "kind": "choice",
+  "answer": [
+    {
+      "number": 1,
+      "selected": [
+        "B"
+      ]
+    },
+    {
+      "number": 2,
+      "selected": [
+        "D"
+      ]
+    },
+    {
+      "number": 3,
+      "selected": [
+        "C"
+      ]
+    },
+    {
+      "number": 4,
+      "selected": [
+        "A"
+      ]
+    },
+    {
+      "number": 5,
+      "selected": [
+        "A"
+      ]
+    },
+    {
+      "number": 6,
+      "selected": [
+        "B"
+      ]
+    },
+    {
+      "number": 7,
+      "selected": [
+        "A"
+      ]
+    },
+    {
+      "number": 8,
+      "selected": [
+        "A"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,12 @@
+{
+  "experiment": "Matplotlib绘制二维图",
+  "subject": "企业产值折线图",
+  "gid": "7xqu6ztlymsh",
+  "path": "t0801/t0801.py",
+  "kind": "code",
+  "classroom": "",
+  "passed": false,
+  "answer_sha256": "f06a35fa1bd9256275dae6667d25c94a9c1b309fe33b933ed0e1a216d1cd5a72",
+  "updated_at": "2026-10-26T21:14:25+08:00",
+  "file": "answer.py"
+}

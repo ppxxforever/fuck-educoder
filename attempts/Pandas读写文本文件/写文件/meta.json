@@ -1,0 +1,13 @@
+{
+  "experiment": "Pandas读写文本文件",
+  "subject": "写文件",
+  "gid": "lbtsvipcoxz9",
+  "path": "d3/d3.py",
+  "kind": "code",
+  "classroom": "",
+  "passed": true,
+  "answer_sha256": "622fe401da11d93a8013f8df9717030a19cac0a3c82be2d523bfb916730a9a16",
+  "updated_at": "2026-10-26T21:44:38+08:00",
+  "file": "answer.py",
+  "passed_at": "2026-10-26T21:44:47+08:00"
+}

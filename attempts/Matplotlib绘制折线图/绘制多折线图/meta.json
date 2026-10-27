@@ -1,0 +1,13 @@
+{
+  "experiment": "Matplotlib绘制折线图",
+  "subject": "绘制多折线图",
+  "gid": "y6wlfr95pm8a",
+  "path": "Z2/Z2.py",
+  "kind": "code",
+  "classroom": "",
+  "passed": true,
+  "answer_sha256": "fce2b93e4b157daa092f934a0a1d2956bbc36e6430d78b8765ac2590be9fc229",
+  "updated_at": "2026-10-26T21:19:47+08:00",
+  "file": "answer.py",
+  "passed_at": "2026-10-26T21:20:15+08:00"
+}

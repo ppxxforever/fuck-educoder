@@ -1,0 +1,36 @@
+{
+  "title": "比较检验",
+  "kind": "choice",
+  "answer": [
+    {
+      "number": 1,
+      "selected": [
+        "ABC"
+      ]
+    },
+    {
+      "number": 2,
+      "selected": [
+        "ABCD"
+      ]
+    },
+    {
+      "number": 3,
+      "selected": [
+        "C"
+      ]
+    },
+    {
+      "number": 4,
+      "selected": [
+        "AC"
+      ]
+    },
+    {
+      "number": 5,
+      "selected": [
+        "A"
+      ]
+    }
+  ]
+}

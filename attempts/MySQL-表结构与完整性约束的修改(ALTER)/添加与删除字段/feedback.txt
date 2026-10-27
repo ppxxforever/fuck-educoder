@@ -1,0 +1,5 @@
+共有1组测试集，其中有1组测试结果不匹配。详情如下：
+
+test 1 result=False:
+代码存在错误，以下是提示信息：
+ERROR 1146 (42S02) at line 4: Table 'MyDb.orderdetail' doesn't exist

@@ -26,12 +26,15 @@ from pathlib import Path
 
 from playwright.async_api import Error as PlaywrightError
 
-from .ai import AIError, ai_chat, ai_configured, extract_json_block
+from . import attempts, levels as levelmod, prepared, solutions
+from .ai import AIError, ai_chat, ai_configured, extract_json_block, load_code_model
 from .client import open_client
 from .errors import CollectionError
 from .submit import (
-    fetch_homework_rows, is_level_passed, resolve_entry, verdict_signature,
-    walk_prev_to_head, wait_for_verdict,
+    detail_of, evaluate_sec_key, fetch_homework_rows, homework_deadline,
+    is_homework_closed, is_level_passed, note_unconfirmed, passed_on_platform,
+    resolve_entry, verdict_signature, wait_for_completion, wait_for_verdict,
+    walk_prev_to_head,
 )
 from .uml_solver import solve_from_grader
 
@@ -185,6 +188,14 @@ def write_targets(challenge_path, task_target, step):
 
 
 def is_graphic(detail) -> bool:
+    """是否图形化绘图题。
+
+    选择题（有 chooses）与代码题不应被当成绘图题：它们会共用实验的 VNC 环境
+    （env[0].vnc_url 为真），但自身没有 vnc_url/challenge.path，误判会导致
+    「无法解析保存路径」而跳过。
+    """
+    if detail.get('chooses'):
+        return False
     if detail.get('vnc_url'):
         return True
     envs = detail.get('shixun_environments') or []
@@ -366,7 +377,8 @@ async def release_all_envs(client, classroom):
 
 
 async def submit_graphic_game(client, hw_id, gid, detail, content, target_path, step,
-                              apply, stats, poll_timeout, classroom=None):
+                              apply, stats, poll_timeout, classroom=None,
+                              experiment_name=None):
     """SSH 写 .mdj → git commit → 触发评测；返回是否评测通过。"""
     challenge = detail.get('challenge') or {}
     user = detail.get('user') or {}
@@ -430,9 +442,14 @@ async def submit_graphic_game(client, hw_id, gid, detail, content, target_path, 
         'subject_id': '',
         'competition_entry_id': '',
     }
+    # 官网前端用 game_status.json 返回的 sec_key 提交评测；缺了它平台常常只给分
+    # 而不把该关卡记成「已通关」。取不到就多问几次。
+    sec_key = await evaluate_sec_key(client, gid, detail)
+    if not sec_key:
+        print(f'      ⚠ UML {gid}：拿不到 sec_key，平台可能只评分不记通关。')
     grade_resp = await client.post(
         f'/api/tasks/{gid}/game_build.json', {}, {
-            'sec_key': detail.get('sec_key') or '',
+            'sec_key': sec_key,
             'resubmit': '',
             'first': 1,
             'content_modified': 0,
@@ -448,11 +465,30 @@ async def submit_graphic_game(client, hw_id, gid, detail, content, target_path, 
         return False
 
     print(f'      UML {gid}：已触发评测，等待结果…')
-    passed, _ = await wait_for_verdict(client, gid, timeout=poll_timeout, baseline=baseline)
+    passed, verdict = await wait_for_verdict(client, gid, timeout=poll_timeout,
+                                             baseline=baseline)
     if passed is True:
         stats['submitted'] += 1
         print(f'      UML {gid}：评测通过 ✔')
+        confirmed = await wait_for_completion(client, gid)
+        if not confirmed:
+            note_unconfirmed(stats, gid, 'UML')
+        # solutions/ 只收平台确认 status==2 的答案，未确认的容易被别的账号复用后重蹈覆辙
+        if experiment_name and confirmed:
+            attempts.mark_passed(experiment_name, subject)
+            solutions.save_solution(experiment_name, subject, content, path=target_path,
+                                    gid=gid, kind='uml', source='submit')
         return True
+    if experiment_name:
+        from .submit import _verdict_feedback
+        try:
+            target = attempts.save_attempt(
+                experiment_name, subject, content, path=target_path, gid=gid,
+                kind='uml', passed=False,
+                feedback=_verdict_feedback(verdict) or '评测未通过')
+            print(f'      ↳ 已存档失败答案：{target.relative_to(ROOT)}')
+        except Exception as exc:
+            print(f'      · 保存失败答案出错：{exc}')
     if passed is False:
         stats['failed'] += 1
         print(f'      UML {gid}：评测未通过，请查看平台反馈。')
@@ -479,9 +515,10 @@ async def _trigger_eval(client, detail, hw_id, gid):
         'subject_id': '',
         'competition_entry_id': '',
     }
+    sec_key = await evaluate_sec_key(client, gid, detail)
     return await client.post(
         f'/api/tasks/{gid}/game_build.json', {}, {
-            'sec_key': detail.get('sec_key') or '',
+            'sec_key': sec_key,
             'resubmit': '',
             'first': 1,
             'content_modified': 0,
@@ -651,7 +688,8 @@ async def _ssh_write_commit(ssh, content, rel_paths, msg='submit'):
 
 
 async def solve_level_from_grader(client, hw_id, gid, detail, target, step, apply,
-                                  stats, poll_timeout, classroom=None):
+                                  stats, poll_timeout, classroom=None,
+                                  experiment_name=None):
     """抓评测脚本 → 逆向构造 .mdj → 提交；返回是否通过。"""
     challenge = detail.get('challenge') or {}
     targets = write_targets(challenge.get('path'), target, step)
@@ -728,13 +766,37 @@ async def solve_level_from_grader(client, hw_id, gid, detail, target, step, appl
         except Exception:
             pass
 
+    try:
+        baseline = verdict_signature(
+            await client.get(f'/api/tasks/{gid}.json', {}, strict_status=False))
+    except CollectionError:
+        baseline = verdict_signature(detail)
     await _trigger_eval(client, detail, hw_id, gid)
     print(f'      UML {gid}：已按评测脚本构造并提交，等待结果…')
-    passed, _ = await wait_for_verdict(client, gid, timeout=poll_timeout)
+    passed, verdict = await wait_for_verdict(client, gid, timeout=poll_timeout,
+                                             baseline=baseline)
+    subject = ((detail.get('challenge') or {}).get('subject') or '').strip()
     if passed is True:
         stats['submitted'] += 1
         print(f'      UML {gid}：评测通过 ✔')
+        confirmed = await wait_for_completion(client, gid)
+        if not confirmed:
+            note_unconfirmed(stats, gid, 'UML')
+        if experiment_name and confirmed:
+            attempts.mark_passed(experiment_name, subject)
+            solutions.save_solution(experiment_name, subject, content, path=target,
+                                    gid=gid, kind='uml', source='submit-grader')
         return content
+    if experiment_name:
+        from .submit import _verdict_feedback
+        try:
+            target = attempts.save_attempt(
+                experiment_name, subject, content, path=target, gid=gid,
+                kind='uml', passed=False,
+                feedback=_verdict_feedback(verdict) or '评测未通过')
+            print(f'      ↳ 已存档失败答案：{target.relative_to(ROOT)}')
+        except Exception as exc:
+            print(f'      · 保存失败答案出错：{exc}')
     stats['failed'] += 1
     print(f'      UML {gid}：评测未通过。' if passed is False else f'      UML {gid}：评测超时。')
     return None
@@ -771,7 +833,8 @@ def build_uml_prompt(task_pass, example):
 
 async def ai_solve_uml(task_pass, example):
     """用 AI 生成 .mdj，返回合法 JSON 文本；失败返回 None。"""
-    content = await ai_chat(UML_SYSTEM_PROMPT, build_uml_prompt(task_pass, example), temperature=0.2)
+    content = await ai_chat(UML_SYSTEM_PROMPT, build_uml_prompt(task_pass, example),
+                            model=load_code_model(), thinking=True, reasoning_effort='high')
     j = extract_json_block(content)
     try:
         obj = json.loads(j)
@@ -809,10 +872,23 @@ def save_mdj_answer(exp_name, step, content, subject=None):
 
 async def process_experiment(client, hw, apply, stats, poll_timeout, limit=None,
                              experiment_filter=None, use_ai=True, release_pods=True,
-                             delay=5.0, classroom=None):
-    """处理一个实验的图形化关卡。"""
+                             delay=5.0, classroom=None, repair_status=False,
+                             include_expired=False, coverage=None, entry=None):
+    """处理一个实验的图形化关卡。
+
+    coverage：与 submit.py 共享的关卡覆盖记录，用来标记每个关卡归哪条链处理，
+    避免「两条链都认为不归自己」时静默漏提交。
+    entry：submit_all 解析好的入口关卡，与选择/代码链、收尾校验共用同一个。
+    """
+    coverage = coverage if coverage is not None else levelmod.Coverage()
     name = hw.get('name') or ''
     if experiment_filter and experiment_filter not in name:
+        return
+    if not include_expired and is_homework_closed(hw):
+        stats['skipped_closed'] = stats.get('skipped_closed', 0) + 1
+        deadline = homework_deadline(hw)
+        when = f'（截止 {deadline:%Y-%m-%d %H:%M}）' if deadline else '（已归档）'
+        print(f'  - [跳过] 实验已截止{when}：{name}')
         return
     hw_id = hw.get('homework_id')
     shixun_id = hw.get('shixun_identifier')
@@ -821,17 +897,18 @@ async def process_experiment(client, hw, apply, stats, poll_timeout, limit=None,
         print(f'  - [跳过] 实验已完成：{name}')
         return
 
-    entry = await resolve_entry(client, shixun_id, hw_id)
+    entry = entry or await resolve_entry(client, shixun_id, hw_id)
     if not entry:
         print(f'  ✗ 无法解析实验入口，跳过：{name}')
         return
     ordered, cache = await walk_prev_to_head(client, entry)
 
-    # 非图形实验（选择/代码题）直接跳过，交给 submit.py 处理
-    entry_detail = cache.get(entry)
-    if entry_detail and not is_graphic(entry_detail):
+    # 非图形实验（选择/代码题）直接跳过，交给 submit.py 处理。
+    # 只能判断「整条关卡链里有没有图形题」：混合实验（选择/代码 + 图形）的
+    # 入口往往是选择题，只看入口会把后面的图形题整个漏掉
+    # （曾导致面向对象分析系列 29 关图形题一直未处理）。
+    if not any(is_graphic(cache.get(g)) for g in ordered):
         return
-
     base = resolve_answer_base(name)
     mdj = collect_mdj(base)
     example = None
@@ -856,7 +933,7 @@ async def process_experiment(client, hw, apply, stats, poll_timeout, limit=None,
         if gid in done:
             continue
         done.add(gid)
-        detail = cache.get(gid) or await client.get(f'/api/tasks/{gid}.json', {}, strict_status=False)
+        detail = await detail_of(client, cache, gid)
         game = detail.get('game') or {}
         challenge = detail.get('challenge') or {}
         subject = (challenge.get('subject') or '').strip()
@@ -867,18 +944,84 @@ async def process_experiment(client, hw, apply, stats, poll_timeout, limit=None,
             queue.append(str(nxt))
 
         if not is_graphic(detail):
+            kind = levelmod.classify_level(detail)
+            if is_level_passed(detail):
+                coverage.note(gid, kind=kind, subject=subject,
+                              passed=True, action='skipped_passed')
+            elif kind in (levelmod.KIND_CHOICE, levelmod.KIND_CODE):
+                coverage.note(gid, kind=kind, subject=subject,
+                              owner=levelmod.OWNER_SUBMIT)
+            else:
+                coverage.note(gid, kind=kind, subject=subject, action='unknown')
+                print(f'  ✗ [无主关卡] {subject}：既不是图形题，也没有选择/代码题线索，'
+                      '本次未处理；请人工确认。')
             continue
+        coverage.note(gid, kind=levelmod.KIND_GRAPHIC, subject=subject,
+                      owner=levelmod.OWNER_UML)
         if is_level_passed(detail):
+            passed_status = (detail.get('game') or {}).get('status')
+            if not (repair_status and passed_status != 2):
+                stats['skipped_passed'] += 1
+                print(f'  [跳过] {subject}：已通过。')
+                coverage.note(gid, passed=True, action='skipped_passed')
+                continue
+            print(f'  ▸ {subject}：评测记录已通过但平台未记通关，按官网流程重交一次。')
+        # 提交前重查一次：本地/缓存判成未通过，但平台可能已经通关（用户手动过了/同步慢）。
+        if apply and not repair_status and await passed_on_platform(client, gid):
             stats['skipped_passed'] += 1
-            print(f'  [跳过] {subject}：已通过。')
+            print(f'  [跳过] {subject}：提交前重查确认已在平台通关。')
+            coverage.note(gid, passed=True, action='skipped_passed')
             continue
         target, step = extract_target(challenge.get('path'), challenge.get('task_pass'))
         if not target:
+            target = attempts.attempt_target(name, subject)
+            if target:
+                step_m = re.search(r'step(?:_detail)?_?(\d+)', target)
+                step = int(step_m.group(1)) if step_m else step
+                print(f'  ▸ {subject}：使用 attempts/ 里指定的保存路径 {target}')
+        if not target:
+            # prepare.py 预生成答案时可能从题面/评测脚本解析出了保存路径
+            target = prepared.prepared_target(name, subject)
+            if target:
+                step_m = re.search(r'step(?:_detail)?_?(\d+)', target)
+                step = int(step_m.group(1)) if step_m else step
+                print(f'  ▸ {subject}：使用 prepared/ 里记录的保存路径 {target}')
+        if not target:
             stats['skipped_error'] += 1
-            print(f'  - [跳过] {subject}：无法解析保存路径（非 .mdj 绘图题？）。')
+            coverage.note(gid, action='skipped_error')
+            print(f'  - [跳过] {subject}：无法解析保存路径（非 .mdj 绘图题？）。'
+                  '可在 attempts/ 对应关卡里写 target.txt 指定。')
             continue
 
-        local_path = mdj.get(subject) or (mdj.get(step) if step is not None else None)
+        local_path = None
+        local_source = ''
+        if repair_status:
+            archived = attempts.attempt_path(name, subject, ('.mdj', '.txt'))
+            if archived:
+                local_path = str(archived)
+                print(f'  ▸ {subject}：使用 attempts/ 里的存档答案重试。')
+        if not local_path:
+            local_path = mdj.get(subject) or (mdj.get(step) if step is not None else None)
+        if not local_path:
+            # 闭环：solutions/ 存的是「平台确认已通关」的 .mdj，比 attempts/（失败尝试）可靠。
+            # AI 刷通过的那一份就在这里，换账号/换机器直接复用，不用重跑 grader/AI。
+            solved = solutions.solution_path(name, subject)
+            if solved:
+                local_path = str(solved)
+                print(f'  ▸ {subject}：使用 solutions/ 里已通关的答案。')
+        if not local_path:
+            archived = attempts.attempt_path(name, subject, ('.mdj', '.txt'))
+            if archived:
+                local_path = str(archived)
+                print(f'  ▸ {subject}：使用 attempts/ 里的存档答案重试。')
+        if not local_path:
+            # prepare.py 预先集中生成的 AI 答案（还没平台验证）。先用它提交一次，
+            # 不通过仍会回落到「抓评测脚本逆向构造」然后才是现场 AI。
+            generated = prepared.prepared_path(name, subject, ('.mdj', '.txt'))
+            if generated:
+                local_path = str(generated)
+                local_source = 'prepared'
+                print(f'  ▸ {subject}：使用 prepared/ 里预生成的 AI 答案。')
         if not local_path:
             # 无本地答案：优先抓评测脚本逆向构造（不消耗 AI），失败再尝试 AI
             print(f'  ▸ {subject}（抓评测脚本逆向构造）')
@@ -887,7 +1030,8 @@ async def process_experiment(client, hw, apply, stats, poll_timeout, limit=None,
             try:
                 content = await solve_level_from_grader(client, hw_id, gid, detail, target,
                                                         step, apply, stats, poll_timeout,
-                                                        classroom=classroom)
+                                                        classroom=classroom,
+                                                        experiment_name=name)
             except CollectionError as exc:
                 print(f'      ✗ {subject}：{exc}')
             except Exception as exc:
@@ -916,7 +1060,8 @@ async def process_experiment(client, hw, apply, stats, poll_timeout, limit=None,
                     try:
                         passed = await submit_graphic_game(client, hw_id, gid, detail, content,
                                                            target, step, apply, stats, poll_timeout,
-                                                           classroom=classroom)
+                                                           classroom=classroom,
+                                                           experiment_name=name)
                     except CollectionError as exc:
                         stats['failed'] += 1
                         print(f'      ✗ {subject}：{exc}')
@@ -935,13 +1080,19 @@ async def process_experiment(client, hw, apply, stats, poll_timeout, limit=None,
         try:
             passed = await submit_graphic_game(client, hw_id, gid, detail, content, target,
                                                step, apply, stats, poll_timeout,
-                                               classroom=classroom)
+                                               classroom=classroom,
+                                               experiment_name=name)
         except CollectionError as exc:
             stats['failed'] += 1
             print(f'      ✗ {subject}：{exc}')
 
         # 本地答案没通过：改用评测脚本逆向构造（不消耗 AI），成功后覆盖本地答案
         if apply and not passed:
+            if local_source == 'prepared':
+                # 预生成的 AI 草稿没通过：标记作废，下一轮改用逆向构造 / 现场 AI，
+                # 避免同一份错误答案每轮重交。
+                prepared.mark_rejected(name, subject, '提交未通过，下一轮重新生成')
+                print('      · prepared/ 答案已标记作废，下一轮改用逆向构造/AI 重做')
             print(f'      · 本地答案未通过，改用评测脚本逆向构造')
             try:
                 ref = await solve_level_from_grader(client, hw_id, gid, detail, target,
@@ -965,10 +1116,12 @@ async def process_experiment(client, hw, apply, stats, poll_timeout, limit=None,
 
 
 async def run(apply, classroom, limit, poll_timeout, experiment_filter, use_ai,
-              release_pods=True, release_envs=False, delay=5.0):
+              release_pods=True, release_envs=False, delay=5.0, repair_status=False,
+              include_expired=False):
     stats = {
         'submitted': 0, 'would_submit': 0, 'skipped_passed': 0,
         'skipped_no_answer': 0, 'skipped_error': 0, 'failed': 0, 'processed': 0,
+        'unowned': 0,
     }
     async with open_client() as client:
         if release_envs:
@@ -980,7 +1133,9 @@ async def run(apply, classroom, limit, poll_timeout, experiment_filter, use_ai,
             await process_experiment(client, hw, apply, stats, poll_timeout,
                                      limit=limit, experiment_filter=experiment_filter,
                                      use_ai=use_ai, release_pods=release_pods,
-                                     delay=delay, classroom=classroom)
+                                     delay=delay, classroom=classroom,
+                                     repair_status=repair_status,
+                                     include_expired=include_expired)
     print('\n===== 汇总 =====')
     for key, value in stats.items():
         print(f'  {key}: {value}')
@@ -995,17 +1150,22 @@ def main():
     parser.add_argument('--classroom', default=DEFAULT_CLASSROOM, help='课堂 code。')
     parser.add_argument('--limit', type=int, default=None, help='最多处理多少个图形化关卡（测试用）。')
     parser.add_argument('--experiment', default=None, help='只处理名称包含该字符串的实验。')
-    parser.add_argument('--poll-timeout', type=int, default=120, help='评测等待秒数。')
+    parser.add_argument('--poll-timeout', type=int, default=180, help='评测等待秒数。')
     parser.add_argument('--no-ai', action='store_true', help='缺答案时不用 AI 自动生成，直接跳过。')
     parser.add_argument('--release-envs', action='store_true', help='运行前先释放课堂里所有实验环境 pod。')
     parser.add_argument('--no-release', action='store_true', help='每个实验跑完后不释放其环境 pod。')
+    parser.add_argument('--repair-status', action='store_true',
+                        help='重交「评测已通过但平台未记通关（status!=2）」的关卡。')
+    parser.add_argument('--include-expired', action='store_true',
+                        help='连已截止/已归档的实验也处理（默认跳过）。')
     parser.add_argument('--delay', type=float, default=5.0, help='每个实验之间的等待秒数（避免环境启动过快）。')
     args = parser.parse_args()
     try:
         asyncio.run(run(args.apply, args.classroom, args.limit,
                         args.poll_timeout, args.experiment, use_ai=not args.no_ai,
                         release_pods=not args.no_release, release_envs=args.release_envs,
-                        delay=args.delay))
+                        delay=args.delay, repair_status=args.repair_status,
+                        include_expired=args.include_expired))
     except CollectionError as exc:
         raise SystemExit(str(exc)) from None
     except PlaywrightError:

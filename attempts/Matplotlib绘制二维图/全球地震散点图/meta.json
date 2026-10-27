@@ -1,0 +1,14 @@
+{
+  "experiment": "Matplotlib绘制二维图",
+  "subject": "全球地震散点图",
+  "gid": "x5opylfbqsj9",
+  "path": "t0803/t0803.py",
+  "kind": "code",
+  "classroom": "",
+  "passed": true,
+  "answer_sha256": "0b88acc06e0e0eb420562dfece064fc9b20493e89a8e7673f2487f1b488c8906",
+  "updated_at": "2026-10-26T19:48:17+08:00",
+  "file": "answer.py",
+  "passed_at": "2026-10-26T21:14:52+08:00",
+  "note": "已替换为平台确认通关的最终答案（status=2）。"
+}

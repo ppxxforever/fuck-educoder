@@ -1,0 +1,18 @@
+{
+  "title": "技术可行性分析",
+  "kind": "choice",
+  "answer": [
+    {
+      "number": 1,
+      "selected": [
+        "B"
+      ]
+    },
+    {
+      "number": 2,
+      "selected": [
+        "ABCD"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,13 @@
+{
+  "experiment": "DataFrame数据计算",
+  "subject": "算术运算",
+  "gid": "6iqohl9kjw35",
+  "path": "D1/D1.py",
+  "kind": "code",
+  "classroom": "",
+  "passed": true,
+  "answer_sha256": "a29fa6c2754bef693955a7a5cd56fc736ac8335f96115602f87c3e0af577eced",
+  "updated_at": "2026-10-26T21:24:02+08:00",
+  "file": "answer.py",
+  "passed_at": "2026-10-26T21:24:38+08:00"
+}

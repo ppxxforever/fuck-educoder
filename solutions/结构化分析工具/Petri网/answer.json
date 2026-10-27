@@ -1,0 +1,48 @@
+{
+  "title": "Petri网",
+  "kind": "choice",
+  "answer": [
+    {
+      "number": 1,
+      "selected": [
+        "B"
+      ]
+    },
+    {
+      "number": 2,
+      "selected": [
+        "ABCD"
+      ]
+    },
+    {
+      "number": 3,
+      "selected": [
+        "A"
+      ]
+    },
+    {
+      "number": 4,
+      "selected": [
+        "C"
+      ]
+    },
+    {
+      "number": 5,
+      "selected": [
+        "B"
+      ]
+    },
+    {
+      "number": 6,
+      "selected": [
+        "A"
+      ]
+    },
+    {
+      "number": 7,
+      "selected": [
+        "B"
+      ]
+    }
+  ]
+}

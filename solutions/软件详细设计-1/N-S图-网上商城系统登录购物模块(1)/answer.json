@@ -1,0 +1,18 @@
+{
+  "title": "N-S图-网上商城系统登录购物模块(1)",
+  "kind": "choice",
+  "answer": [
+    {
+      "number": 1,
+      "selected": [
+        "B"
+      ]
+    },
+    {
+      "number": 2,
+      "selected": [
+        "C"
+      ]
+    }
+  ]
+}

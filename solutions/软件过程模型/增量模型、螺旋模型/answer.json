@@ -1,0 +1,30 @@
+{
+  "title": "增量模型、螺旋模型",
+  "kind": "choice",
+  "answer": [
+    {
+      "number": 1,
+      "selected": [
+        "C"
+      ]
+    },
+    {
+      "number": 2,
+      "selected": [
+        "D"
+      ]
+    },
+    {
+      "number": 3,
+      "selected": [
+        "B"
+      ]
+    },
+    {
+      "number": 4,
+      "selected": [
+        "C"
+      ]
+    }
+  ]
+}

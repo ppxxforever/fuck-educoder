@@ -1,0 +1,1 @@
+{"_type": "Project", "_id": "AAAAAAehKYY8enG3O5=", "name": "Untitled", "ownedElements": [{"_type": "UMLModel", "_id": "AAAAAAw1+2sU4DMfm0=", "name": "Model0", "ownedElements": [{"_type": "UMLClassDiagram", "_id": "AAAAAAxzyqGs80HrAj=", "name": "Main", "defaultDiagram": true}, {"_type": "UMLActor", "_id": "AAAAAAcRi/QiQ5aiVb=", "name": "客户"}]}]}

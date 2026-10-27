@@ -1,0 +1,11 @@
+{
+  "experiment": "DataFrame缺失数据处理",
+  "subject": "dropna删除缺失值行",
+  "gid": "uo4vcs63gzn8",
+  "path": "o2/o2.py",
+  "kind": "code",
+  "classroom": "",
+  "source": "submit",
+  "completed_at": "2026-10-26T21:22:06+08:00",
+  "file": "answer.py"
+}

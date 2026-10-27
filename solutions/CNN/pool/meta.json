@@ -1,0 +1,11 @@
+{
+  "experiment": "CNN",
+  "subject": "pool",
+  "gid": "8gau7op4z3vk",
+  "path": "pool/pool.py",
+  "kind": "code",
+  "classroom": "HCEAP94S",
+  "source": "answers.json",
+  "completed_at": "2026-10-24T19:02:52+08:00",
+  "file": "answer.py"
+}

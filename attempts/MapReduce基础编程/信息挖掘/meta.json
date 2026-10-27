@@ -1,0 +1,13 @@
+{
+  "experiment": "MapReduce基础编程",
+  "subject": "信息挖掘",
+  "gid": "kzj5ryip4wqa",
+  "path": "step3/simple_data_mining.java",
+  "kind": "code",
+  "classroom": "",
+  "passed": true,
+  "answer_sha256": "b77b726c4444e05d82e59c0f2c627fa4d8d29bfa5935d15030e18ae5ddfdefcf",
+  "updated_at": "2026-10-26T19:03:41+08:00",
+  "file": "answer.java",
+  "passed_at": "2026-10-26T21:12:07+08:00"
+}

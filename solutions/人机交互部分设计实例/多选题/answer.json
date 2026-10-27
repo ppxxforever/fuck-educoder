@@ -1,0 +1,12 @@
+{
+  "title": "多选题",
+  "kind": "choice",
+  "answer": [
+    {
+      "number": 1,
+      "selected": [
+        "BC"
+      ]
+    }
+  ]
+}

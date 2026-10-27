@@ -1,0 +1,1 @@
+SELECT sname, gender, mobile FROM staff ORDER BY dob ASC;

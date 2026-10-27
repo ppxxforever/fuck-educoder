@@ -1,0 +1,24 @@
+{
+  "title": "软件工程方法学",
+  "kind": "choice",
+  "answer": [
+    {
+      "number": 1,
+      "selected": [
+        "ACD"
+      ]
+    },
+    {
+      "number": 2,
+      "selected": [
+        "B"
+      ]
+    },
+    {
+      "number": 3,
+      "selected": [
+        "B"
+      ]
+    }
+  ]
+}

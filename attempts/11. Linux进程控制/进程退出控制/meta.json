@@ -1,0 +1,11 @@
+{
+  "experiment": "11.   Linux进程控制",
+  "subject": "进程退出控制",
+  "gid": "7ifkr3fghy2t",
+  "path": "case2/ExitTest.c",
+  "kind": "code",
+  "classroom": "",
+  "passed": false,
+  "updated_at": "2026-10-24T19:36:34+08:00",
+  "file": "answer.c"
+}

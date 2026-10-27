@@ -1,0 +1,18 @@
+{
+  "title": "CMMI-软件能力成熟度集成模型",
+  "kind": "choice",
+  "answer": [
+    {
+      "number": 1,
+      "selected": [
+        "A"
+      ]
+    },
+    {
+      "number": 2,
+      "selected": [
+        "C"
+      ]
+    }
+  ]
+}

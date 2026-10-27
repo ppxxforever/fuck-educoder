@@ -1,0 +1,36 @@
+{
+  "title": "等价类划分法",
+  "kind": "choice",
+  "answer": [
+    {
+      "number": 1,
+      "selected": [
+        "A"
+      ]
+    },
+    {
+      "number": 2,
+      "selected": [
+        "B"
+      ]
+    },
+    {
+      "number": 3,
+      "selected": [
+        "AC"
+      ]
+    },
+    {
+      "number": 4,
+      "selected": [
+        "D"
+      ]
+    },
+    {
+      "number": 5,
+      "selected": [
+        "D"
+      ]
+    }
+  ]
+}

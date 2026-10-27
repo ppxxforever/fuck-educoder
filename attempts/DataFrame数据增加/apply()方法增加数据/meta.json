@@ -1,0 +1,13 @@
+{
+  "experiment": "DataFrame数据增加",
+  "subject": "apply()方法增加数据",
+  "gid": "w3utkac7l6qj",
+  "path": "a3/a3.py",
+  "kind": "code",
+  "classroom": "",
+  "passed": true,
+  "answer_sha256": "620d02577b7f4758663204602886c792559c5ef281561e49158a197063a57a03",
+  "updated_at": "2026-10-26T21:34:44+08:00",
+  "file": "answer.py",
+  "passed_at": "2026-10-26T21:35:00+08:00"
+}

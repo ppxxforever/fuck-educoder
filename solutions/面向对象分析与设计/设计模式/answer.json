@@ -1,0 +1,66 @@
+{
+  "title": "设计模式",
+  "kind": "choice",
+  "answer": [
+    {
+      "number": 1,
+      "selected": [
+        "D"
+      ]
+    },
+    {
+      "number": 2,
+      "selected": [
+        "A"
+      ]
+    },
+    {
+      "number": 3,
+      "selected": [
+        "A"
+      ]
+    },
+    {
+      "number": 4,
+      "selected": [
+        "D"
+      ]
+    },
+    {
+      "number": 5,
+      "selected": [
+        "A"
+      ]
+    },
+    {
+      "number": 6,
+      "selected": [
+        "A"
+      ]
+    },
+    {
+      "number": 7,
+      "selected": [
+        "C"
+      ]
+    },
+    {
+      "number": 8,
+      "selected": [
+        "D"
+      ]
+    },
+    {
+      "number": 9,
+      "selected": [
+        "B"
+      ]
+    },
+    {
+      "number": 10,
+      "selected": [
+        "D"
+      ]
+    }
+  ]
+}

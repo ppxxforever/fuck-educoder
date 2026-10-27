@@ -1,0 +1,12 @@
+{
+  "experiment": "Matplotlib绘制二维图",
+  "subject": "企业产值折线图",
+  "gid": "f6ut29siom4h",
+  "path": "t0801/t0801.py",
+  "kind": "code",
+  "classroom": "",
+  "source": "submit",
+  "file": "answer.py",
+  "completed_at": "2026-10-26T20:26:43+08:00",
+  "note": "图像对比关卡（已平台确认 status=2）：线用 b--o + linewidth=1，中文用 FontProperties(simhei.ttf)，注释文字 ha=center。"
+}

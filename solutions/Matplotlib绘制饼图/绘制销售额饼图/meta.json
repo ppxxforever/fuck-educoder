@@ -1,0 +1,12 @@
+{
+  "experiment": "Matplotlib绘制饼图",
+  "subject": "绘制销售额饼图",
+  "gid": "2yt8ur4kxpec",
+  "path": "c0707/c0707.py",
+  "kind": "code",
+  "classroom": "",
+  "source": "submit",
+  "completed_at": "2026-10-26T19:55:10+08:00",
+  "file": "answer.py",
+  "note": "图像对比关卡：标题必须是「某店1月销售额饼图」，岳麓店 explode=0.2；错一点就判图像对比不一致。2026-10-26 已平台确认 status=2。"
+}

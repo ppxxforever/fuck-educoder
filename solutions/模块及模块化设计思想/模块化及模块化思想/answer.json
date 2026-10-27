@@ -1,0 +1,42 @@
+{
+  "title": "模块化及模块化思想",
+  "kind": "choice",
+  "answer": [
+    {
+      "number": 1,
+      "selected": [
+        "C"
+      ]
+    },
+    {
+      "number": 2,
+      "selected": [
+        "C"
+      ]
+    },
+    {
+      "number": 3,
+      "selected": [
+        "A"
+      ]
+    },
+    {
+      "number": 4,
+      "selected": [
+        "CD"
+      ]
+    },
+    {
+      "number": 5,
+      "selected": [
+        "ABD"
+      ]
+    },
+    {
+      "number": 6,
+      "selected": [
+        "A"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,12 @@
++------------+--------------+------+-----+------------+----------------+
+| Field      | Type         | Null | Key | Default    | Extra          |
++------------+--------------+------+-----+------------+----------------+
+| guestID    | bigint(20)   | NO   | PRI | NULL       | auto_increment |
+| birthday   | varchar(255) | YES  |     | 0002-02-02 |                |
+| enterprise | varchar(255) | YES  |     |            |                |
+| name       | varchar(255) | YES  |     |            |                |
+| nickName   | varchar(255) | YES  |     |            |                |
+| password   | varchar(255) | YES  |     | 123456     |                |
+| credit     | double       | YES  |     | 1000       |                |
+| phone      | varchar(255) | YES  |     |            |                |
++------------+--------------+------+-----+------------+----------------+

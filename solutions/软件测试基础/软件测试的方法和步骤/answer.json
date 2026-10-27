@@ -1,0 +1,36 @@
+{
+  "title": "软件测试的方法和步骤",
+  "kind": "choice",
+  "answer": [
+    {
+      "number": 1,
+      "selected": [
+        "B"
+      ]
+    },
+    {
+      "number": 2,
+      "selected": [
+        "C"
+      ]
+    },
+    {
+      "number": 3,
+      "selected": [
+        "B"
+      ]
+    },
+    {
+      "number": 4,
+      "selected": [
+        "B"
+      ]
+    },
+    {
+      "number": 5,
+      "selected": [
+        "A"
+      ]
+    }
+  ]
+}

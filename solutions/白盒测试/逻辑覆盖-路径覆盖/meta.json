@@ -1,0 +1,11 @@
+{
+  "experiment": "白盒测试",
+  "subject": "逻辑覆盖-路径覆盖",
+  "gid": "yo9lrxtisvpf",
+  "path": "answer.json",
+  "kind": "choice",
+  "classroom": "",
+  "source": "submit",
+  "completed_at": "2026-10-26T21:57:16+08:00",
+  "file": "answer.json"
+}

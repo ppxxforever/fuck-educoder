@@ -1,0 +1,42 @@
+{
+  "title": "UML综合案例",
+  "kind": "choice",
+  "answer": [
+    {
+      "number": 1,
+      "selected": [
+        "A"
+      ]
+    },
+    {
+      "number": 2,
+      "selected": [
+        "C"
+      ]
+    },
+    {
+      "number": 3,
+      "selected": [
+        "D"
+      ]
+    },
+    {
+      "number": 4,
+      "selected": [
+        "A"
+      ]
+    },
+    {
+      "number": 5,
+      "selected": [
+        "B"
+      ]
+    },
+    {
+      "number": 6,
+      "selected": [
+        "D"
+      ]
+    }
+  ]
+}

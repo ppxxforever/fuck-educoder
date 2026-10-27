@@ -1,0 +1,12 @@
+{
+  "experiment": "MySQL-数据的插入、修改与删除(Insert,Update,Delete)",
+  "subject": "删除没有银行卡的客户信息",
+  "gid": "crzlgi4sybfp",
+  "path": "src/test4/test4.sql",
+  "kind": "code",
+  "classroom": "",
+  "passed": true,
+  "updated_at": "2026-10-25T03:52:59+08:00",
+  "file": "answer.sql",
+  "passed_at": "2026-10-26T01:17:12+08:00"
+}

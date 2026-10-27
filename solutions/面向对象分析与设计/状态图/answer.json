@@ -1,0 +1,48 @@
+{
+  "title": "状态图",
+  "kind": "choice",
+  "answer": [
+    {
+      "number": 1,
+      "selected": [
+        "D"
+      ]
+    },
+    {
+      "number": 2,
+      "selected": [
+        "C"
+      ]
+    },
+    {
+      "number": 3,
+      "selected": [
+        "D"
+      ]
+    },
+    {
+      "number": 4,
+      "selected": [
+        "D"
+      ]
+    },
+    {
+      "number": 5,
+      "selected": [
+        "ABCD"
+      ]
+    },
+    {
+      "number": 6,
+      "selected": [
+        "AB"
+      ]
+    },
+    {
+      "number": 7,
+      "selected": [
+        "B"
+      ]
+    }
+  ]
+}

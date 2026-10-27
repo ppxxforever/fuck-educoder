@@ -1,0 +1,4 @@
+1.2-采用数组实现图书统计/1.2-采用数组实现图书统计.cpp: In function ‘int main()’:<br/>1.2-采用数组实现图书统计/1.2-采用数组实现图书统计.cpp:7:5: error: redefinition of ‘int main()’<br/> int main(){<br/>     ^~~~<br/>In file included from 1.2-采用数组实现图书统计/1.2-采用数组实现图书统计.cpp:1:0:<br/>1.2-采用数组实现图书统计/1.2.h:39:5: note: ‘int main()’ previously defined here<br/> int main(){<br/>     ^~~~
+
+test 1 result=False:
+编译失败，请在测试结果中查看具体的错误信息

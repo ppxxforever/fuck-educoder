@@ -1,0 +1,12 @@
+{
+  "experiment": "9.   Linux之进程管理二",
+  "subject": "进程等待",
+  "gid": "k5qpr8jc3i49",
+  "path": "case1/test.c",
+  "kind": "code",
+  "classroom": "",
+  "passed": true,
+  "updated_at": "2026-10-25T01:47:12+08:00",
+  "file": "answer.c",
+  "passed_at": "2026-10-25T01:47:51+08:00"
+}

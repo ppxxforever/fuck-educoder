@@ -49,7 +49,8 @@ async def try_login(account, password):
     """用 Playwright 真实登录一次，返回 (是否成功, 说明)。"""
     from playwright.async_api import async_playwright
     async with async_playwright() as p:
-        browser = await p.chromium.launch(headless=True)
+        # 禁止使用代理（含系统代理）：强制直连，避免系统代理干扰登录结果。
+        browser = await p.chromium.launch(headless=True, args=['--no-proxy-server'])
         try:
             ctx = await browser.new_context()
             page = await ctx.new_page()

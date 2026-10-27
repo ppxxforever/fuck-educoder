@@ -1,0 +1,60 @@
+{
+  "title": "构件图和部署图",
+  "kind": "choice",
+  "answer": [
+    {
+      "number": 1,
+      "selected": [
+        "D"
+      ]
+    },
+    {
+      "number": 2,
+      "selected": [
+        "C"
+      ]
+    },
+    {
+      "number": 3,
+      "selected": [
+        "D"
+      ]
+    },
+    {
+      "number": 4,
+      "selected": [
+        "C"
+      ]
+    },
+    {
+      "number": 5,
+      "selected": [
+        "CD"
+      ]
+    },
+    {
+      "number": 6,
+      "selected": [
+        "C"
+      ]
+    },
+    {
+      "number": 7,
+      "selected": [
+        "B"
+      ]
+    },
+    {
+      "number": 8,
+      "selected": [
+        "D"
+      ]
+    },
+    {
+      "number": 9,
+      "selected": [
+        "D"
+      ]
+    }
+  ]
+}

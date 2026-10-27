@@ -1,0 +1,12 @@
+{
+  "experiment": "MySQ-单表查询(简单比较,in,范围查询)",
+  "subject": "带 IN 关键字的查询",
+  "gid": "7zmojalw3r5v",
+  "path": "src/step4/test4.sql",
+  "kind": "code",
+  "classroom": "",
+  "passed": true,
+  "updated_at": "2026-10-26T01:45:17+08:00",
+  "file": "answer.sql",
+  "passed_at": "2026-10-26T01:46:10+08:00"
+}

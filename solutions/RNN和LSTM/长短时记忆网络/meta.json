@@ -1,0 +1,11 @@
+{
+  "experiment": "RNN和LSTM",
+  "subject": "长短时记忆网络",
+  "gid": "bhpeyzoumtiw",
+  "path": "src/step3/LSTM.py",
+  "kind": "code",
+  "classroom": "",
+  "source": "submit",
+  "completed_at": "2026-10-25T03:18:54+08:00",
+  "file": "answer.py"
+}

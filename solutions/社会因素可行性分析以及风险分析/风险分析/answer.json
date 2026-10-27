@@ -1,0 +1,36 @@
+{
+  "title": "风险分析",
+  "kind": "choice",
+  "answer": [
+    {
+      "number": 1,
+      "selected": [
+        "ABCD"
+      ]
+    },
+    {
+      "number": 2,
+      "selected": [
+        "ABCD"
+      ]
+    },
+    {
+      "number": 3,
+      "selected": [
+        "AC"
+      ]
+    },
+    {
+      "number": 4,
+      "selected": [
+        "B"
+      ]
+    },
+    {
+      "number": 5,
+      "selected": [
+        "C"
+      ]
+    }
+  ]
+}

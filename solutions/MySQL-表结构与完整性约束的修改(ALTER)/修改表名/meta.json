@@ -1,0 +1,11 @@
+{
+  "experiment": "MySQL-表结构与完整性约束的修改(ALTER)",
+  "subject": "修改表名",
+  "gid": "uvzgamf5hpqj",
+  "path": "src/test1/test1.sql",
+  "kind": "code",
+  "classroom": "",
+  "source": "submit",
+  "completed_at": "2026-10-26T01:48:22+08:00",
+  "file": "answer.sql"
+}

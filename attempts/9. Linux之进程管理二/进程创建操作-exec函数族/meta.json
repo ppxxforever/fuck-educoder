@@ -1,0 +1,11 @@
+{
+  "experiment": "9.   Linux之进程管理二",
+  "subject": "进程创建操作-exec函数族",
+  "gid": "e2arczjgh5f7",
+  "path": "case2/test.c",
+  "kind": "code",
+  "classroom": "",
+  "passed": false,
+  "updated_at": "2026-10-25T01:50:33+08:00",
+  "file": "answer.c"
+}

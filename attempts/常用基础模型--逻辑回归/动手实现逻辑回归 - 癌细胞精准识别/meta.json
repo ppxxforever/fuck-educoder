@@ -1,0 +1,13 @@
+{
+  "experiment": "常用基础模型--逻辑回归",
+  "subject": "动手实现逻辑回归 - 癌细胞精准识别",
+  "gid": "l3bz56eamwus",
+  "path": "step3/student.py",
+  "kind": "code",
+  "classroom": "",
+  "passed": true,
+  "answer_sha256": "ac04e32c5453c0b866967b3199a15a565f178c53bce3a4b095ca6899087e4f0a",
+  "updated_at": "2026-10-26T21:13:06+08:00",
+  "file": "answer.py",
+  "passed_at": "2026-10-26T21:13:59+08:00"
+}

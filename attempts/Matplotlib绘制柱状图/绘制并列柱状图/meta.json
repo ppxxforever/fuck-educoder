@@ -1,0 +1,12 @@
+{
+  "experiment": "Matplotlib绘制柱状图",
+  "subject": "绘制并列柱状图",
+  "gid": "j5hu4ctxeg7r",
+  "path": "bar2/bar2.py",
+  "kind": "code",
+  "classroom": "",
+  "passed": false,
+  "answer_sha256": "7b827d9da995c0a37208bdd4cacdddc5a017a1ae239237a93ce22229cdffff39",
+  "updated_at": "2026-10-26T21:19:17+08:00",
+  "file": "answer.py"
+}

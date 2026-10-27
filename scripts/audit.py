@@ -15,7 +15,7 @@ from educoder_reminder.client import open_client
 from educoder_reminder.courses import fetch_courses
 from educoder_reminder.errors import CollectionError
 from educoder_reminder.submit import (
-    fetch_homework_rows, resolve_entry, walk_prev_to_head,
+    fetch_homework_rows, is_level_passed, resolve_entry, walk_prev_to_head,
 )
 from educoder_reminder.submit_all import COURSE_CUTOFF
 
@@ -48,8 +48,9 @@ async def audit_classroom(client, course):
                                                    {}, strict_status=False)
             ch = d.get('challenge') or {}
             g = d.get('game') or {}
-            # 通过判定：status==2，或已拿到分数（平台偶尔不同步 status 字段）
-            passed = g.get('status') == 2 or (g.get('final_score') or 0) > 0
+            # 通过判定与提交器共用同一口径（status==2 或 test_sets 全过）。
+            # 不能再看 final_score：它只是关卡分值，测试失败时也可能是 100。
+            passed = is_level_passed(d)
             levels.append((ch.get('subject') or '', 2 if passed else g.get('status')))
             nxt = d.get('next_game')
             if nxt and str(nxt) not in seen:

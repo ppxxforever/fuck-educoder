@@ -1,0 +1,13 @@
+{
+  "experiment": "DataFrame数据排序",
+  "subject": "按值排序",
+  "gid": "qnf2hrzefw46",
+  "path": "s1/s1.py",
+  "kind": "code",
+  "classroom": "",
+  "passed": true,
+  "answer_sha256": "8d4ec5d4af147e3ebac3f52a3453923ffaffd3c0686744b2a86bc17243464559",
+  "updated_at": "2026-10-26T21:27:01+08:00",
+  "file": "answer.py",
+  "passed_at": "2026-10-26T21:28:02+08:00"
+}

@@ -1,0 +1,13 @@
+共有1组测试集，其中有1组测试结果不匹配。详情如下：
+
+test 1 result=False:
+Traceback (most recent call last):
+  File "Z2/Z2.py", line 29, in <module>
+    plt.savefig('Z2/result/tu2.png')
+NameError: name 'plt' is not defined
+Traceback (most recent call last):
+  File "Z2/Z2_test.py", line 23, in <module>
+    a = Image.open("Z2/result/tu2.png")
+  File "/usr/local/lib/python3.6/site-packages/PIL/Image.py", line 2530, in open
+    fp = builtins.open(filename, "rb")
+FileNotFoundError: [Errno 2] No such file or directory: 'Z2/result/tu2.png'

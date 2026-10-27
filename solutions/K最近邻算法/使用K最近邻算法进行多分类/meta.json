@@ -1,0 +1,11 @@
+{
+  "experiment": "K最近邻算法",
+  "subject": "使用K最近邻算法进行多分类",
+  "gid": "gfa7mxqe92ph",
+  "path": "src2/main.py",
+  "kind": "code",
+  "classroom": "",
+  "source": "submit",
+  "completed_at": "2026-10-25T02:40:37+08:00",
+  "file": "answer.py"
+}

@@ -1,0 +1,12 @@
+{
+  "experiment": "MySQL-数据库、表与完整性约束的定义(Create)",
+  "subject": "UNIQUE约束",
+  "gid": "u32a5cb47gth",
+  "path": "src/test6/test6.sql",
+  "kind": "code",
+  "classroom": "",
+  "passed": true,
+  "updated_at": "2026-10-26T02:23:37+08:00",
+  "file": "answer.sql",
+  "passed_at": "2026-10-26T02:24:13+08:00"
+}

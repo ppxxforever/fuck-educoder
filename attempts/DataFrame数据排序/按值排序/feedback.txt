@@ -1,0 +1,19 @@
+共有1组测试集，其中有1组测试结果不匹配。详情如下：
+
+test 1 result=False:
+Traceback (most recent call last):
+  File "s1/s1.py", line 3, in <module>
+    df = pd.read_csv('temperature.txt', sep='\s+', engine='python', index_col=0)
+  File "/usr/local/lib/python3.6/site-packages/pandas/io/parsers.py", line 688, in read_csv
+    return _read(filepath_or_buffer, kwds)
+  File "/usr/local/lib/python3.6/site-packages/pandas/io/parsers.py", line 460, in _read
+    data = parser.read(nrows)
+  File "/usr/local/lib/python3.6/site-packages/pandas/io/parsers.py", line 1198, in read
+    ret = self._engine.read(nrows)
+  File "/usr/local/lib/python3.6/site-packages/pandas/io/parsers.py", line 2585, in read
+    alldata = self._rows_to_cols(content)
+  File "/usr/local/lib/python3.6/site-packages/pandas/io/parsers.py", line 3237, in _rows_to_cols
+    self._alert_malformed(msg, row_num + 1)
+  File "/usr/local/lib/python3.6/site-packages/pandas/io/parsers.py", line 2998, in _alert_malformed
+    raise ParserError(msg)
+pandas.errors.ParserError: Expected 2 fields in line 2, saw 3. Error could possibly be due to quotes being ignored when a multi-char delimiter is used.

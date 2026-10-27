@@ -1,0 +1,12 @@
+{
+  "title": "PAD图-网上商城系统购买商品模块",
+  "kind": "choice",
+  "answer": [
+    {
+      "number": 1,
+      "selected": [
+        "A"
+      ]
+    }
+  ]
+}

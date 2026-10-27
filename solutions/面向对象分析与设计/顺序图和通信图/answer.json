@@ -1,0 +1,60 @@
+{
+  "title": "顺序图和通信图",
+  "kind": "choice",
+  "answer": [
+    {
+      "number": 1,
+      "selected": [
+        "D"
+      ]
+    },
+    {
+      "number": 2,
+      "selected": [
+        "B"
+      ]
+    },
+    {
+      "number": 3,
+      "selected": [
+        "C"
+      ]
+    },
+    {
+      "number": 4,
+      "selected": [
+        "D"
+      ]
+    },
+    {
+      "number": 5,
+      "selected": [
+        "E"
+      ]
+    },
+    {
+      "number": 6,
+      "selected": [
+        "ABCDE"
+      ]
+    },
+    {
+      "number": 7,
+      "selected": [
+        "A"
+      ]
+    },
+    {
+      "number": 8,
+      "selected": [
+        "B"
+      ]
+    },
+    {
+      "number": 9,
+      "selected": [
+        "D"
+      ]
+    }
+  ]
+}

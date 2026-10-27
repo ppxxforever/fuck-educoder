@@ -1,0 +1,30 @@
+{
+  "title": "软件需求分析的定义、任务和过程",
+  "kind": "choice",
+  "answer": [
+    {
+      "number": 1,
+      "selected": [
+        "A"
+      ]
+    },
+    {
+      "number": 2,
+      "selected": [
+        "ABCD"
+      ]
+    },
+    {
+      "number": 3,
+      "selected": [
+        "ABCD"
+      ]
+    },
+    {
+      "number": 4,
+      "selected": [
+        "A"
+      ]
+    }
+  ]
+}

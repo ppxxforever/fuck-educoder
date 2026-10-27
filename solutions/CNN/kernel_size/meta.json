@@ -1,0 +1,11 @@
+{
+  "experiment": "CNN",
+  "subject": "kernel_size",
+  "gid": "2lq5xbsji9cm",
+  "path": "kernel_size/kernel_size.py",
+  "kind": "code",
+  "classroom": "HCEAP94S",
+  "source": "answers.json",
+  "completed_at": "2026-10-24T19:02:52+08:00",
+  "file": "answer.py"
+}

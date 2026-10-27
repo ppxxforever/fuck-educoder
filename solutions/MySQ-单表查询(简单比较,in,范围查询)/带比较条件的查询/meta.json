@@ -1,0 +1,11 @@
+{
+  "experiment": "MySQ-单表查询(简单比较,in,范围查询)",
+  "subject": "带比较条件的查询",
+  "gid": "nbikogj2t7ru",
+  "path": "src/step3/step3.sql",
+  "kind": "code",
+  "classroom": "",
+  "source": "submit",
+  "completed_at": "2026-10-26T02:22:57+08:00",
+  "file": "answer.sql"
+}

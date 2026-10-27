@@ -1,0 +1,11 @@
+{
+  "experiment": "DataFrame缺失数据处理",
+  "subject": "isnull检查缺失值",
+  "gid": "6veimqzr5cwx",
+  "path": "o1/o1.py",
+  "kind": "code",
+  "classroom": "",
+  "source": "submit",
+  "completed_at": "2026-10-26T21:21:44+08:00",
+  "file": "answer.py"
+}

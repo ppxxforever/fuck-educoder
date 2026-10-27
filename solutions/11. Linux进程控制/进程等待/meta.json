@@ -1,0 +1,11 @@
+{
+  "experiment": "11.   Linux进程控制",
+  "subject": "进程等待",
+  "gid": "ax76uo5rhfi9",
+  "path": "case1/WaitTest.c",
+  "kind": "code",
+  "classroom": "",
+  "source": "submit",
+  "completed_at": "2026-10-24T19:36:04+08:00",
+  "file": "answer.c"
+}
